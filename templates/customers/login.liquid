@@ -1,0 +1,58 @@
+<section class="dc-account-card">
+  <h1 class="dc-account-title">Sign in</h1>
+
+  {% form 'customer_login' %}
+    {{ form.errors | default_errors }}
+    <label class="dc-account-label" for="login-email">Email</label>
+    <input class="dc-account-input" type="email" id="login-email" name="customer[email]" required autocomplete="email">
+
+    <label class="dc-account-label" for="login-password">Password</label>
+    <input class="dc-account-input" type="password" id="login-password" name="customer[password]" required autocomplete="current-password">
+
+    <button class="dc-btn dc-btn--primary dc-btn--block" type="submit">Sign in</button>
+
+    <p class="dc-account-foot">
+      <a class="dc-account-link" href="#recover">Forgot password?</a>
+    </p>
+  {% endform %}
+
+  <p class="dc-account-divider">
+    New here? <a class="dc-account-link" href="{{ routes.account_register_url }}">Create an account</a>
+  </p>
+</section>
+
+{% form 'recover_customer_password' %}
+  <section class="dc-account-card" id="recover"
+    {% unless form.errors or form.posted_successfully? %}hidden{% endunless %}>
+    <h2 class="dc-account-title">Reset your password</h2>
+    <p class="dc-account-lede">Enter the email on your account and we'll send you a reset link.</p>
+
+    {{ form.errors | default_errors }}
+    {% if form.posted_successfully? %}
+      <p class="dc-account-success">If an account exists for that email, we've sent a reset link. Check your inbox.</p>
+    {% endif %}
+
+    <label class="dc-account-label" for="recover-email">Email</label>
+    <input class="dc-account-input" type="email" id="recover-email" name="email" required autocomplete="email">
+
+    <button class="dc-btn dc-btn--primary dc-btn--block" type="submit">Send reset link</button>
+
+    <p class="dc-account-foot">
+      <a class="dc-account-link" href="{{ routes.account_login_url }}">Back to sign in</a>
+    </p>
+  </section>
+{% endform %}
+
+<script>
+  // Toggle #recover open when "Forgot password?" is clicked or #recover is in the URL hash.
+  (function () {
+    var recover = document.getElementById('recover');
+    if (!recover) return;
+    function reveal() { recover.removeAttribute('hidden'); recover.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    if (window.location.hash === '#recover') reveal();
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest('a[href="#recover"]');
+      if (t) reveal();
+    });
+  })();
+</script>

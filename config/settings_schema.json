@@ -1,0 +1,127 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Dr Collagen",
+    "theme_version": "1.0.0",
+    "theme_author": "Dr Collagen",
+    "theme_documentation_url": "https://drcollagen.in",
+    "theme_support_url": "https://drcollagen.in/contact"
+  },
+  {
+    "name": "Brand",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Brand identity"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Brand logo"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "32 x 32 px .png recommended"
+      },
+      {
+        "type": "text",
+        "id": "tagline",
+        "label": "Tagline",
+        "default": "Japanese marine collagen, dosed and tested like a medicine."
+      },
+      {
+        "type": "image_picker",
+        "id": "og_image",
+        "label": "Social share image (Open Graph)",
+        "info": "1200 x 630 px .png/.jpg recommended. Used when a page is shared on WhatsApp, Instagram, Facebook, X, etc."
+      },
+      {
+        "type": "email",
+        "id": "support_email",
+        "label": "Customer support email",
+        "default": "support@drcollagen.in",
+        "info": "Used in FAQ answers and the footer. Update if your support inbox changes."
+      },
+      {
+        "type": "checkbox",
+        "id": "show_testimonials",
+        "label": "Show homepage testimonials section",
+        "default": false,
+        "info": "Disabled by default. Only enable once you have real, permissioned customer reviews — fabricated reviews violate consumer protection rules."
+      }
+    ]
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Core palette"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Primary accent (gold)",
+        "default": "#e8b72e"
+      },
+      {
+        "type": "color",
+        "id": "color_accent_deep",
+        "label": "Deep accent",
+        "default": "#b8903a"
+      },
+      {
+        "type": "color",
+        "id": "color_ink",
+        "label": "Primary text",
+        "default": "#1a1a1a"
+      },
+      {
+        "type": "color",
+        "id": "color_footer_bg",
+        "label": "Footer background",
+        "default": "#1a1225"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Fonts"
+      },
+      {
+        "type": "paragraph",
+        "content": "This theme uses Playfair Display (headings) and DM Sans (body) loaded from Google Fonts."
+      }
+    ]
+  },
+  {
+    "name": "Social",
+    "settings": [
+      {
+        "type": "url",
+        "id": "social_instagram",
+        "label": "Instagram URL"
+      },
+      {
+        "type": "url",
+        "id": "social_facebook",
+        "label": "Facebook URL"
+      },
+      {
+        "type": "url",
+        "id": "social_youtube",
+        "label": "YouTube URL"
+      },
+      {
+        "type": "url",
+        "id": "social_twitter",
+        "label": "Twitter/X URL"
+      }
+    ]
+  }
+]

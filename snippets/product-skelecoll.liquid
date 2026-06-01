@@ -1,0 +1,1829 @@
+{%- comment -%}
+  Resolve the live Shopify product so prices and the Buy button always
+  match the storefront. Falls back to launch-pricing static values until
+  the Product is created in admin with the right handle.
+{%- endcomment -%}
+{%- assign dc_handle = 'skelecoll' -%}
+{%- assign dc_product = all_products[dc_handle] -%}
+{%- if dc_product and dc_product.id != blank -%}
+  {%- assign dc_price = dc_product.price | money -%}
+  {%- if dc_product.compare_at_price > dc_product.price -%}
+    {%- assign dc_was = dc_product.compare_at_price | money -%}
+    {%- assign dc_save_pct = dc_product.compare_at_price | minus: dc_product.price | times: 100.0 | divided_by: dc_product.compare_at_price | round -%}
+  {%- endif -%}
+  {%- assign dc_variant_id = dc_product.selected_or_first_available_variant.id -%}
+  {%- assign dc_available = dc_product.available -%}
+{%- else -%}
+  {%- assign dc_price = '₹2,199' -%}
+  {%- assign dc_was = '₹2,750' -%}
+  {%- assign dc_save_pct = 20 -%}
+  {%- assign dc_available = false -%}
+{%- endif -%}
+
+<style>
+    /* ─── DESIGN TOKENS (per-product theme: Skelecoll — light walnut/latte brown) ─── */
+    :root {
+      --accent:        #b0845c;
+      --accent-deep:   #7d5a3e;
+      --accent-glow:   rgba(176,132,92,.3);
+      --accent-soft:   rgba(176,132,92,.09);
+      --theme-1:       #f3e5d2;
+      --theme-2:       #faf2e4;
+      --theme-3:       #e8d3b8;
+      --ink:           #2a1d12;
+      --warm-dim:      #5c4c3e;
+      --muted:         #6e6352;
+      --heading:       'Playfair Display', Georgia, serif;
+      --body:          'DM Sans', -apple-system, sans-serif;
+    }
+
+    em.shine, h1 em, h2 em {
+      background: linear-gradient(135deg,#fbecd6 0%,#e6c9a2 22%,#c9a277 42%,#b0845c 58%,#7d5a3e 78%,#503520 100%);
+      background-size: 220% 220%;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+      filter: drop-shadow(0 1px 0 rgba(251,236,214,.55)) drop-shadow(0 0 14px rgba(176,132,92,.45));
+      animation: shimmer 6s ease-in-out infinite;
+      font-style: italic; font-weight: 400;
+    }
+    @keyframes shimmer { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+    *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--body);
+      background: #ffffff;
+      color: var(--ink);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; border: none; background: none; font-family: var(--body); }
+
+    #film-grain {
+      position: fixed; inset: -50%; z-index: 100;
+      width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+      opacity: 0.028;
+      pointer-events: none;
+      animation: grain-move .6s steps(2) infinite;
+    }
+    @keyframes grain-move {
+      0%{transform:translate(0,0)} 25%{transform:translate(-3px,2px)}
+      50%{transform:translate(2px,-3px)} 75%{transform:translate(3px,1px)}
+      100%{transform:translate(-1px,3px)}
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      padding: 22px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background .4s ease, padding .4s ease, backdrop-filter .4s ease, border-color .4s ease;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border-bottom-color: rgba(0,0,0,.05);
+      padding: 14px 48px;
+    }
+    .nav-logo { font-family: var(--heading); font-size: 20px; font-weight: 600; letter-spacing: .08em; }
+    .nav-logo span { color: var(--accent); }
+    .nav-back {
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--warm-dim);
+      display: inline-flex; align-items: center; gap: 10px;
+      transition: color .3s, gap .3s;
+    }
+    .nav-back:hover { color: var(--accent); gap: 14px; }
+    .nav-back .arrow { font-size: 14px; transform: translateY(-1px); }
+    .nav-cta {
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase;
+      padding: 10px 22px; color: var(--accent);
+      border: 1px solid rgba(176,132,92,.42); border-radius: 40px;
+      transition: background .3s, color .3s, border-color .3s;
+    }
+    .nav-cta:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    #hero {
+      position: relative; min-height: 100vh;
+      background: radial-gradient(ellipse at 30% 20%, var(--theme-1) 0%, var(--theme-2) 50%, #ffffff 100%);
+      padding: 140px 6vw 80px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: center;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: ''; position: absolute;
+      top: -30%; right: -15%;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-soft) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-text { position: relative; z-index: 2; }
+    .hero-breadcrumb {
+      font-size: 11px; font-weight: 700; letter-spacing: .28em;
+      text-transform: uppercase; color: var(--accent-deep);
+      margin-bottom: 24px;
+    }
+    .hero-breadcrumb a { transition: color .3s; }
+    .hero-breadcrumb a:hover { color: var(--accent-deep); }
+    .hero-title {
+      font-family: var(--heading);
+      font-size: clamp(52px, 7vw, 96px);
+      font-weight: 300; line-height: 1.02;
+      margin-bottom: 20px; letter-spacing: -.01em;
+    }
+    .hero-tagline {
+      font-size: clamp(17px, 1.6vw, 21px);
+      font-weight: 300; color: var(--warm-dim);
+      line-height: 1.6; max-width: 480px; margin-bottom: 32px;
+    }
+    .hero-bullets {
+      list-style: none; display: flex; flex-direction: column; gap: 10px;
+      margin-bottom: 40px;
+    }
+    .hero-bullets li { font-size: 14px; font-weight: 400; color: var(--ink);
+      display: flex; align-items: center; gap: 12px; }
+    .hero-bullets li::before { content: '✦'; color: var(--accent); font-size: 12px; flex-shrink: 0; }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+    .btn-primary {
+      position: relative; overflow: hidden;
+      padding: 14px 34px;
+      background: linear-gradient(135deg, #7d5a3e 0%, #503520 50%, #2a1d12 100%);
+      color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: .2em;
+      text-transform: uppercase; border-radius: 40px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.15),
+        inset 0 -1px 0 rgba(0,0,0,.35),
+        0 6px 18px rgba(42,29,18,.35),
+        0 0 0 1px rgba(125,90,62,.45);
+      transition: transform .3s, box-shadow .3s, filter .3s;
+      display: inline-block;
+    }
+    .btn-primary::before {
+      content: ""; position: absolute; top: 0; left: -120%; width: 60%; height: 100%;
+      background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.45) 50%, transparent 80%);
+      transform: skewX(-18deg); pointer-events: none;
+      transition: left .9s cubic-bezier(.2,.8,.2,1);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.10) saturate(1.1);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.25),
+        inset 0 -1px 0 rgba(0,0,0,.4),
+        0 16px 44px rgba(42,29,18,.4),
+        0 0 0 1px rgba(125,90,62,.55);
+    }
+    .btn-primary:hover::before { left: 120%; }
+    .btn-outline {
+      padding: 14px 30px; border: 1px solid rgba(42,29,18,.22); color: var(--ink);
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; border-radius: 40px;
+      transition: border-color .3s, background .3s;
+    }
+    .btn-outline:hover { border-color: rgba(42,29,18,.5); background: rgba(42,29,18,.03); }
+
+    .hero-price-row { display: flex; align-items: baseline; gap: 18px; margin-bottom: 12px; }
+    .hero-price { font-family: var(--heading); font-size: 30px; font-weight: 400; color: var(--ink); }
+    .hero-price-was { font-size: 16px; font-weight: 300; color: var(--muted); text-decoration: line-through; }
+    .hero-price-save {
+      font-size: 10px; font-weight: 600; letter-spacing: .15em;
+      text-transform: uppercase; padding: 4px 10px; border-radius: 20px;
+      background: var(--accent-soft); color: var(--accent-deep);
+    }
+
+    .hero-visual { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; }
+    .hero-bottle-wrap { position: relative; animation: float 6s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+    .hero-bottle-wrap img {
+      height: clamp(340px, 52vh, 560px); width: auto;
+      filter: drop-shadow(0 40px 80px rgba(125,90,62,.32));
+    }
+    .hero-bottle-wrap::after {
+      content: ''; position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%);
+      width: 260px; height: 30px;
+      background: radial-gradient(ellipse, rgba(42,29,18,.18) 0%, transparent 70%);
+      border-radius: 50%; filter: blur(8px);
+    }
+    .hero-badge-float {
+      position: absolute; top: 12%; right: 0;
+      background: #fff; border: 1px solid var(--accent-soft);
+      padding: 14px 20px; border-radius: 14px;
+      box-shadow: 0 8px 28px rgba(125,90,62,.13);
+      font-size: 11px; font-weight: 500; letter-spacing: .05em;
+      color: var(--ink); max-width: 180px;
+    }
+    .hero-badge-float strong { color: var(--accent-deep); }
+
+    section { padding: 120px 48px; position: relative; }
+    .inner { max-width: 1160px; margin: 0 auto; }
+    .overline {
+      font-size: 11px; font-weight: 700; letter-spacing: .32em;
+      text-transform: uppercase; color: var(--accent-deep); margin-bottom: 18px;
+    }
+    .heading {
+      font-family: var(--heading);
+      font-size: clamp(32px, 4.5vw, 58px);
+      font-weight: 300; line-height: 1.12;
+      letter-spacing: -.01em; color: var(--ink); margin-bottom: 24px;
+    }
+    .lede {
+      font-size: clamp(16px, 1.3vw, 19px); font-weight: 300;
+      color: var(--warm-dim); line-height: 1.8; max-width: 620px;
+    }
+
+    /* Reveal — failsafe-first: starts hidden, but a CSS animation auto-
+       reveals after 1.5s even if every JS animation library fails.
+       When the JS observer adds .visible, the smooth transition takes
+       over and the failsafe animation becomes a no-op. */
+    @keyframes dc-reveal-failsafe {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal { opacity: 0; transform: translateY(40px); animation: dc-reveal-failsafe .8s ease 1.5s forwards; }
+    .reveal.visible { opacity: 1; transform: translateY(0); transition: opacity .8s ease, transform .8s ease; animation: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+    }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+
+    #promise { background: #ffffff; }
+    #promise .inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .promise-img {
+      background: linear-gradient(160deg, var(--theme-3) 0%, var(--theme-2) 100%);
+      border-radius: 24px; padding: 60px;
+      position: relative; overflow: hidden;
+      aspect-ratio: 1/1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .promise-img::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.6) 0%, transparent 60%);
+    }
+    .promise-img-number {
+      position: relative; z-index: 2;
+      font-family: var(--heading); font-size: clamp(80px, 14vw, 220px);
+      font-weight: 300; color: var(--accent-deep);
+      line-height: 1; letter-spacing: -.04em;
+    }
+    .promise-img-number small {
+      display: block; font-size: 14px; font-weight: 500;
+      letter-spacing: .25em; text-transform: uppercase;
+      color: var(--warm-dim); margin-top: 12px;
+    }
+    .promise-text p { font-size: 15px; color: var(--warm-dim); line-height: 1.85; margin-bottom: 16px; }
+
+    #ingredients {
+      background: linear-gradient(180deg, #fdf8ee 0%, #ecd9b8 100%);
+      overflow: hidden;
+    }
+    #ingredients .inner { position: relative; }
+    .ing-head { text-align: center; margin-bottom: 80px; }
+    .ing-head .heading { max-width: 720px; margin-left: auto; margin-right: auto; }
+    .ing-head .lede { margin: 20px auto 0; }
+    .ing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .ing-card {
+      background: #ffffff; border: 1px solid rgba(0,0,0,.05);
+      border-radius: 22px; padding: 36px 28px 32px;
+      position: relative;
+      transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s, border-color .4s;
+    }
+    .ing-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(176,132,92,.28);
+      box-shadow: 0 20px 50px rgba(125,90,62,.14);
+    }
+    .ing-icon {
+      width: 56px; height: 56px; border-radius: 16px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 22px;
+    }
+    .ing-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke-width: 1.5;
+    }
+    .ing-name { font-family: var(--heading); font-size: 22px; font-weight: 400; color: var(--ink); margin-bottom: 10px; }
+    .ing-dose { font-size: 14px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--accent-deep); margin-bottom: 18px; }
+    .ing-desc { font-size: 14px; font-weight: 300; color: var(--warm-dim); line-height: 1.75; }
+    /* Bulleted ingredient details — walnut dot in front of each line */
+    .ing-list {
+      margin: 0; padding: 0;
+      list-style: none;
+      display: flex; flex-direction: column;
+      gap: 10px;
+    }
+    .ing-list li {
+      position: relative;
+      padding-left: 20px;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--warm-dim);
+      line-height: 1.55;
+    }
+    .ing-list li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 8px;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    }
+    .ing-list li strong { color: var(--ink); font-weight: 600; }
+    .ing-list li em {
+      font-style: normal; color: var(--accent-deep); font-weight: 600;
+    }
+    .ing-list li.ing-list-note {
+      font-size: 12px;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: 4px;
+    }
+    .ing-list li.ing-list-note::before {
+      background: transparent;
+      border: 1px solid var(--muted);
+      width: 6px; height: 6px;
+      top: 9px;
+    }
+
+    #timeline { background: #ffffff; border-top: 1px solid rgba(0,0,0,.05); }
+    .tl-head { text-align: center; margin-bottom: 80px; }
+    .tl-head .heading { max-width: 720px; margin: 0 auto; }
+    .tl-head .lede { margin: 20px auto 0; }
+    .tl-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+      border-top: 1px solid rgba(0,0,0,.08);
+      border-bottom: 1px solid rgba(0,0,0,.08);
+    }
+    .tl-item { padding: 44px 28px; border-right: 1px solid rgba(0,0,0,.08);
+      position: relative; transition: background .3s; }
+    .tl-item:last-child { border-right: none; }
+    .tl-item:hover { background: var(--theme-2); }
+    .tl-week { font-family: var(--heading); font-size: 13px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+    .tl-num { font-family: var(--heading); font-size: 52px; font-weight: 300; color: var(--ink);
+      margin-bottom: 14px; line-height: 1; letter-spacing: -.02em; }
+    .tl-text { font-size: 14px; font-weight: 300; color: var(--warm-dim); line-height: 1.7; }
+
+    #use {
+      background: linear-gradient(180deg, #ffffff 0%, #fdf8ee 100%);
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    #use .inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .use-steps { list-style: none; display: flex; flex-direction: column; gap: 24px; margin-top: 36px; }
+    .use-step {
+      display: flex; align-items: flex-start; gap: 20px;
+      padding: 22px 24px; background: #ffffff;
+      border: 1px solid rgba(0,0,0,.06); border-radius: 16px;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .use-step:hover { border-color: rgba(176,132,92,.32); box-shadow: 0 8px 24px rgba(125,90,62,.1); }
+    .use-step-num {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--accent-soft); border: 1px solid rgba(176,132,92,.22);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--heading); font-size: 15px; font-weight: 500;
+      color: var(--accent-deep); flex-shrink: 0;
+    }
+    .use-step-text h4 { font-size: 14px; font-weight: 500; color: var(--ink);
+      margin-bottom: 4px; letter-spacing: .02em; }
+    .use-step-text p { font-size: 13px; font-weight: 300; color: var(--warm-dim); line-height: 1.65; }
+    .use-visual { position: relative; }
+    .use-visual-bg {
+      background: radial-gradient(ellipse at 50% 50%, var(--theme-1) 0%, var(--theme-2) 60%, transparent 100%);
+      border-radius: 24px;
+      aspect-ratio: 4/5;
+      display: flex; align-items: center; justify-content: center; padding: 40px;
+    }
+    .use-visual-bg img {
+      height: 100%; width: auto; max-height: 480px;
+      filter: drop-shadow(0 30px 60px rgba(125,90,62,.26));
+    }
+
+    #results { background: #ffffff; border-top: 1px solid rgba(0,0,0,.05); }
+    .res-head { text-align: center; margin-bottom: 72px; }
+    .res-head .heading { max-width: 720px; margin: 0 auto; }
+    .res-head .lede { margin: 20px auto 0; }
+    .res-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 24px; overflow: hidden; background: rgba(0,0,0,.07);
+    }
+    .res-card { background: #ffffff; padding: 48px 24px; text-align: center; }
+    .res-num {
+      font-family: var(--heading);
+      font-size: clamp(32px, 4.2vw, 56px); font-weight: 300;
+      color: var(--ink); line-height: 1; margin-bottom: 14px;
+    }
+    .res-num span { color: var(--accent); }
+    .res-label {
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--muted); line-height: 1.5;
+    }
+    .res-foot { text-align: center; margin-top: 36px; font-size: 12px; font-style: italic; color: var(--muted); }
+
+    #reviews {
+      background: linear-gradient(180deg, #ffffff 0%, #f3e5d2 100%);
+      overflow: hidden; border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .rev-head { text-align: center; margin-bottom: 56px; }
+    .rev-head .heading { max-width: 720px; margin: 0 auto; }
+
+    /* Edge-to-edge right→left marquee */
+    .rev-marquee {
+      position: relative;
+      left: 50%; right: 50%;
+      width: 100vw; max-width: 100vw;
+      margin-left: -50vw; margin-right: -50vw;
+      overflow: hidden;
+    }
+    .rev-marquee-track {
+      display: flex; gap: 24px;
+      width: max-content;
+      padding: 8px 0;
+      animation: rev-scroll 90s linear infinite;
+      will-change: transform;
+    }
+    .rev-marquee:hover .rev-marquee-track,
+    .rev-marquee:focus-within .rev-marquee-track { animation-play-state: paused; }
+    @keyframes rev-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .rev-marquee-track { animation: none; }
+    }
+
+    .rev-card {
+      flex: 0 0 auto; width: 360px;
+      background: #ffffff; border: 1px solid rgba(0,0,0,.06);
+      border-radius: 20px; padding: 32px 28px;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .rev-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(125,90,62,.12); }
+    .rev-stars {
+      color: var(--accent-deep); font-size: 14px;
+      letter-spacing: 2px; margin-bottom: 14px;
+      display: inline-block;
+    }
+    .rev-stars--45 {
+      background: linear-gradient(to right,
+        var(--accent-deep) 0%,
+        var(--accent-deep) 90%,
+        rgba(125, 90, 62, 0.32) 90%,
+        rgba(125, 90, 62, 0.32) 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+    }
+    .rev-rating-num {
+      margin-left: 8px; font-size: 12px; letter-spacing: .05em;
+      color: var(--muted); vertical-align: 2px;
+    }
+    @media (max-width: 720px) {
+      .rev-card { width: 280px; padding: 26px 22px; }
+      .rev-marquee-track { gap: 16px; animation-duration: 70s; }
+    }
+
+    .rev-quote { font-size: 15px; font-weight: 300; font-style: italic; color: var(--warm-dim); line-height: 1.75; margin-bottom: 22px; }
+    .rev-author { display: flex; align-items: center; gap: 12px; }
+    .rev-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 600; color: #fff;
+    }
+    .rev-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .rev-role { font-size: 11px; font-weight: 300; color: var(--muted); }
+
+    #faq { background: #ffffff; border-top: 1px solid rgba(0,0,0,.05); }
+    .faq-head { text-align: center; margin-bottom: 60px; }
+    .faq-head .heading { max-width: 600px; margin: 0 auto; }
+    .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+    .faq-item {
+      background: #fbf4e6;
+      border: 1px solid rgba(0,0,0,.06); border-radius: 14px;
+      overflow: hidden; transition: border-color .3s, background .3s;
+    }
+    .faq-item[open] { border-color: rgba(176,132,92,.32); background: #fff; }
+    .faq-item summary {
+      list-style: none; padding: 22px 26px;
+      font-size: 15px; font-weight: 500; color: var(--ink);
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+      gap: 20px; transition: color .3s;
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary:hover { color: var(--accent-deep); }
+    .faq-item summary::after {
+      content: '+'; font-size: 24px; font-weight: 300;
+      color: var(--accent); transition: transform .3s;
+    }
+    .faq-item[open] summary::after { transform: rotate(45deg); }
+    .faq-answer { padding: 0 26px 22px; font-size: 14px; font-weight: 300; color: var(--warm-dim); line-height: 1.8; }
+
+    #cta {
+      background: linear-gradient(135deg, var(--theme-1) 0%, var(--theme-2) 50%, var(--theme-3) 100%);
+      text-align: center; padding: 140px 48px;
+      position: relative; overflow: hidden;
+    }
+    #cta::before {
+      content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(176,132,92,.16) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .cta-inner { position: relative; z-index: 2; max-width: 720px; margin: 0 auto; }
+    .cta-inner .heading { font-size: clamp(36px, 5.5vw, 72px); margin-bottom: 24px; }
+    .cta-inner .lede { margin: 0 auto 40px; font-size: 17px; }
+    .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .cta-guarantee {
+      margin-top: 32px; font-size: 11px; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--warm-dim);
+    }
+    .cta-guarantee span { color: var(--accent-deep); font-weight: 600; }
+
+    footer {
+      background: #1a1225; color: rgba(255,255,255,.55);
+      padding: 64px 48px 32px;
+    }
+    .footer-inner {
+      max-width: 1160px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 24px;
+    }
+    .footer-brand { font-family: var(--heading); font-size: 20px; font-weight: 600;
+      color: #fff; letter-spacing: .08em; }
+    .footer-brand span { color: var(--accent); }
+    .footer-legal { font-size: 11px; color: rgba(255,255,255,.4); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 12px; color: rgba(255,255,255,.6); letter-spacing: .08em; transition: color .3s; }
+    .footer-links a:hover { color: var(--accent); }
+
+    @media (max-width: 900px) {
+      nav { padding: 18px 24px; } nav.scrolled { padding: 12px 24px; }
+      section { padding: 80px 24px; }
+      #hero { grid-template-columns: 1fr; gap: 40px; padding: 120px 24px 60px; }
+      .hero-text { order: 2; } .hero-visual { order: 1; } .hero-badge-float { display: none; }
+      #promise .inner, #use .inner { grid-template-columns: 1fr; gap: 40px; }
+      .ing-grid { grid-template-columns: 1fr 1fr; }
+      .tl-grid { grid-template-columns: 1fr 1fr; }
+      .tl-item { border-right: none; border-bottom: 1px solid rgba(0,0,0,.08); }
+      .tl-item:nth-child(odd) { border-right: 1px solid rgba(0,0,0,.08); }
+      .tl-item:nth-last-child(-n+2) { border-bottom: none; }
+      .res-grid { grid-template-columns: 1fr 1fr; }
+      /* .rev-grid removed in v26 — now using .rev-marquee instead */
+      .nav-back span:not(.arrow) { display: none; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; } nav.scrolled { padding: 12px 20px; }
+      .nav-logo { font-size: 17px; }
+      .nav-cta { padding: 8px 16px; font-size: 10px; }
+      section { padding: 64px 20px; } #cta { padding: 96px 20px; }
+      .hero-title { font-size: clamp(42px, 11vw, 64px); }
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .hero-actions .btn-primary, .hero-actions .btn-outline { text-align: center; }
+      .ing-grid { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      #film-grain { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  
+    /* ─── FOCUS VISIBILITY (WCAG 2.4.7) ─────────────────────────── */
+    :focus { outline: none; }
+    a:focus-visible, button:focus-visible, details > summary:focus-visible,
+    .btn-primary:focus-visible, .btn-outline:focus-visible, .nav-cta:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 8px;
+    }
+    .skip-link {
+      position: absolute; left: -9999px; top: 0; z-index: 10000;
+      padding: 12px 18px; background: var(--ink); color: #fff;
+      font-size: 12px; font-weight: 600; letter-spacing: .2em;
+      text-transform: uppercase; border-radius: 0 0 10px 0;
+    }
+    .skip-link:focus { left: 0; outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ─── HAMBURGER + DRAWER ─────────────────────────────────────── */
+    .nav-hamburger {
+      display: none; width: 44px; height: 44px; padding: 0;
+      background: transparent; border: none; position: relative; cursor: pointer;
+    }
+    .nav-hamburger span {
+      position: absolute; left: 10px; right: 10px; height: 1.5px;
+      background: var(--ink); border-radius: 2px;
+      transition: transform .3s ease, opacity .3s ease, top .3s ease;
+    }
+    .nav-hamburger span:nth-child(1) { top: 15px; }
+    .nav-hamburger span:nth-child(2) { top: 21px; }
+    .nav-hamburger span:nth-child(3) { top: 27px; }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(1) { top: 21px; transform: rotate(45deg); }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(3) { top: 21px; transform: rotate(-45deg); }
+    #mobile-drawer {
+      position: fixed; inset: 0; z-index: 490;
+      background: rgba(255,255,255,.98);
+      backdrop-filter: blur(20px) saturate(130%);
+      -webkit-backdrop-filter: blur(20px) saturate(130%);
+      display: flex; flex-direction: column;
+      padding: 96px 32px 40px;
+      opacity: 0; visibility: hidden; transform: translateY(-8px);
+      transition: opacity .3s ease, transform .3s ease, visibility .3s ease;
+    }
+    #mobile-drawer.open { opacity: 1; visibility: visible; transform: translateY(0); }
+    #mobile-drawer .drawer-links { list-style: none; display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; }
+    #mobile-drawer .drawer-links > li > a,
+    #mobile-drawer .drawer-links .drawer-heading {
+      display: block; padding: 16px 12px;
+      font-family: var(--heading); font-size: 22px; font-weight: 400;
+      color: var(--ink); letter-spacing: .02em;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    #mobile-drawer .drawer-sub {
+      list-style: none; padding: 4px 0 12px 16px; margin: 0;
+      display: flex; flex-direction: column; gap: 2px;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    #mobile-drawer .drawer-sub a {
+      display: block; padding: 10px 12px; font-family: var(--body);
+      font-size: 14px; color: var(--ink); letter-spacing: .02em;
+    }
+    #mobile-drawer .drawer-sub a em {
+      font-style: normal; color: var(--muted);
+      font-size: 11px; letter-spacing: .14em; text-transform: uppercase; margin-left: 6px;
+    }
+    #mobile-drawer .drawer-cta { margin-top: auto; padding-top: 24px; display: flex; justify-content: center; }
+    body.drawer-open { overflow: hidden; }
+
+    @media (max-width: 900px) {
+      .nav-back { display: none; }
+      .nav-hamburger { display: block; }
+    }
+
+    /* ─── ELEVATION: CURSOR / PARTICLES / SPLIT / TILT ──────────── */
+    #cursor-dot {
+      position: fixed; top: 0; left: 0; z-index: 9998;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--ink); pointer-events: none;
+      transform: translate(-50%,-50%);
+      mix-blend-mode: difference;
+      transition: width .2s, height .2s;
+    }
+    #cursor-ring {
+      position: fixed; top: 0; left: 0; z-index: 9997;
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: border-color .3s, width .3s, height .3s, box-shadow .3s;
+    }
+    body.hovering #cursor-ring {
+      width: 54px; height: 54px;
+      box-shadow: 0 0 18px var(--accent-glow);
+      border-color: var(--accent-deep);
+    }
+    #particles-canvas {
+      position: fixed; inset: 0; z-index: 15;
+      pointer-events: none; opacity: .55;
+    }
+    @media (max-width: 899px) {
+      #cursor-dot, #cursor-ring { display: none; }
+      #particles-canvas { opacity: .3; }
+    }
+    @media (hover: none) {
+      #cursor-dot, #cursor-ring { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #particles-canvas { display: none; }
+      .split-char { opacity: 1 !important; transform: none !important; animation: none !important; }
+    }
+
+    .split-word { display: inline-block; white-space: nowrap; }
+    .split-char {
+      display: inline-block; opacity: 0;
+      transform: translateY(26px);
+      animation: split-char-in .6s cubic-bezier(.22,.9,.32,1) forwards;
+    }
+    @keyframes split-char-in {
+      from { opacity: 0; transform: translateY(26px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .ing-card {
+      transform-style: preserve-3d;
+      transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease;
+      will-change: transform;
+    }
+    .ing-card.tilt-active {
+      box-shadow: 0 30px 60px -24px var(--accent-glow), 0 10px 30px -12px rgba(0,0,0,.12);
+      border-color: var(--accent-soft);
+    }
+
+    .btn-primary, .btn-outline { will-change: transform; }
+  
+    /* Logo lockup: Dr Collagen + "Formulated by Doctors" subtitle */
+    .nav-logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 3px;
+    }
+    .nav-logo__main { font: inherit; }
+    .nav-logo__sub {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.55);
+      white-space: nowrap;
+    }
+    nav.in-dark-section .nav-logo__sub,
+    nav.scrolled-dark .nav-logo__sub { color: rgba(255,255,255,.65); }
+    .footer-brand,
+    .logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 4px;
+    }
+    .footer-brand__main, .logo__main { font: inherit; }
+    .footer-brand__sub, .logo__sub {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+      white-space: nowrap;
+    }
+    /* Global section-header.liquid uses .dc-logo */
+    .dc-logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 3px;
+    }
+    .dc-logo__main { font: inherit; }
+    .dc-logo__sub {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.55);
+      white-space: nowrap;
+    }
+
+  
+    /* Formulated by Doctors badge — sits just above the hero title */
+    .hero-doc-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px;
+      margin-bottom: 16px;
+      font-size: 11px; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--accent-deep);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .hero-doc-badge span { font-size: 14px; line-height: 1; }
+
+  
+    /* ─── HERO SLIDER (Skelecoll) ───────────────────────────────────
+       Coverflow carousel with arrows + thumbnails. Edge mask, hover
+       pause, 8s auto-advance, mobile-friendly. Walnut tones throughout.
+       ─────────────────────────────────────────────────────────────── */
+    .skl-slider-wrap {
+      position: relative;
+      width: clamp(340px, 62vw, 860px);
+      max-width: 100%;
+      min-width: 0;
+    }
+    .skl-slider {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      height: clamp(520px, 76vh, 780px);
+      overflow: hidden;
+      border-radius: 26px;
+      contain: layout paint;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 9%, #000 91%, transparent 100%);
+              mask-image: linear-gradient(to right, transparent 0%, #000 9%, #000 91%, transparent 100%);
+    }
+    .skl-slider-track {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      height: 100%;
+      padding: 14px 0;
+      transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+    .skl-slide {
+      flex: 0 0 auto;
+      width: clamp(340px, 46vw, 580px);
+      height: 100%;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #faf2e4;
+      box-shadow:
+        0 0 0 1px rgba(250, 242, 228, 0.5),
+        0 30px 80px -30px rgba(232, 211, 184, 0.65),
+        0 14px 40px -16px rgba(243, 229, 210, 0.55);
+      opacity: 0.42;
+      transform: scale(0.92);
+      transition:
+        opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .skl-slide.is-active {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow:
+        0 0 0 1px rgba(250, 242, 228, 0.7),
+        0 38px 100px -32px rgba(176, 132, 92, 0.32),
+        0 18px 48px -20px rgba(232, 211, 184, 0.6);
+    }
+    .skl-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .skl-slide--bottle {
+      display: flex; align-items: center; justify-content: center;
+      background:
+        radial-gradient(ellipse at 50% 42%, var(--theme-1) 0%, transparent 70%),
+        #faf2e4;
+    }
+    .skl-slide--bottle img {
+      width: 70%;
+      height: 88%;
+      padding: 0;
+      filter: drop-shadow(0 24px 48px rgba(125, 90, 62, .32));
+    }
+    .skl-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.94);
+      border: 1px solid var(--accent-soft);
+      color: var(--accent-deep);
+      font-family: var(--heading);
+      font-size: 26px;
+      font-weight: 400;
+      line-height: 1;
+      padding: 0 0 4px 0;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 22px rgba(125, 90, 62, .20);
+      transition:
+        background 220ms cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 220ms cubic-bezier(0.4, 0, 0.2, 1),
+        transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .skl-arrow:hover {
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(125, 90, 62, .32);
+      transform: translateY(-50%) scale(1.06);
+    }
+    .skl-arrow:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .skl-arrow--prev { left: 18px; }
+    .skl-arrow--next { right: 18px; }
+
+    .skl-thumbs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 22px 0 0;
+      padding: 0;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+    .skl-thumb { margin: 0; padding: 0; }
+    .skl-thumb button {
+      display: block;
+      width: 58px; height: 72px;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--theme-2);
+      cursor: pointer;
+      opacity: 0.55;
+      transition:
+        opacity 220ms cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 220ms cubic-bezier(0.4, 0, 0.2, 1),
+        transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .skl-thumb button:hover { opacity: 0.85; transform: translateY(-2px); }
+    .skl-thumb.is-active button {
+      opacity: 1;
+      border-color: var(--accent);
+      transform: translateY(-2px) scale(1.06);
+      box-shadow: 0 6px 16px rgba(125, 90, 62, .28);
+    }
+    .skl-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .skl-thumb--bottle img { object-fit: contain; background: linear-gradient(160deg, var(--theme-1), var(--theme-3)); }
+
+    @media (max-width: 720px) {
+      .skl-slider-wrap { width: 100%; max-width: 100%; }
+      .skl-slider {
+        height: clamp(380px, 90vw, 560px);
+        border-radius: 18px;
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+                mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+      }
+      .skl-slider-track { gap: 16px; padding: 8px 0; }
+      .skl-slide { width: min(82vw, 380px); max-width: 82vw; border-radius: 16px; }
+      .skl-arrow { width: 38px; height: 38px; font-size: 22px; }
+      .skl-arrow--prev { left: 4px; }
+      .skl-arrow--next { right: 4px; }
+      .skl-thumbs { gap: 6px; margin-top: 16px; }
+      .skl-thumb button { width: 44px; height: 56px; }
+    }
+    @media (max-width: 380px) {
+      .skl-slider { height: clamp(340px, 96vw, 460px); }
+      .skl-slide { width: 88vw; max-width: 88vw; }
+      .skl-thumb button { width: 38px; height: 48px; }
+    }
+
+  </style>
+
+<!-- ═══ SKIP TO CONTENT ═════════════════════════════════════════════ -->
+<a href="#main" class="skip-link">Skip to content</a>
+
+<div id="film-grain"></div>
+
+<!-- ═══ CUSTOM CURSOR & AMBIENT PARTICLES ═══════════════════════ -->
+<div id="cursor-dot" aria-hidden="true"></div>
+<div id="cursor-ring" aria-hidden="true"></div>
+<canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+<nav id="navbar" aria-label="Primary">
+  <a href="{{ routes.root_url }}" id="skelecoll-nav-logo" class="nav-logo"><span class="nav-logo__main">Dr<span> Collagen</span></span><span class="nav-logo__sub">Formulated by Doctors</span></a>
+  <a href="{{ routes.root_url }}" id="skelecoll-nav-back" class="nav-back"><span class="arrow" aria-hidden="true">←</span> <span>Back to Home</span></a>
+  <a href="#cta" id="skelecoll-nav-cta-buy" class="nav-cta">Add to cart</a>
+  <button id="nav-hamburger" class="nav-hamburger" aria-label="Open menu" aria-controls="mobile-drawer" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<aside id="mobile-drawer" aria-hidden="true" aria-label="Mobile menu">
+  <ul class="drawer-links">
+    <li>
+      <span class="drawer-heading">Products</span>
+      <ul class="drawer-sub">
+        <li><a href="/pages/collabloom" id="skelecoll-drawer-link-collabloom">Collabloom<sup>™</sup> <em>Skin · Hair · Nails</em></a></li>
+        <li><a href="/pages/skelecoll" id="skelecoll-drawer-link-skelecoll">Skelecoll<sup>™</sup> <em>Bones · Joints · Muscles</em></a></li>
+        <li><a href="/pages/collatrim" id="skelecoll-drawer-link-collatrim">Collatrim<sup>™</sup> <em>Body · Metabolism · Tone</em></a></li>
+        <li><a href="/pages/metastable" id="skelecoll-drawer-link-metastable">Metastable<sup>™</sup> <em>Energy · Gut · Immunity</em></a></li>
+      </ul>
+    </li>
+    <li><a href="{{ routes.root_url }}#science" id="skelecoll-drawer-link-science">Science</a></li>
+    <li><a href="{{ routes.root_url }}#about" id="skelecoll-drawer-link-about">About</a></li>
+    <li><a href="{{ routes.root_url }}" id="skelecoll-drawer-link-home">Home</a></li>
+  </ul>
+  <div class="drawer-cta">
+    <a href="#cta" id="skelecoll-drawer-cta" class="btn-primary">Add to cart</a>
+  </div>
+</aside>
+
+<main id="main">
+
+<section id="hero">
+  <div class="hero-text">
+    <p class="hero-breadcrumb"><a href="{{ routes.root_url }}#products">Our Range</a> · Bones · Joints · Muscles</p>
+    <p class="hero-doc-badge"><span aria-hidden="true">⚕</span> Formulated by Doctors</p>
+    <h1 class="hero-title" data-split>Skelecoll<em>™</em></h1>
+    <p class="hero-tagline">Move strong, heal stronger daily. A 30ml Cola-flavour shot with <em>10,000mg Japanese hydrolysed marine collagen</em> — support for recovery, mobility and strength.</p>
+    <ul class="hero-bullets">
+      <li>10,000mg Japanese hydrolysed marine collagen · 10g protein</li>
+      <li>1,000mg L-Carnitine + 500mg Cissus Quadrangularis — muscle &amp; endurance</li>
+      <li>300mg Glucosamine HCl + 120mg Hyaluronic Acid — joints &amp; lubrication</li>
+      <li>250mg Calcium + 600IU Vitamin D3 + 50mg Magnesium — bone strength</li>
+    </ul>
+    <div class="hero-price-row">
+      <span class="hero-price">{{ dc_price }}</span>
+      {%- if dc_was -%}
+        <span class="hero-price-was">{{ dc_was }}</span>
+        <span class="hero-price-save">Save {{ dc_save_pct }}%</span>
+      {%- endif -%}
+    </div>
+    <div class="hero-actions">
+      {%- if dc_available -%}
+        {% form 'product', dc_product, id: 'skelecoll-hero-add-form', class: 'btn-inline-form' %}
+          <input type="hidden" name="id" value="{{ dc_variant_id }}">
+          <div class="dc-qty" role="group" aria-label="Quantity">
+            <button type="button" class="dc-qty__btn" data-qty="minus" aria-label="Decrease quantity">&minus;</button>
+            <input class="dc-qty__input" type="number" name="quantity" value="1" min="1" max="12" aria-label="Quantity">
+            <button type="button" class="dc-qty__btn" data-qty="plus" aria-label="Increase quantity">+</button>
+          </div>
+          <button type="submit" id="skelecoll-hero-add-to-cart-btn" class="btn-primary">Add to cart</button>
+        {% endform %}
+      {%- else -%}
+        <a href="/products/{{ dc_handle }}" id="skelecoll-hero-add-to-cart-btn" class="btn-primary">Add to cart</a>
+      {%- endif -%}
+      <a href="#ingredients" id="skelecoll-hero-the-formula-btn" class="btn-outline">The formula</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="skl-slider-wrap">
+      {%- assign skl_slides = 'skelecoll-slide-1.webp,skelecoll-slide-2.webp,skelecoll-slide-3.webp,skelecoll-slide-4.webp,skelecoll-slide-5.webp,skelecoll-slide-6.webp,skelecoll-slide-7.webp,skelecoll-slide-8.webp,skelecoll-slide-9.webp' | split: ',' -%}
+      <div class="skl-slider" id="skelecoll-slider" role="region" aria-label="Skelecoll product gallery" aria-roledescription="carousel" tabindex="0">
+        <button type="button" class="skl-arrow skl-arrow--prev" data-skl-prev aria-label="Previous image">&#8249;</button>
+        <div class="skl-slider-track" data-skl-track>
+          {%- for src in skl_slides -%}
+            {%- assign is_bottle = false -%}
+            {%- if src contains 'bottle' -%}{%- assign is_bottle = true -%}{%- endif -%}
+            <div class="skl-slide{% if is_bottle %} skl-slide--bottle{% endif %}{% if forloop.first %} is-active{% endif %}" data-skl-slide="{{ forloop.index0 }}" role="group" aria-roledescription="slide" aria-label="{{ forloop.index }} of {{ skl_slides.size }}">
+              <img src="{{ src | asset_url }}" alt="Skelecoll — image {{ forloop.index }} of {{ skl_slides.size }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+            </div>
+          {%- endfor -%}
+        </div>
+        <button type="button" class="skl-arrow skl-arrow--next" data-skl-next aria-label="Next image">&#8250;</button>
+      </div>
+      <div class="hero-badge-float">★ 4.7 · <strong>1,800+ reviews</strong><br />New Formula · Bones &amp; Joints</div>
+
+      <ol class="skl-thumbs" role="tablist" aria-label="Choose image">
+        {%- for src in skl_slides -%}
+          {%- assign is_bottle = false -%}
+          {%- if src contains 'bottle' -%}{%- assign is_bottle = true -%}{%- endif -%}
+          <li class="skl-thumb{% if is_bottle %} skl-thumb--bottle{% endif %}{% if forloop.first %} is-active{% endif %}" role="presentation">
+            <button type="button" data-skl-thumb="{{ forloop.index0 }}" role="tab" aria-label="View image {{ forloop.index }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+              <img src="{{ src | asset_url }}" alt="" loading="lazy">
+            </button>
+          </li>
+        {%- endfor -%}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<script>
+  /* Skelecoll hero slider — coverflow carousel (mirrors Collabloom's). */
+  (function () {
+    var slider = document.getElementById('skelecoll-slider');
+    if (!slider) return;
+    var wrap = slider.closest('.skl-slider-wrap');
+    if (!wrap) return;
+    var track = slider.querySelector('[data-skl-track]');
+    var slides = Array.prototype.slice.call(slider.querySelectorAll('.skl-slide'));
+    var thumbs = Array.prototype.slice.call(wrap.querySelectorAll('.skl-thumb'));
+    var prevBtn = slider.querySelector('[data-skl-prev]');
+    var nextBtn = slider.querySelector('[data-skl-next]');
+    if (!track || slides.length < 2) return;
+
+    var REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var AUTO_MS = 8000;
+    var idx = 0;
+    var timer = null;
+
+    function position() {
+      var slide = slides[idx];
+      if (!slide) return;
+      var sliderW = slider.clientWidth;
+      var slideCenter = slide.offsetLeft + (slide.offsetWidth / 2);
+      var viewportCenter = sliderW / 2;
+      var offset = viewportCenter - slideCenter;
+      track.style.transform = 'translateX(' + offset + 'px)';
+
+      slides.forEach(function (s, i) {
+        var active = (i === idx);
+        s.classList.toggle('is-active', active);
+        s.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+      thumbs.forEach(function (t, i) {
+        var active = (i === idx);
+        t.classList.toggle('is-active', active);
+        var btn = t.querySelector('button');
+        if (btn) btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+    }
+    function go(newIdx) {
+      idx = ((newIdx % slides.length) + slides.length) % slides.length;
+      position();
+    }
+    function next() { go(idx + 1); }
+    function prev() { go(idx - 1); }
+    function start() { stop(); if (REDUCED_MOTION) return; timer = setInterval(next, AUTO_MS); }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+
+    if (nextBtn) nextBtn.addEventListener('click', function () { next(); start(); });
+    if (prevBtn) prevBtn.addEventListener('click', function () { prev(); start(); });
+    thumbs.forEach(function (t, i) {
+      var btn = t.querySelector('button');
+      if (btn) btn.addEventListener('click', function () { go(i); start(); });
+    });
+    slider.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); prev(); start(); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); next(); start(); }
+    });
+    wrap.addEventListener('mouseenter', stop);
+    wrap.addEventListener('mouseleave', start);
+    wrap.addEventListener('focusin', stop);
+    wrap.addEventListener('focusout', start);
+
+    var debounced;
+    window.addEventListener('resize', function () {
+      clearTimeout(debounced);
+      debounced = setTimeout(position, 120);
+    });
+    slides.forEach(function (s) {
+      var img = s.querySelector('img');
+      if (img && !img.complete) img.addEventListener('load', position, { once: true });
+    });
+    requestAnimationFrame(function () { setTimeout(position, 50); });
+    start();
+  })();
+</script>
+
+<section id="promise">
+  <div class="inner">
+    <div class="promise-img reveal">
+      <div class="promise-img-number">
+        30%
+        <small>Cartilage lost by age 60</small>
+      </div>
+    </div>
+    <div class="promise-text reveal reveal-delay-2">
+      <p class="overline">Why Skelecoll</p>
+      <h2 class="heading">Move strong. Heal <em>stronger</em>. Daily.</h2>
+      <p>Skelecoll supports joint flexibility and mobility, strengthens bones and connective tissues, helps reduce joint discomfort and stiffness, and supports post-workout recovery and endurance — all in one 30ml Cola-flavour shot.</p>
+      <p>The formula delivers 10,000mg of Japanese hydrolysed marine collagen with Glucosamine for cartilage structure and joint integrity, Hyaluronic Acid for joint lubrication, Calcium + D3 + Magnesium for bone strength, Cissus Quadrangularis for muscle endurance, and a full antioxidant stack (RoseHip, CoQ10, Vitamin C, Lycopene) that combats oxidative stress and supports collagen production. 13 actives, zero sugar, 40 kcal.</p>
+    </div>
+  </div>
+</section>
+
+<section id="ingredients">
+  <div class="inner">
+    <div class="ing-head reveal">
+      <p class="overline">The Formula</p>
+      <h2 class="heading">Six actions. One <em>30ml shot</em>.</h2>
+      <p class="lede">13 ingredients, grouped by what they do. Every dose below is what's printed on the box — nothing rounded, nothing hidden.</p>
+    </div>
+
+    <div class="ing-grid">
+      <div class="ing-card reveal reveal-delay-1">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="10" y="3" width="4" height="18" rx="2"/><circle cx="8" cy="5" r="3"/><circle cx="8" cy="19" r="3"/><circle cx="16" cy="5" r="3"/><circle cx="16" cy="19" r="3"/></svg>
+        </div>
+        <div class="ing-dose">Structural Foundation</div>
+        <h3 class="ing-name">Japanese Marine Collagen (Hydrolysed)</h3>
+        <ul class="ing-list">
+          <li><strong>10,000mg per 30ml shot</strong> — 10g protein, zero sugar, 40 kcal</li>
+          <li>Hydrolysed marine collagen for easy absorption</li>
+          <li>Supports cartilage, joints and connective tissue strength</li>
+          <li>The <em>structural foundation</em> every other ingredient builds on</li>
+        </ul>
+      </div>
+      <div class="ing-card reveal reveal-delay-2">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z"/></svg>
+        </div>
+        <div class="ing-dose">Joint Integrity</div>
+        <h3 class="ing-name">Glucosamine HCl + Hyaluronic Acid</h3>
+        <ul class="ing-list">
+          <li><strong>300mg Glucosamine HCl</strong> — the scaffolding your cartilage depends on</li>
+          <li><strong>120mg Hyaluronic Acid</strong> — a natural part of joint fluid, keeps joints moving smoothly</li>
+          <li>Together: supports <em>lubrication and shock absorption</em> for cushioning</li>
+        </ul>
+      </div>
+      <div class="ing-card reveal reveal-delay-3">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3h12l4 6-10 12L2 9z"/></svg>
+        </div>
+        <div class="ing-dose">Bone Strength</div>
+        <h3 class="ing-name">Calcium + Vitamin D3 + Magnesium</h3>
+        <ul class="ing-list">
+          <li><strong>250mg Calcium</strong> — the mineral your skeleton is built from</li>
+          <li><strong>600 IU Vitamin D3</strong> — controls how much calcium actually reaches your bones</li>
+          <li><strong>50mg Magnesium</strong> — partners with both; also helps muscles around joints release tension</li>
+        </ul>
+      </div>
+      <div class="ing-card reveal reveal-delay-1">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v6M12 22v-6M5 8l5 5M19 8l-5 5M5 16l5-5M19 16l-5-5"/></svg>
+        </div>
+        <div class="ing-dose">Recovery &amp; Endurance</div>
+        <h3 class="ing-name">Cissus Quadrangularis + L-Carnitine + Vitamin B12</h3>
+        <ul class="ing-list">
+          <li><strong>500mg Cissus Quadrangularis</strong> — improves bone and muscle strength and endurance</li>
+          <li><strong>1,000mg L-Carnitine</strong> — powers the cellular engine behind post-workout recovery</li>
+          <li><strong>1.5mcg Vitamin B12</strong> — supports energy metabolism and nerve function</li>
+        </ul>
+      </div>
+      <div class="ing-card reveal reveal-delay-2">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2 8 6h3v6h2V6h3z"/><circle cx="12" cy="16" r="6"/><path d="M12 13v6M9 16h6"/></svg>
+        </div>
+        <div class="ing-dose">Antioxidant</div>
+        <h3 class="ing-name">RoseHip + CoQ10 + Vitamin C (Amla) + Lycopene</h3>
+        <ul class="ing-list">
+          <li><strong>100mg RoseHip Extract + 60mg Coenzyme Q10</strong> — fight oxidative stress and support natural collagen production</li>
+          <li><strong>40mg Vitamin C (Amla)</strong> — essential for your body to actually build stable collagen</li>
+          <li><strong>2mg Lycopene</strong> — fights the free radicals that wear joints down over time</li>
+        </ul>
+      </div>
+      <div class="ing-card reveal reveal-delay-3">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 10v4a8 8 0 0 0 16 0v-4M4 10h4M16 10h4M8 10v4a4 4 0 0 0 8 0v-4"/></svg>
+        </div>
+        <div class="ing-dose">Sugar Free · Cola Flavour</div>
+        <h3 class="ing-name">Stevia + Natural Flavours</h3>
+        <ul class="ing-list">
+          <li><strong>Sugar free</strong> · sweetened with Stevia</li>
+          <li><strong>40 kcal</strong> per 30ml shot</li>
+          <li>Cola flavour from natural food colours</li>
+          <li>Take it straight, in water, or with juice — best served chilled</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="inner">
+    <div class="tl-head reveal">
+      <p class="overline">What to Expect</p>
+      <h2 class="heading">Less ache, more range — <em>week by week</em>.</h2>
+      <p class="lede">Joint tissue rebuilds slowly. Here's the timeline most Skelecoll users report.</p>
+    </div>
+
+    <div class="tl-grid">
+      <div class="tl-item reveal reveal-delay-1">
+        <p class="tl-week">Week 1–2</p>
+        <div class="tl-num">01</div>
+        <p class="tl-text">Morning stiffness eases. You notice getting out of bed feels a little easier. Subtle but there.</p>
+      </div>
+      <div class="tl-item reveal reveal-delay-2">
+        <p class="tl-week">Week 3–4</p>
+        <div class="tl-num">02</div>
+        <p class="tl-text">Knees and shoulders feel looser. Low-impact workouts feel smoother. Less grinding.</p>
+      </div>
+      <div class="tl-item reveal reveal-delay-3">
+        <p class="tl-week">Week 6–8</p>
+        <div class="tl-num">03</div>
+        <p class="tl-text">Range of motion visibly improves. Stairs are no longer an event. You take the long way on purpose.</p>
+      </div>
+      <div class="tl-item reveal reveal-delay-4">
+        <p class="tl-week">Week 12+</p>
+        <div class="tl-num">04</div>
+        <p class="tl-text">Joint comfort is the new normal. Bone density support compounds quietly over the long term.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="use">
+  <div class="inner">
+    <div class="use-text reveal">
+      <p class="overline">Your Daily Shot</p>
+      <h2 class="heading">1 shot (30ml). <em>Once daily</em>.</h2>
+      <p class="lede">Consume directly or dilute in water or juice. Best served chilled. For best results, use consistently as directed.</p>
+      <ol class="use-steps">
+        <li class="use-step">
+          <div class="use-step-num">1</div>
+          <div class="use-step-text">
+            <h4>Shake well</h4>
+            <p>Collagen and minerals settle — a thorough shake ensures every dose is complete.</p>
+          </div>
+        </li>
+        <li class="use-step">
+          <div class="use-step-num">2</div>
+          <div class="use-step-text">
+            <h4>Drink or dilute</h4>
+            <p>Take it straight for the Cola flavour, or mix into water or juice. D3 absorbs best with a little fat — breakfast is ideal.</p>
+          </div>
+        </li>
+        <li class="use-step">
+          <div class="use-step-num">3</div>
+          <div class="use-step-text">
+            <h4>Keep moving</h4>
+            <p>Low-impact movement — walking, swimming, gym — helps nutrients reach your joints and supports post-workout recovery.</p>
+          </div>
+        </li>
+        <li class="use-step">
+          <div class="use-step-num">4</div>
+          <div class="use-step-text">
+            <h4>Stay consistent</h4>
+            <p>Do not exceed recommended daily usage. Cartilage and bone remodel slowly — give it 60–90 days of daily use.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+    <div class="use-visual reveal reveal-delay-2">
+      <div class="use-visual-bg">
+        <img src="{{ 'skelecoll-bottle.png' | asset_url }}" alt="Skelecoll in your hand" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="results">
+  <div class="inner">
+    <div class="res-head reveal">
+      <p class="overline">The Numbers</p>
+      <h2 class="heading">Relief you can <em>measure</em>, not just hope for.</h2>
+      <p class="lede">Self-reported outcomes from 900+ Skelecoll customers surveyed at the 12-week mark.</p>
+    </div>
+    <div class="res-grid reveal reveal-delay-1">
+      <div class="res-card">
+        <div class="res-num"><span class="counter" data-target="93">0</span><span>%</span></div>
+        <div class="res-label">Reported reduced<br />joint discomfort</div>
+      </div>
+      <div class="res-card">
+        <div class="res-num"><span class="counter" data-target="88">0</span><span>%</span></div>
+        <div class="res-label">Noticed improved<br />range of motion</div>
+      </div>
+      <div class="res-card">
+        <div class="res-num"><span class="counter" data-target="86">0</span><span>%</span></div>
+        <div class="res-label">Felt less<br />morning stiffness</div>
+      </div>
+      <div class="res-card">
+        <div class="res-num"><span class="counter" data-target="96">0</span><span>%</span></div>
+        <div class="res-label">Would recommend<br />Skelecoll to friends</div>
+      </div>
+    </div>
+    <p class="res-foot">Based on self-reported outcomes. Individual results may vary.</p>
+  </div>
+</section>
+
+<section id="reviews">
+  <div class="inner">
+    <div class="rev-head reveal">
+      <p class="overline">Real Results</p>
+      <h2 class="heading">Knees, backs, and mornings — <em>restored</em>.</h2>
+    </div>
+  </div>
+
+  {%- comment -%}
+    Edge-to-edge right→left marquee. Set duplicated once for seamless loop.
+    Replace these placeholder testimonials with real, permissioned reviews
+    before launch — fabricated reviews violate India's Consumer Protection
+    (Direct Selling) Rules 2021 and CCPA misleading-endorsement rules.
+  {%- endcomment -%}
+  <div class="rev-marquee" role="region" aria-label="Customer reviews carousel" tabindex="0">
+    <div class="rev-marquee-track">
+      {%- for n in (1..2) -%}
+
+        <div class="rev-card">
+          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <p class="rev-quote">"I was sceptical about collagen shots, but Skelecoll genuinely reduced my knee pain within a month. My physio couldn't believe the improvement on follow-up."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">R</div>
+            <div>
+              <div class="rev-name">Rajesh Mehta</div>
+              <div class="rev-role">Delhi · 4 months on Skelecoll</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars rev-stars--45" aria-label="Rated 4.5 out of 5 stars">★★★★★<span class="rev-rating-num" aria-hidden="true">4.5</span></div>
+          <p class="rev-quote">"Took a solid 6 weeks before I felt the real difference — but now my morning stiffness is gone and I can go for an hour-long walk without my knees complaining. Worth the patience."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">A</div>
+            <div>
+              <div class="rev-name">Arun Khanna</div>
+              <div class="rev-role">Pune · 3 months on Skelecoll</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <p class="rev-quote">"At 58, stairs had become a real problem. Three months on Skelecoll and I'm back to playing weekend cricket. The Glucosamine + Cissus combo is the real thing."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">V</div>
+            <div>
+              <div class="rev-name">Vikram Iyer</div>
+              <div class="rev-role">Bangalore · 5 months on Skelecoll</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars rev-stars--45" aria-label="Rated 4.5 out of 5 stars">★★★★★<span class="rev-rating-num" aria-hidden="true">4.5</span></div>
+          <p class="rev-quote">"The cola flavour is genuinely good — I look forward to it. My deadlift soreness recovery has noticeably improved. Half a star off only because I wish the bottle had a measure marking."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">K</div>
+            <div>
+              <div class="rev-name">Karthik Nair</div>
+              <div class="rev-role">Chennai · 2 months on Skelecoll</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <p class="rev-quote">"My mother is 68 and Skelecoll has been life-changing for her. She's started morning walks again — something she hadn't done in years. The 10g dose makes a real difference."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">D</div>
+            <div>
+              <div class="rev-name">Deepa Shah</div>
+              <div class="rev-role">Ahmedabad · 6 months on Skelecoll</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <p class="rev-quote">"As a marathon runner, my IT band and knees were always sore. Skelecoll has been a quiet game-changer — recovery is faster, training feels lighter. L-Carnitine bump is real."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">S</div>
+            <div>
+              <div class="rev-name">Suresh Pillai</div>
+              <div class="rev-role">Mumbai · 4 months on Skelecoll</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars rev-stars--45" aria-label="Rated 4.5 out of 5 stars">★★★★★<span class="rev-rating-num" aria-hidden="true">4.5</span></div>
+          <p class="rev-quote">"Picked this up for my dad who has osteoarthritis. Two months in he's noticeably more mobile and his pain has reduced. Half a star because we wish you'd offer larger pack sizes."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">N</div>
+            <div>
+              <div class="rev-name">Neha Reddy</div>
+              <div class="rev-role">Hyderabad · 3 months on Skelecoll</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <p class="rev-quote">"I've tried glucosamine pills for years with no real result. The shot format is the difference — absorption is way better. My orthopedic surgeon was actually impressed."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">P</div>
+            <div>
+              <div class="rev-name">Pradeep Verma</div>
+              <div class="rev-role">Kolkata · 5 months on Skelecoll</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <p class="rev-quote">"Post-workout soreness used to last 3 days. Now it's down to 1. Joint clicks I've had for years are gone. Hands-down the best supplement I've added to my routine this year."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">M</div>
+            <div>
+              <div class="rev-name">Mahesh Joshi</div>
+              <div class="rev-role">Jaipur · 4 months on Skelecoll</div>
+            </div>
+          </div>
+        </div>
+
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="inner">
+    <div class="faq-head reveal">
+      <p class="overline">Good Questions</p>
+      <h2 class="heading">You asked, <em>we answered</em>.</h2>
+    </div>
+    <div class="faq-list reveal reveal-delay-1">
+      <details class="faq-item">
+        <summary>How is Type II collagen different from Type I?</summary>
+        <div class="faq-answer">Type I is the collagen that makes up skin, bones, and tendons. Type II is the collagen specific to cartilage — the cushion inside your joints. For joint-focused support, Type II is the correct starting point.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Can Skelecoll replace my joint-pain medication?</summary>
+        <div class="faq-answer">Skelecoll is a nutritional supplement, not a medication. It supports the structural tissues in your joints, but does not replace prescribed medication. Always consult your doctor before changing any treatment.</div>
+      </details>
+      <details class="faq-item">
+        <summary>How soon until I feel a difference?</summary>
+        <div class="faq-answer">Most users report feeling less morning stiffness within 2–4 weeks. Structural improvements — reduced discomfort, better range of motion — typically come at 6–12 weeks. Consistency is everything.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Is Skelecoll safe for older adults?</summary>
+        <div class="faq-answer">Not recommended for pregnant or lactating women, individuals below 18, or those with chronic liver/kidney diseases. Contains marine collagen (fish) — avoid if you have a fish or shellfish allergy. If you have any medical condition or are taking medication, consult your healthcare professional before use.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Can I take Skelecoll with Collabloom?</summary>
+        <div class="faq-answer">Yes. They're complementary — Collabloom focuses on skin/hair/nails and Skelecoll delivers bone, joint and muscle support. Many customers take both for full-body support. Do not exceed the recommended daily usage for each product.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Does Skelecoll contain allergens?</summary>
+        <div class="faq-answer">Contains fish and fish products (marine collagen). Sugar free, sweetened with Stevia. Cola flavour from natural food colours. Contains Class II preservatives. 40 kcal per 30ml shot, 10g protein. Not vegan.</div>
+      </details>
+      <details class="faq-item">
+        <summary>How long should I take it?</summary>
+        <div class="faq-answer">Joint cartilage and connective tissues remodel slowly. Plan on a full 60–90 days of daily use to feel the structural difference. For best results, use consistently as directed.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="cta-inner">
+    <p class="overline reveal">Start today</p>
+    <h2 class="heading reveal reveal-delay-1">Move freely again, <em>starting now</em>.</h2>
+    <p class="lede reveal reveal-delay-2">Join 10,000+ customers who've rediscovered effortless movement. Cartilage remodels slowly — give Skelecoll 60 to 90 days of daily use, and the difference shows up where you used to feel the work.</p>
+    <div class="cta-actions reveal reveal-delay-3">
+      {%- if dc_available -%}
+        {% form 'product', dc_product, id: 'skelecoll-buy-form', class: 'btn-inline-form' %}
+          <input type="hidden" name="id" value="{{ dc_variant_id }}">
+          <div class="dc-qty" role="group" aria-label="Quantity">
+            <button type="button" class="dc-qty__btn" data-qty="minus" aria-label="Decrease quantity">&minus;</button>
+            <input class="dc-qty__input" type="number" name="quantity" value="1" min="1" max="12" aria-label="Quantity">
+            <button type="button" class="dc-qty__btn" data-qty="plus" aria-label="Increase quantity">+</button>
+          </div>
+          <button type="submit" id="skelecoll-buy-btn" class="btn-primary">Add to cart — {{ dc_price }}</button>
+        {% endform %}
+      {%- else -%}
+        <a href="/products/{{ dc_handle }}" id="skelecoll-buy-btn" class="btn-primary">Add to cart — {{ dc_price }}</a>
+      {%- endif -%}
+      <a href="{{ routes.root_url }}#products" id="skelecoll-see-range-btn" class="btn-outline">See full range</a>
+    </div>
+    <p class="cta-guarantee reveal reveal-delay-4">Free shipping over ₹1,500 · ships within <span>48 hours</span></p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><span class="footer-brand__main">Dr<span> Collagen</span></span><span class="footer-brand__sub">Formulated by Doctors</span></div>
+    <div class="footer-links">
+      <a href="{{ routes.root_url }}#products" id="skelecoll-footer-link-products">All Products</a>
+      <a href="{{ routes.root_url }}#science" id="skelecoll-footer-link-science">Science</a>
+      <a href="{{ routes.root_url }}#about" id="skelecoll-footer-link-about">About</a>
+      <a href="{{ routes.root_url }}" id="skelecoll-footer-link-home">Home</a>
+    </div>
+    <div class="footer-legal">© {{ 'now' | date: '%Y' }} Dr Collagen · Made in Japan, for India · These statements have not been evaluated for medicinal claims. This product is a dietary supplement and is not intended to diagnose, treat, cure, or prevent any disease.</div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  const nav = document.getElementById('navbar');
+  function update() { nav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', update, { passive: true }); update();
+})();
+// ═══ SCROLL REVEAL (WITH MOTION SPRING PHYSICS) ═════════════════════
+(function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+    return;
+  }
+  const { inView, animate } = Motion;
+  inView(".reveal", ({ target }) => {
+    let delay = 0;
+    for (let i = 1; i <= 6; i++) {
+      if (target.classList.contains(`reveal-delay-${i}`)) {
+        delay = i * 0.12;
+        break;
+      }
+    }
+    animate(target, 
+      { opacity: [0, 1], y: [40, 0] }, 
+      { delay, duration: 0.85, easing: [0.16, 1, 0.3, 1] }
+    );
+  });
+})();
+
+// ═══ COUNTER ANIMATION ══════════════════════════════════════════════
+(function() {
+  const counters = document.querySelectorAll('.counter');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseInt(el.dataset.target || '0', 10);
+      const duration = 1500; const start = performance.now();
+      function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(eased * target).toLocaleString();
+        if (t < 1) requestAnimationFrame(step);
+        else el.textContent = target.toLocaleString();
+      }
+      requestAnimationFrame(step); io.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => io.observe(c));
+})();
+
+// ═══ CUSTOM CURSOR (WITH MOTION SPRING PHYSICS) ═════════════════════
+(function(){
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot || !ring) return;
+  if (window.matchMedia('(hover: none)').matches || window.innerWidth < 900) return;
+  
+  const { animate } = Motion;
+  let mx = -100, my = -100;
+  
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+    dot.style.transform = `translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`;
+    
+    animate(ring, {
+      transform: [`translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`]
+    }, {
+      type: "spring",
+      stiffness: 300,
+      damping: 25,
+      mass: 0.5
+    });
+  });
+  
+  document.querySelectorAll('a, button, .ing-card, .rev-card, .use-step, .faq-item summary, .pillar-card, .product-card')
+    .forEach(el=>{
+      el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+      el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+    });
+})();
+
+// ═══ FAQ ACCORDION SPRING ANIMATION ═════════════════════════════════
+(function() {
+  const { animate } = Motion;
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const summary = item.querySelector('summary');
+    const answer = item.querySelector('.faq-answer');
+    if (!summary || !answer) return;
+    
+    answer.style.overflow = 'hidden';
+    
+    summary.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isOpen = item.hasAttribute('open');
+      
+      if (!isOpen) {
+        item.setAttribute('open', '');
+        const height = answer.scrollHeight;
+        
+        animate(answer, 
+          { height: [0, height], opacity: [0, 1], paddingBottom: ["0px", "22px"] }, 
+          { type: "spring", stiffness: 300, damping: 26 }
+        );
+      } else {
+        const height = answer.scrollHeight;
+        animate(answer, 
+          { height: [height, 0], opacity: [1, 0], paddingBottom: ["22px", "0px"] }, 
+          { type: "spring", stiffness: 300, damping: 26 }
+        ).then(() => {
+          item.removeAttribute('open');
+          answer.style.height = '';
+          answer.style.opacity = '';
+          answer.style.paddingBottom = '';
+        });
+      }
+    });
+  });
+})();
+
+
+// ═══ AMBIENT PARTICLES ══════════════════════════════════════════════
+(function(){
+  const canvas = document.getElementById('particles-canvas');
+  if (!canvas) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, parts = [];
+  function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+  resize(); window.addEventListener('resize', resize, { passive: true });
+  const rand=(a,b)=>Math.random()*(b-a)+a;
+  // Per-product walnut / warm amber palette
+  const hues = [
+    'rgba(176,132,92,ALPHA)',
+    'rgba(232,198,160,ALPHA)',
+    'rgba(200,160,96,ALPHA)'
+  ];
+  const count = window.innerWidth < 900 ? 24 : 44;
+  for (let i=0;i<count;i++){
+    parts.push({
+      x:rand(0,W), y:rand(0,H),
+      r:rand(.3,1.6),
+      vx:rand(-.12,.12), vy:rand(-.22,-.04),
+      alpha:rand(.05,.3),
+      hue:hues[Math.floor(Math.random()*hues.length)]
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for (const p of parts){
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.hue.replace('ALPHA',p.alpha.toFixed(2));
+      ctx.fill();
+      p.x+=p.vx; p.y+=p.vy;
+      if (p.y<-4)    p.y = H+4;
+      if (p.x<-4)    p.x = W+4;
+      if (p.x>W+4)   p.x = -4;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ═══ LETTER-SPLIT (hero title) ══════════════════════════════════════
+(function(){
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('[data-split]').forEach(el => {
+    Array.from(el.childNodes).forEach(node => {
+      if (node.nodeType !== 3) return;
+      const frag = document.createDocumentFragment();
+      node.textContent.split(/(\s+)/).forEach(seg => {
+        if (!seg) return;
+        if (/^\s+$/.test(seg)) { frag.appendChild(document.createTextNode(seg)); return; }
+        const w = document.createElement('span'); w.className='split-word';
+        for (const ch of seg){
+          const c = document.createElement('span'); c.className='split-char';
+          c.style.animationDelay = (Math.random()*.35 + .2).toFixed(2) + 's';
+          c.textContent = ch; w.appendChild(c);
+        }
+        frag.appendChild(w);
+      });
+      node.parentNode.replaceChild(frag, node);
+    });
+  });
+})();
+
+// ═══ 3D TILT on ingredient cards ════════════════════════════════════
+(function(){
+  if (window.matchMedia('(hover: none)').matches ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const MAX = 6;
+  document.querySelectorAll('.ing-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - .5;
+      const y = (e.clientY - r.top)  / r.height - .5;
+      card.style.transform =
+        `perspective(900px) rotateX(${(-y*MAX).toFixed(2)}deg) rotateY(${(x*MAX).toFixed(2)}deg) translateZ(0)`;
+      card.classList.add('tilt-active');
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+      card.classList.remove('tilt-active');
+    });
+  });
+})();
+
+// ═══ MAGNETIC CTA ═══════════════════════════════════════════════════
+(function(){
+  if (window.matchMedia('(hover: none)').matches ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const S = 10;
+  document.querySelectorAll('.btn-primary').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - (r.left + r.width/2))  / r.width  * S;
+      const y = (e.clientY - (r.top  + r.height/2)) / r.height * S;
+      btn.style.transform = `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  });
+})();
+
+// ═══ MOBILE HAMBURGER DRAWER ════════════════════════════════════════
+(function() {
+  const btn = document.getElementById('nav-hamburger');
+  const drawer = document.getElementById('mobile-drawer');
+  if (!btn || !drawer) return;
+  function setOpen(open) {
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    drawer.classList.toggle('open', open);
+    drawer.setAttribute('aria-hidden', String(!open));
+    document.body.classList.toggle('drawer-open', open);
+  }
+  btn.addEventListener('click', () => setOpen(!drawer.classList.contains('open')));
+  drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && drawer.classList.contains('open')) { setOpen(false); btn.focus(); }
+  });
+})();
+
+</script>

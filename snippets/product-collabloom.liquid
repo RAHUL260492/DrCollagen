@@ -1,0 +1,2126 @@
+{%- comment -%}
+  Resolve the live Shopify product so prices and the Buy button always
+  match the storefront. Falls back to the launch-pricing static values
+  ONLY if the Product hasn't been created in admin yet — once it exists
+  with the right handle, every price and CTA pulls from Shopify.
+{%- endcomment -%}
+{%- assign dc_handle = 'collabloom' -%}
+{%- assign dc_product = all_products[dc_handle] -%}
+{%- if dc_product and dc_product.id != blank -%}
+  {%- assign dc_price = dc_product.price | money -%}
+  {%- if dc_product.compare_at_price > dc_product.price -%}
+    {%- assign dc_was = dc_product.compare_at_price | money -%}
+    {%- assign dc_save_pct = dc_product.compare_at_price | minus: dc_product.price | times: 100.0 | divided_by: dc_product.compare_at_price | round -%}
+  {%- endif -%}
+  {%- assign dc_variant_id = dc_product.selected_or_first_available_variant.id -%}
+  {%- assign dc_available = dc_product.available -%}
+{%- else -%}
+  {%- assign dc_price = '₹1,899' -%}
+  {%- assign dc_was = '₹2,375' -%}
+  {%- assign dc_save_pct = 20 -%}
+  {%- assign dc_available = false -%}
+{%- endif -%}
+
+<style>
+    /* Kill any rogue horizontal scroll on this page (sliders, decorative
+       overlays, etc. should never push the viewport wider than itself). */
+    html, body { overflow-x: hidden; max-width: 100vw; }
+
+    /* ─── DESIGN TOKENS (per-product theme: Collabloom — soft rose pink) ─── */
+    :root {
+      --accent:        #e07a9e;
+      --accent-deep:   #b05578;
+      --accent-glow:   rgba(224,122,158,.32);
+      --accent-soft:   rgba(224,122,158,.09);
+      --theme-1:       #fde4ec;    /* hero background tint */
+      --theme-2:       #fef0f3;
+      --theme-3:       #fad6e0;
+      --ink:           #2a1225;
+      --warm-dim:      #6a5065;
+      --muted:         #7a6872;
+      --heading:       'Playfair Display', Georgia, serif;
+      --body:          'DM Sans', -apple-system, sans-serif;
+    }
+
+    /* ─── METALLIC ROSE ─────────────────────────────────────────── */
+    em.shine, h1 em, h2 em {
+      background: linear-gradient(135deg,#ffeef3 0%,#ffc4d4 22%,#f095ae 42%,#e07a9e 58%,#b05578 78%,#833856 100%);
+      background-size: 220% 220%;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+      filter: drop-shadow(0 1px 0 rgba(255,220,230,.55)) drop-shadow(0 0 14px rgba(224,122,158,.45));
+      animation: shimmer 6s ease-in-out infinite;
+      font-style: italic; font-weight: 400;
+    }
+    @keyframes shimmer { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+    /* ─── RESET ─────────────────────────────────────────────────── */
+    *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--body);
+      background: #ffffff;
+      color: var(--ink);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; border: none; background: none; font-family: var(--body); }
+
+    /* ─── FILM GRAIN ────────────────────────────────────────────── */
+    #film-grain {
+      position: fixed; inset: -50%; z-index: 100;
+      width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+      opacity: 0.028;
+      pointer-events: none;
+      animation: grain-move .6s steps(2) infinite;
+    }
+    @keyframes grain-move {
+      0%{transform:translate(0,0)} 25%{transform:translate(-3px,2px)}
+      50%{transform:translate(2px,-3px)} 75%{transform:translate(3px,1px)}
+      100%{transform:translate(-1px,3px)}
+    }
+
+    /* ─── NAV ───────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      padding: 22px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background .4s ease, padding .4s ease, backdrop-filter .4s ease, border-color .4s ease;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border-bottom-color: rgba(0,0,0,.05);
+      padding: 14px 48px;
+    }
+    .nav-logo {
+      font-family: var(--heading); font-size: 20px; font-weight: 600;
+      letter-spacing: .08em;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-back {
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--warm-dim);
+      display: inline-flex; align-items: center; gap: 10px;
+      transition: color .3s, gap .3s;
+    }
+    .nav-back:hover { color: var(--accent); gap: 14px; }
+    .nav-back .arrow { font-size: 14px; transform: translateY(-1px); }
+    .nav-cta {
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase;
+      padding: 10px 22px; color: var(--accent);
+      border: 1px solid rgba(224,122,158,.42); border-radius: 40px;
+      transition: background .3s, color .3s, border-color .3s;
+    }
+    .nav-cta:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* ─── HERO ──────────────────────────────────────────────────── */
+    #hero {
+      position: relative; min-height: 100vh;
+      background: radial-gradient(ellipse at 30% 20%, var(--theme-1) 0%, var(--theme-2) 50%, #ffffff 100%);
+      padding: 140px 6vw 80px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: center;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: ''; position: absolute;
+      top: -30%; right: -15%;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-soft) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-text { position: relative; z-index: 2; }
+    .hero-breadcrumb {
+      font-size: 11px; font-weight: 700; letter-spacing: .28em;
+      text-transform: uppercase; color: var(--accent-deep);
+      margin-bottom: 24px;
+    }
+    .hero-breadcrumb a { transition: color .3s; }
+    .hero-breadcrumb a:hover { color: var(--accent-deep); }
+    .hero-title {
+      font-family: var(--heading);
+      font-size: clamp(52px, 7vw, 96px);
+      font-weight: 300; line-height: 1.02;
+      margin-bottom: 20px;
+      letter-spacing: -.01em;
+    }
+    .hero-tagline {
+      font-size: clamp(17px, 1.6vw, 21px);
+      font-weight: 300;
+      color: var(--warm-dim);
+      line-height: 1.6;
+      max-width: 480px;
+      margin-bottom: 32px;
+    }
+    .hero-bullets {
+      list-style: none; display: flex; flex-direction: column; gap: 10px;
+      margin-bottom: 40px;
+    }
+    .hero-bullets li {
+      font-size: 14px; font-weight: 400; color: var(--ink);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .hero-bullets li::before {
+      content: '✦'; color: var(--accent);
+      font-size: 12px; flex-shrink: 0;
+    }
+    .hero-actions {
+      display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+    }
+    .btn-primary {
+      position: relative; overflow: hidden;
+      padding: 14px 34px;
+      background: linear-gradient(135deg, #b05578 0%, #833856 50%, #2a1225 100%);
+      color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: .2em;
+      text-transform: uppercase; border-radius: 40px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.15),
+        inset 0 -1px 0 rgba(0,0,0,.35),
+        0 6px 18px rgba(42,18,37,.35),
+        0 0 0 1px rgba(176,85,120,.45);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      transition: transform .3s, box-shadow .3s, filter .3s;
+      display: inline-block;
+    }
+    .btn-primary::before {
+      content: ""; position: absolute; top: 0; left: -120%; width: 60%; height: 100%;
+      background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.55) 50%, transparent 80%);
+      transform: skewX(-18deg); pointer-events: none;
+      transition: left .9s cubic-bezier(.2,.8,.2,1);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.10) saturate(1.1);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.25),
+        inset 0 -1px 0 rgba(0,0,0,.4),
+        0 16px 44px rgba(42,18,37,.4),
+        0 0 0 1px rgba(176,85,120,.55);
+    }
+    .btn-primary:hover::before { left: 120%; }
+    .btn-outline {
+      padding: 14px 30px; border: 1px solid rgba(42,18,37,.22);
+      color: var(--ink);
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; border-radius: 40px;
+      transition: border-color .3s, background .3s;
+    }
+    .btn-outline:hover { border-color: rgba(42,18,37,.5); background: rgba(42,18,37,.03); }
+
+    .hero-price-row {
+      display: flex; align-items: baseline; gap: 18px;
+      margin-bottom: 12px;
+    }
+    .hero-price {
+      font-family: var(--heading);
+      font-size: 30px; font-weight: 400;
+      color: var(--ink);
+    }
+    .hero-price-was {
+      font-size: 16px; font-weight: 300;
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+    .hero-price-save {
+      font-size: 10px; font-weight: 600; letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: 4px 10px; border-radius: 20px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+    }
+
+    .hero-visual {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+      /* Safety: contain the slider track so it can't push the page wider */
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .hero-bottle-wrap {
+      position: relative;
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-18px); }
+    }
+    .hero-bottle-wrap img {
+      height: clamp(340px, 52vh, 560px);
+      width: auto;
+      filter: drop-shadow(0 40px 80px rgba(176,85,120,.3));
+    }
+    .hero-bottle-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: 50%;
+      transform: translateX(-50%);
+      width: 260px; height: 30px;
+      background: radial-gradient(ellipse, rgba(42,18,37,.18) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(8px);
+    }
+    .hero-badge-float {
+      position: absolute; top: 12%; right: 0;
+      background: #fff;
+      border: 1px solid var(--accent-soft);
+      padding: 14px 20px; border-radius: 14px;
+      box-shadow: 0 8px 28px rgba(176,85,120,.12);
+      font-size: 11px; font-weight: 500;
+      letter-spacing: .05em; color: var(--ink);
+      max-width: 180px;
+    }
+    .hero-badge-float strong { color: var(--accent-deep); }
+
+    /* ─── HERO SLIDER (Collabloom) ──────────────────────────────────
+       Coverflow-style carousel: 3 cards visible, center highlighted,
+       side cards faded and scaled down. Auto-advances every 7s,
+       pauses on hover. Manual arrows + thumbnail strip below.
+       ─────────────────────────────────────────────────────────────── */
+    .cb-slider-wrap {
+      position: relative;
+      width: clamp(280px, 62vw, 860px);
+      max-width: 100%;
+      min-width: 0;
+    }
+    .cb-slider {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      height: clamp(520px, 76vh, 780px);
+      overflow: hidden;
+      border-radius: 26px;
+      contain: layout paint;
+      /* Soft edge fade so side cards melt out toward the page background */
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 9%, #000 91%, transparent 100%);
+              mask-image: linear-gradient(to right, transparent 0%, #000 9%, #000 91%, transparent 100%);
+    }
+    .cb-slider-track {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      height: 100%;
+      padding: 14px 0;
+      transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+    .cb-slide {
+      flex: 0 0 auto;
+      width: clamp(340px, 46vw, 580px);
+      height: 100%;
+      border-radius: 24px;
+      overflow: hidden;
+      /* Card background matches the image corners (#fef0f3) so there's
+         no visible seam between the image edge and the card itself.
+         The card also has a soft outer halo in the same tone — this
+         dissolves the card edges into the hero gradient. */
+      background: #fef0f3;
+      box-shadow:
+        0 0 0 1px rgba(254, 240, 243, 0.5),
+        0 30px 80px -30px rgba(254, 220, 232, 0.65),
+        0 14px 40px -16px rgba(254, 230, 240, 0.55);
+      opacity: 0.42;
+      transform: scale(0.92);
+      transition:
+        opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .cb-slide.is-active {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow:
+        0 0 0 1px rgba(254, 240, 243, 0.7),
+        0 38px 100px -32px rgba(224, 122, 158, 0.32),
+        0 18px 48px -20px rgba(254, 220, 232, 0.6);
+    }
+    /* Images run edge-to-edge with object-fit:contain. Since the card
+       background now matches the image corners, there's no visible
+       transition between the two. */
+    .cb-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    /* Slide 1 — transparent PNG bottle. Uses the same soft pink card
+       background, with a subtle radial tint behind the bottle for depth. */
+    .cb-slide--bottle {
+      display: flex; align-items: center; justify-content: center;
+      background:
+        radial-gradient(ellipse at 50% 42%, var(--theme-1) 0%, transparent 70%),
+        #fef0f3;
+    }
+    .cb-slide--bottle img {
+      width: 70%;
+      height: 88%;
+      padding: 0;
+      filter: drop-shadow(0 24px 48px rgba(176,85,120,.36));
+    }
+
+    /* Prev / Next arrows */
+    .cb-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.94);
+      border: 1px solid var(--accent-soft);
+      color: var(--accent-deep);
+      font-family: var(--heading);
+      font-size: 26px;
+      font-weight: 400;
+      line-height: 1;
+      padding: 0 0 4px 0;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 22px rgba(176,85,120,.20);
+      transition:
+        background 220ms var(--dc-ease-soft),
+        box-shadow 220ms var(--dc-ease-soft),
+        transform 220ms var(--dc-ease-soft);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .cb-arrow:hover {
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(176,85,120,.32);
+      transform: translateY(-50%) scale(1.06);
+    }
+    .cb-arrow:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .cb-arrow--prev { left: 18px; }
+    .cb-arrow--next { right: 18px; }
+
+    /* Thumbnail strip below the slider */
+    .cb-thumbs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 22px 0 0;
+      padding: 0;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+    .cb-thumb {
+      margin: 0; padding: 0;
+    }
+    .cb-thumb button {
+      display: block;
+      width: 58px; height: 72px;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--theme-2);
+      cursor: pointer;
+      opacity: 0.55;
+      transition:
+        opacity 220ms var(--dc-ease-soft),
+        border-color 220ms var(--dc-ease-soft),
+        transform 220ms var(--dc-ease-soft);
+    }
+    .cb-thumb button:hover { opacity: 0.85; transform: translateY(-2px); }
+    .cb-thumb.is-active button {
+      opacity: 1;
+      border-color: var(--accent);
+      transform: translateY(-2px) scale(1.06);
+      box-shadow: 0 6px 16px rgba(176,85,120,.28);
+    }
+    .cb-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cb-thumb--bottle img { object-fit: contain; background: linear-gradient(160deg, var(--theme-1), var(--theme-3)); }
+
+    @media (max-width: 720px) {
+      .cb-slider-wrap { width: 100%; max-width: 100%; }
+      .cb-slider {
+        height: clamp(380px, 90vw, 560px);
+        border-radius: 18px;
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+                mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+      }
+      .cb-slider-track { gap: 16px; padding: 8px 0; }
+      .cb-slide {
+        width: min(82vw, 380px);
+        max-width: 82vw;
+        border-radius: 16px;
+      }
+      .cb-slide img { padding: 0; }
+      .cb-arrow {
+        width: 38px; height: 38px;
+        font-size: 22px;
+      }
+      .cb-arrow--prev { left: 4px; }
+      .cb-arrow--next { right: 4px; }
+      .cb-thumbs { gap: 6px; margin-top: 16px; }
+      .cb-thumb button { width: 44px; height: 56px; }
+    }
+    @media (max-width: 380px) {
+      /* Very small phones (iPhone SE, etc.) — tighter sizing */
+      .cb-slider { height: clamp(340px, 96vw, 460px); }
+      .cb-slide { width: 88vw; max-width: 88vw; }
+      .cb-thumb button { width: 38px; height: 48px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cb-slider-track,
+      .cb-slide { transition: none; }
+    }
+
+    /* ─── SECTION SHARED ────────────────────────────────────────── */
+    section { padding: 120px 48px; position: relative; }
+    .inner { max-width: 1160px; margin: 0 auto; }
+    .overline {
+      font-size: 11px; font-weight: 700; letter-spacing: .32em;
+      text-transform: uppercase; color: var(--accent-deep);
+      margin-bottom: 18px;
+    }
+    .heading {
+      font-family: var(--heading);
+      font-size: clamp(32px, 4.5vw, 58px);
+      font-weight: 300; line-height: 1.12;
+      letter-spacing: -.01em;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
+    .lede {
+      font-size: clamp(16px, 1.3vw, 19px);
+      font-weight: 300;
+      color: var(--warm-dim);
+      line-height: 1.8;
+      max-width: 620px;
+    }
+
+    /* Reveal — failsafe-first: starts hidden, but a CSS animation auto-
+       reveals after 1.5s even if every JS animation library fails.
+       When the JS observer adds .visible, the smooth transition takes
+       over and the failsafe animation becomes a no-op. */
+    @keyframes dc-reveal-failsafe {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal { opacity: 0; transform: translateY(40px); animation: dc-reveal-failsafe .8s ease 1.5s forwards; }
+    .reveal.visible { opacity: 1; transform: translateY(0); transition: opacity .8s ease, transform .8s ease; animation: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+    }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+
+    /* ─── THE PROMISE / PROBLEM ─────────────────────────────────── */
+    #promise { background: #ffffff; }
+    #promise .inner {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    .promise-img {
+      background: linear-gradient(160deg, var(--theme-3) 0%, var(--theme-2) 100%);
+      border-radius: 24px; padding: 60px;
+      position: relative; overflow: hidden;
+      aspect-ratio: 1/1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .promise-img::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.6) 0%, transparent 60%);
+    }
+    .promise-img-number {
+      position: relative; z-index: 2;
+      font-family: var(--heading);
+      font-size: clamp(80px, 14vw, 220px);
+      font-weight: 300;
+      color: var(--accent-deep);
+      line-height: 1;
+      letter-spacing: -.04em;
+    }
+    .promise-img-number small {
+      display: block; font-size: 14px; font-weight: 500;
+      letter-spacing: .3em; text-transform: uppercase;
+      color: var(--warm-dim); margin-top: 12px;
+      letter-spacing: .25em;
+    }
+    .promise-text p {
+      font-size: 15px; color: var(--warm-dim);
+      line-height: 1.85; margin-bottom: 16px;
+    }
+
+    /* ─── INGREDIENT DEEP-DIVE ──────────────────────────────────── */
+    #ingredients {
+      background: linear-gradient(180deg, #fff8fa 0%, #fde4ec 100%);
+      overflow: hidden;
+    }
+    #ingredients .inner { position: relative; }
+    .ing-head { text-align: center; margin-bottom: 80px; }
+    .ing-head .heading { max-width: 720px; margin-left: auto; margin-right: auto; }
+    .ing-head .lede { margin: 20px auto 0; }
+    .ing-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .ing-card {
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,.05);
+      border-radius: 22px;
+      padding: 36px 28px 32px;
+      position: relative;
+      transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s, border-color .4s;
+    }
+    .ing-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(224,122,158,.25);
+      box-shadow: 0 20px 50px rgba(176,85,120,.14);
+    }
+    .ing-icon {
+      width: 56px; height: 56px; border-radius: 16px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 22px;
+    }
+    .ing-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke-width: 1.5;
+    }
+    .ing-name {
+      font-family: var(--heading);
+      font-size: 22px; font-weight: 400;
+      color: var(--ink); margin-bottom: 10px;
+    }
+    .ing-dose {
+      font-size: 14px; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--accent-deep);
+      margin-bottom: 18px;
+    }
+    .ing-desc {
+      font-size: 14px; font-weight: 300;
+      color: var(--warm-dim);
+      line-height: 1.75;
+    }
+    /* Bulleted ingredient details — rose dot in front of each line */
+    .ing-list {
+      margin: 0; padding: 0;
+      list-style: none;
+      display: flex; flex-direction: column;
+      gap: 10px;
+    }
+    .ing-list li {
+      position: relative;
+      padding-left: 20px;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--warm-dim);
+      line-height: 1.55;
+    }
+    .ing-list li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 8px;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    }
+    .ing-list li strong { color: var(--ink); font-weight: 600; }
+    .ing-list li em {
+      font-style: normal; color: var(--accent-deep);
+      font-weight: 600;
+    }
+    .ing-list li.ing-list-note {
+      padding-left: 20px;
+      font-size: 12px;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: 4px;
+    }
+    .ing-list li.ing-list-note::before {
+      background: transparent;
+      border: 1px solid var(--muted);
+      width: 6px; height: 6px;
+      top: 9px;
+    }
+
+    /* ─── HOW IT WORKS / TIMELINE ───────────────────────────────── */
+    #timeline {
+      background: #ffffff;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .tl-head { text-align: center; margin-bottom: 80px; }
+    .tl-head .heading { max-width: 720px; margin: 0 auto; }
+    .tl-head .lede { margin: 20px auto 0; }
+    .tl-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+      border-top: 1px solid rgba(0,0,0,.08);
+      border-bottom: 1px solid rgba(0,0,0,.08);
+    }
+    .tl-item {
+      padding: 44px 28px;
+      border-right: 1px solid rgba(0,0,0,.08);
+      position: relative;
+      transition: background .3s;
+    }
+    .tl-item:last-child { border-right: none; }
+    .tl-item:hover { background: var(--theme-2); }
+    .tl-week {
+      font-family: var(--heading);
+      font-size: 13px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+    .tl-num {
+      font-family: var(--heading);
+      font-size: 52px; font-weight: 300;
+      color: var(--ink);
+      margin-bottom: 14px; line-height: 1;
+      letter-spacing: -.02em;
+    }
+    .tl-text {
+      font-size: 14px; font-weight: 300;
+      color: var(--warm-dim);
+      line-height: 1.7;
+    }
+
+    /* ─── HOW TO USE ────────────────────────────────────────────── */
+    #use {
+      background: linear-gradient(180deg, #ffffff 0%, #fff5f8 100%);
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    #use .inner {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    .use-steps {
+      list-style: none; display: flex; flex-direction: column; gap: 24px;
+      margin-top: 36px;
+    }
+    .use-step {
+      display: flex; align-items: flex-start; gap: 20px;
+      padding: 22px 24px;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 16px;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .use-step:hover {
+      border-color: rgba(224,122,158,.28);
+      box-shadow: 0 8px 24px rgba(176,85,120,.09);
+    }
+    .use-step-num {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--accent-soft);
+      border: 1px solid rgba(224,122,158,.22);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--heading); font-size: 15px; font-weight: 500;
+      color: var(--accent-deep);
+      flex-shrink: 0;
+    }
+    .use-step-text h4 {
+      font-size: 14px; font-weight: 500; color: var(--ink);
+      margin-bottom: 4px; letter-spacing: .02em;
+    }
+    .use-step-text p {
+      font-size: 13px; font-weight: 300; color: var(--warm-dim);
+      line-height: 1.65;
+    }
+    .use-visual {
+      position: relative;
+    }
+    .use-visual-bg {
+      background: radial-gradient(ellipse at 50% 50%, var(--theme-1) 0%, var(--theme-2) 60%, transparent 100%);
+      border-radius: 24px;
+      aspect-ratio: 4/5;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px;
+    }
+    .use-visual-bg img {
+      height: 100%; width: auto; max-height: 480px;
+      filter: drop-shadow(0 30px 60px rgba(176,85,120,.26));
+    }
+
+    /* ─── RESULTS STATS ─────────────────────────────────────────── */
+    #results {
+      background: #ffffff;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .res-head { text-align: center; margin-bottom: 72px; }
+    .res-head .heading { max-width: 720px; margin: 0 auto; }
+    .res-head .lede { margin: 20px auto 0; }
+    .res-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 24px; overflow: hidden;
+      background: rgba(0,0,0,.07);
+    }
+    .res-card {
+      background: #ffffff;
+      padding: 48px 24px;
+      text-align: center;
+    }
+    .res-num {
+      font-family: var(--heading);
+      font-size: clamp(32px, 4.2vw, 56px);
+      font-weight: 300;
+      color: var(--ink); line-height: 1;
+      margin-bottom: 14px;
+    }
+    .res-num span { color: var(--accent); }
+    .res-label {
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--muted);
+      line-height: 1.5;
+    }
+    .res-foot {
+      text-align: center; margin-top: 36px;
+      font-size: 12px; font-style: italic; color: var(--muted);
+    }
+
+    /* ─── TESTIMONIALS ──────────────────────────────────────────── */
+    #reviews {
+      background: linear-gradient(180deg, #ffffff 0%, #fde4ec 100%);
+      overflow: hidden;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .rev-head { text-align: center; margin-bottom: 56px; }
+    .rev-head .heading { max-width: 720px; margin: 0 auto; }
+
+    /* ─── Edge-to-edge marquee (right → left, continuous) ──────── */
+    .rev-marquee {
+      position: relative;
+      left: 50%;
+      right: 50%;
+      width: 100vw;
+      max-width: 100vw;
+      margin-left: -50vw;
+      margin-right: -50vw;
+      overflow: hidden;
+    }
+    .rev-marquee-track {
+      display: flex;
+      gap: 24px;
+      width: max-content;
+      padding: 8px 0;
+      animation: rev-scroll 90s linear infinite;
+      will-change: transform;
+    }
+    .rev-marquee:hover .rev-marquee-track,
+    .rev-marquee:focus-within .rev-marquee-track {
+      animation-play-state: paused;
+    }
+    @keyframes rev-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .rev-marquee-track { animation: none; }
+    }
+
+    .rev-card {
+      flex: 0 0 auto;
+      width: 360px;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 20px;
+      padding: 32px 28px;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .rev-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(176,85,120,.12);
+    }
+    .rev-stars {
+      color: var(--accent-deep);
+      font-size: 14px;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+      display: inline-block;
+    }
+    /* 4.5 star rendering — solid color through the first 90% of the row
+       (= 4 full stars + half of star 5), then a softened color for the
+       remaining half so the 5th star reads as ½-filled. */
+    .rev-stars--45 {
+      background: linear-gradient(to right,
+        var(--accent-deep) 0%,
+        var(--accent-deep) 90%,
+        rgba(176, 85, 120, 0.32) 90%,
+        rgba(176, 85, 120, 0.32) 100%);
+      -webkit-background-clip: text;
+              background-clip: text;
+      -webkit-text-fill-color: transparent;
+              color: transparent;
+    }
+    .rev-rating-num {
+      margin-left: 8px;
+      font-size: 12px;
+      letter-spacing: .05em;
+      color: var(--muted);
+      vertical-align: 2px;
+    }
+
+    @media (max-width: 720px) {
+      .rev-card { width: 280px; padding: 26px 22px; }
+      .rev-marquee-track { gap: 16px; animation-duration: 70s; }
+    }
+    .rev-quote { font-size: 15px; font-weight: 300; font-style: italic;
+      color: var(--warm-dim); line-height: 1.75; margin-bottom: 22px; }
+    .rev-author { display: flex; align-items: center; gap: 12px; }
+    .rev-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 600; color: #fff;
+    }
+    .rev-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .rev-role { font-size: 11px; font-weight: 300; color: var(--muted); }
+
+    /* ─── FAQ ───────────────────────────────────────────────────── */
+    #faq {
+      background: #ffffff;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .faq-head { text-align: center; margin-bottom: 60px; }
+    .faq-head .heading { max-width: 600px; margin: 0 auto; }
+    .faq-list {
+      max-width: 760px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .faq-item {
+      background: #fdf6f8;
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color .3s, background .3s;
+    }
+    .faq-item[open] { border-color: rgba(224,122,158,.32); background: #fff; }
+    .faq-item summary {
+      list-style: none;
+      padding: 22px 26px;
+      font-size: 15px; font-weight: 500; color: var(--ink);
+      cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 20px;
+      transition: color .3s;
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary:hover { color: var(--accent-deep); }
+    .faq-item summary::after {
+      content: '+';
+      font-size: 24px; font-weight: 300;
+      color: var(--accent);
+      transition: transform .3s;
+    }
+    .faq-item[open] summary::after { transform: rotate(45deg); }
+    .faq-answer {
+      padding: 0 26px 22px;
+      font-size: 14px; font-weight: 300;
+      color: var(--warm-dim); line-height: 1.8;
+    }
+
+    /* ─── FINAL CTA ─────────────────────────────────────────────── */
+    #cta {
+      background: linear-gradient(135deg, var(--theme-1) 0%, var(--theme-2) 50%, var(--theme-3) 100%);
+      text-align: center;
+      padding: 140px 48px;
+      position: relative; overflow: hidden;
+    }
+    #cta::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(224,122,158,.14) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .cta-inner { position: relative; z-index: 2; max-width: 720px; margin: 0 auto; }
+    .cta-inner .heading {
+      font-size: clamp(36px, 5.5vw, 72px);
+      margin-bottom: 24px;
+    }
+    .cta-inner .lede {
+      margin: 0 auto 40px; font-size: 17px;
+    }
+    .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .cta-guarantee {
+      margin-top: 32px;
+      font-size: 11px; letter-spacing: .15em; text-transform: uppercase;
+      color: var(--warm-dim);
+    }
+    .cta-guarantee span { color: var(--accent-deep); font-weight: 600; }
+
+    /* ─── FOOTER ────────────────────────────────────────────────── */
+    footer {
+      background: #1a1225;
+      color: rgba(255,255,255,.55);
+      padding: 64px 48px 32px;
+    }
+    .footer-inner {
+      max-width: 1160px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 24px;
+    }
+    .footer-brand {
+      font-family: var(--heading);
+      font-size: 20px; font-weight: 600;
+      color: #fff;
+      letter-spacing: .08em;
+    }
+    .footer-brand span { color: var(--accent); }
+    .footer-legal { font-size: 11px; color: rgba(255,255,255,.4); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a {
+      font-size: 12px; color: rgba(255,255,255,.6); letter-spacing: .08em;
+      transition: color .3s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 18px 24px; }
+      nav.scrolled { padding: 12px 24px; }
+      section { padding: 80px 24px; }
+      #hero { grid-template-columns: 1fr; gap: 40px; padding: 120px 24px 60px; }
+      .hero-text { order: 2; }
+      .hero-visual { order: 1; }
+      .hero-badge-float { display: none; }
+      #promise .inner, #use .inner { grid-template-columns: 1fr; gap: 40px; }
+      .ing-grid { grid-template-columns: 1fr 1fr; }
+      .tl-grid { grid-template-columns: 1fr 1fr; }
+      .tl-item { border-right: none; border-bottom: 1px solid rgba(0,0,0,.08); }
+      .tl-item:nth-child(odd) { border-right: 1px solid rgba(0,0,0,.08); }
+      .tl-item:nth-last-child(-n+2) { border-bottom: none; }
+      .res-grid { grid-template-columns: 1fr 1fr; }
+      /* .rev-grid removed in v23 — now using .rev-marquee instead */
+      .nav-back span:not(.arrow) { display: none; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      nav.scrolled { padding: 12px 20px; }
+      .nav-logo { font-size: 17px; }
+      .nav-cta { padding: 8px 16px; font-size: 10px; }
+      section { padding: 64px 20px; }
+      #cta { padding: 96px 20px; }
+      .hero-title { font-size: clamp(42px, 11vw, 64px); }
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .hero-actions .btn-primary, .hero-actions .btn-outline { text-align: center; }
+      .ing-grid { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      #film-grain { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  
+    /* ─── FOCUS VISIBILITY (WCAG 2.4.7) ─────────────────────────── */
+    :focus { outline: none; }
+    a:focus-visible, button:focus-visible, details > summary:focus-visible,
+    .btn-primary:focus-visible, .btn-outline:focus-visible, .nav-cta:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 8px;
+    }
+    .skip-link {
+      position: absolute; left: -9999px; top: 0; z-index: 10000;
+      padding: 12px 18px; background: var(--ink); color: #fff;
+      font-size: 12px; font-weight: 600; letter-spacing: .2em;
+      text-transform: uppercase; border-radius: 0 0 10px 0;
+    }
+    .skip-link:focus { left: 0; outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ─── HAMBURGER + DRAWER ─────────────────────────────────────── */
+    .nav-hamburger {
+      display: none; width: 44px; height: 44px; padding: 0;
+      background: transparent; border: none; position: relative; cursor: pointer;
+    }
+    .nav-hamburger span {
+      position: absolute; left: 10px; right: 10px; height: 1.5px;
+      background: var(--ink); border-radius: 2px;
+      transition: transform .3s ease, opacity .3s ease, top .3s ease;
+    }
+    .nav-hamburger span:nth-child(1) { top: 15px; }
+    .nav-hamburger span:nth-child(2) { top: 21px; }
+    .nav-hamburger span:nth-child(3) { top: 27px; }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(1) { top: 21px; transform: rotate(45deg); }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(3) { top: 21px; transform: rotate(-45deg); }
+    #mobile-drawer {
+      position: fixed; inset: 0; z-index: 490;
+      background: rgba(255,255,255,.98);
+      backdrop-filter: blur(20px) saturate(130%);
+      -webkit-backdrop-filter: blur(20px) saturate(130%);
+      display: flex; flex-direction: column;
+      padding: 96px 32px 40px;
+      opacity: 0; visibility: hidden; transform: translateY(-8px);
+      transition: opacity .3s ease, transform .3s ease, visibility .3s ease;
+    }
+    #mobile-drawer.open { opacity: 1; visibility: visible; transform: translateY(0); }
+    #mobile-drawer .drawer-links { list-style: none; display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; }
+    #mobile-drawer .drawer-links > li > a,
+    #mobile-drawer .drawer-links .drawer-heading {
+      display: block; padding: 16px 12px;
+      font-family: var(--heading); font-size: 22px; font-weight: 400;
+      color: var(--ink); letter-spacing: .02em;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    #mobile-drawer .drawer-sub {
+      list-style: none; padding: 4px 0 12px 16px; margin: 0;
+      display: flex; flex-direction: column; gap: 2px;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    #mobile-drawer .drawer-sub a {
+      display: block; padding: 10px 12px; font-family: var(--body);
+      font-size: 14px; color: var(--ink); letter-spacing: .02em;
+    }
+    #mobile-drawer .drawer-sub a em {
+      font-style: normal; color: var(--muted);
+      font-size: 11px; letter-spacing: .14em; text-transform: uppercase; margin-left: 6px;
+    }
+    #mobile-drawer .drawer-cta { margin-top: auto; padding-top: 24px; display: flex; justify-content: center; }
+    body.drawer-open { overflow: hidden; }
+
+    @media (max-width: 900px) {
+      .nav-back { display: none; }
+      .nav-hamburger { display: block; }
+    }
+
+    /* ─── ELEVATION: CURSOR / PARTICLES / SPLIT / TILT ──────────── */
+    #cursor-dot {
+      position: fixed; top: 0; left: 0; z-index: 9998;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--ink); pointer-events: none;
+      transform: translate(-50%,-50%);
+      mix-blend-mode: difference;
+      transition: width .2s, height .2s;
+    }
+    #cursor-ring {
+      position: fixed; top: 0; left: 0; z-index: 9997;
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: border-color .3s, width .3s, height .3s, box-shadow .3s;
+    }
+    body.hovering #cursor-ring {
+      width: 54px; height: 54px;
+      box-shadow: 0 0 18px var(--accent-glow);
+      border-color: var(--accent-deep);
+    }
+    #particles-canvas {
+      position: fixed; inset: 0; z-index: 15;
+      pointer-events: none; opacity: .55;
+    }
+    @media (max-width: 899px) {
+      #cursor-dot, #cursor-ring { display: none; }
+      #particles-canvas { opacity: .3; }
+    }
+    @media (hover: none) {
+      #cursor-dot, #cursor-ring { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #particles-canvas { display: none; }
+      .split-char { opacity: 1 !important; transform: none !important; animation: none !important; }
+    }
+
+    .split-word { display: inline-block; white-space: nowrap; }
+    .split-char {
+      display: inline-block; opacity: 0;
+      transform: translateY(26px);
+      animation: split-char-in .6s cubic-bezier(.22,.9,.32,1) forwards;
+    }
+    @keyframes split-char-in {
+      from { opacity: 0; transform: translateY(26px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .ing-card {
+      transform-style: preserve-3d;
+      transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease;
+      will-change: transform;
+    }
+    .ing-card.tilt-active {
+      box-shadow: 0 30px 60px -24px var(--accent-glow), 0 10px 30px -12px rgba(0,0,0,.12);
+      border-color: var(--accent-soft);
+    }
+
+    .btn-primary, .btn-outline { will-change: transform; }
+  
+    /* Logo lockup: Dr Collagen + "Formulated by Doctors" subtitle */
+    .nav-logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 3px;
+    }
+    .nav-logo__main { font: inherit; }
+    .nav-logo__sub {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.55);
+      white-space: nowrap;
+    }
+    nav.in-dark-section .nav-logo__sub,
+    nav.scrolled-dark .nav-logo__sub { color: rgba(255,255,255,.65); }
+    .footer-brand,
+    .logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 4px;
+    }
+    .footer-brand__main, .logo__main { font: inherit; }
+    .footer-brand__sub, .logo__sub {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+      white-space: nowrap;
+    }
+    /* Global section-header.liquid uses .dc-logo */
+    .dc-logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 3px;
+    }
+    .dc-logo__main { font: inherit; }
+    .dc-logo__sub {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.55);
+      white-space: nowrap;
+    }
+
+  
+    /* Formulated by Doctors badge — sits just above the hero title */
+    .hero-doc-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px;
+      margin-bottom: 16px;
+      font-size: 11px; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--accent-deep);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .hero-doc-badge span { font-size: 14px; line-height: 1; }
+
+  </style>
+
+<!-- ═══ SKIP TO CONTENT ═════════════════════════════════════════════ -->
+<a href="#main" class="skip-link">Skip to content</a>
+
+<!-- ═══ FILM GRAIN ═══════════════════════════════════════════════ -->
+<div id="film-grain"></div>
+
+<!-- ═══ CUSTOM CURSOR & AMBIENT PARTICLES ═══════════════════════ -->
+<div id="cursor-dot" aria-hidden="true"></div>
+<div id="cursor-ring" aria-hidden="true"></div>
+<canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+<!-- ═══ NAV ══════════════════════════════════════════════════════ -->
+<nav id="navbar" aria-label="Primary">
+  <a href="{{ routes.root_url }}" id="collabloom-nav-logo" class="nav-logo"><span class="nav-logo__main">Dr<span> Collagen</span></span><span class="nav-logo__sub">Formulated by Doctors</span></a>
+  <a href="{{ routes.root_url }}" id="collabloom-nav-back" class="nav-back"><span class="arrow" aria-hidden="true">←</span> <span>Back to Home</span></a>
+  <a href="#cta" id="collabloom-nav-cta-buy" class="nav-cta">Add to cart</a>
+  <button id="nav-hamburger" class="nav-hamburger" aria-label="Open menu" aria-controls="mobile-drawer" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<aside id="mobile-drawer" aria-hidden="true" aria-label="Mobile menu">
+  <ul class="drawer-links">
+    <li>
+      <span class="drawer-heading">Products</span>
+      <ul class="drawer-sub">
+        <li><a href="/pages/collabloom" id="collabloom-drawer-link-collabloom">Collabloom<sup>™</sup> <em>Skin · Hair · Nails</em></a></li>
+        <li><a href="/pages/skelecoll" id="collabloom-drawer-link-skelecoll">Skelecoll<sup>™</sup> <em>Bone · Joint · Cartilage</em></a></li>
+        <li><a href="/pages/collatrim" id="collabloom-drawer-link-collatrim">Collatrim<sup>™</sup> <em>Body · Metabolism · Tone</em></a></li>
+        <li><a href="/pages/metastable" id="collabloom-drawer-link-metastable">Metastable<sup>™</sup> <em>Energy · Gut · Immunity</em></a></li>
+      </ul>
+    </li>
+    <li><a href="{{ routes.root_url }}#science" id="collabloom-drawer-link-science">Science</a></li>
+    <li><a href="{{ routes.root_url }}#about" id="collabloom-drawer-link-about">About</a></li>
+    <li><a href="{{ routes.root_url }}" id="collabloom-drawer-link-home">Home</a></li>
+  </ul>
+  <div class="drawer-cta">
+    <a href="#cta" id="collabloom-drawer-cta" class="btn-primary">Add to cart</a>
+  </div>
+</aside>
+
+
+<main id="main">
+
+<!-- ═══ HERO ═════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-text">
+    <p class="hero-breadcrumb"><a href="{{ routes.root_url }}#products">Our Range</a> · Skin · Hair · Nails</p>
+    <p class="hero-doc-badge"><span aria-hidden="true">⚕</span> Formulated by Doctors</p>
+    <h1 class="hero-title" data-split>Collabloom<em>™</em></h1>
+    <p class="hero-tagline">A daily 30ml shot for <em>glow, hydration, sun-damage defence and strength</em> — 17 actives, sugar free, Wild Berry.</p>
+    <ul class="hero-bullets">
+      <li>8,000mg Japanese hydrolysed marine collagen</li>
+      <li>250mg Glutathione + 250mg Vitamin C (Amla) — pigmentation &amp; glow</li>
+      <li>240mg Polypodium leucotomos — sun protection from the inside</li>
+      <li>100mg Hyaluronic Acid + 30mg Oral Ceramides — deep hydration</li>
+    </ul>
+    <div class="hero-price-row">
+      <span class="hero-price">{{ dc_price }}</span>
+      {%- if dc_was -%}
+        <span class="hero-price-was">{{ dc_was }}</span>
+        <span class="hero-price-save">Save {{ dc_save_pct }}%</span>
+      {%- endif -%}
+    </div>
+    <div class="hero-actions">
+      {%- if dc_available -%}
+        {% form 'product', dc_product, id: 'collabloom-hero-add-form', class: 'btn-inline-form' %}
+          <input type="hidden" name="id" value="{{ dc_variant_id }}">
+          <div class="dc-qty" role="group" aria-label="Quantity">
+            <button type="button" class="dc-qty__btn" data-qty="minus" aria-label="Decrease quantity">&minus;</button>
+            <input class="dc-qty__input" type="number" name="quantity" value="1" min="1" max="12" aria-label="Quantity">
+            <button type="button" class="dc-qty__btn" data-qty="plus" aria-label="Increase quantity">+</button>
+          </div>
+          <button type="submit" id="collabloom-hero-add-to-cart-btn" class="btn-primary">Add to cart</button>
+        {% endform %}
+      {%- else -%}
+        <a href="/products/{{ dc_handle }}" id="collabloom-hero-add-to-cart-btn" class="btn-primary">Add to cart</a>
+      {%- endif -%}
+      <a href="#ingredients" id="collabloom-hero-the-formula-btn" class="btn-outline">The formula</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="cb-slider-wrap">
+      {%- assign cb_slides = 'collabloom-slide-1.webp,collabloom-slide-2.webp,collabloom-slide-3.webp,collabloom-slide-4.webp,collabloom-slide-5.webp,collabloom-slide-6.webp,collabloom-slide-7.webp,collabloom-slide-8.webp,collabloom-slide-9.webp' | split: ',' -%}
+      <div class="cb-slider" id="collabloom-slider" role="region" aria-label="Collabloom product gallery" aria-roledescription="carousel" tabindex="0">
+        <button type="button" class="cb-arrow cb-arrow--prev" data-cb-prev aria-label="Previous image">&#8249;</button>
+        <div class="cb-slider-track" data-cb-track>
+          {%- for src in cb_slides -%}
+            {%- assign is_bottle = false -%}
+            {%- if src contains 'bottle' -%}{%- assign is_bottle = true -%}{%- endif -%}
+            <div class="cb-slide{% if is_bottle %} cb-slide--bottle{% endif %}{% if forloop.first %} is-active{% endif %}" data-cb-slide="{{ forloop.index0 }}" role="group" aria-roledescription="slide" aria-label="{{ forloop.index }} of {{ cb_slides.size }}">
+              <img src="{{ src | asset_url }}" alt="Collabloom — image {{ forloop.index }} of {{ cb_slides.size }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+            </div>
+          {%- endfor -%}
+        </div>
+        <button type="button" class="cb-arrow cb-arrow--next" data-cb-next aria-label="Next image">&#8250;</button>
+      </div>
+      <div class="hero-badge-float">★ 4.8 · <strong>3,200+ reviews</strong><br />Best Seller · Skin &amp; Hair</div>
+
+      <ol class="cb-thumbs" role="tablist" aria-label="Choose image">
+        {%- for src in cb_slides -%}
+          {%- assign is_bottle = false -%}
+          {%- if src contains 'bottle' -%}{%- assign is_bottle = true -%}{%- endif -%}
+          <li class="cb-thumb{% if is_bottle %} cb-thumb--bottle{% endif %}{% if forloop.first %} is-active{% endif %}" role="presentation">
+            <button type="button" data-cb-thumb="{{ forloop.index0 }}" role="tab" aria-label="View image {{ forloop.index }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+              <img src="{{ src | asset_url }}" alt="" loading="lazy">
+            </button>
+          </li>
+        {%- endfor -%}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<script>
+  /* Collabloom hero slider — coverflow carousel with arrows + thumbnails.
+     - Auto-advances every 7s (paused on hover/focus)
+     - Center slide highlighted, side slides faded + scaled down
+     - Arrows + thumbnail strip jump to specific slide
+     - Track shifts via translateX so the active slide is always centered
+  */
+  (function () {
+    var slider = document.getElementById('collabloom-slider');
+    if (!slider) return;
+    var wrap = slider.closest('.cb-slider-wrap');
+    if (!wrap) return;
+    var track = slider.querySelector('[data-cb-track]');
+    var slides = Array.prototype.slice.call(slider.querySelectorAll('.cb-slide'));
+    var thumbs = Array.prototype.slice.call(wrap.querySelectorAll('.cb-thumb'));
+    var prevBtn = slider.querySelector('[data-cb-prev]');
+    var nextBtn = slider.querySelector('[data-cb-next]');
+    if (!track || slides.length < 2) return;
+
+    var REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    /* Medium auto-advance: 8 seconds per slide gives a comfortable reading
+       window for the infographic slides (especially "Who is it for?",
+       "Key Benefits", etc.) while still feeling alive. */
+    var AUTO_MS = 8000;
+    var idx = 0;
+    var timer = null;
+
+    function position() {
+      var slide = slides[idx];
+      if (!slide) return;
+      // Centre the active slide within the slider viewport
+      var sliderW = slider.clientWidth;
+      var slideCenter = slide.offsetLeft + (slide.offsetWidth / 2);
+      var viewportCenter = sliderW / 2;
+      var offset = viewportCenter - slideCenter;
+      track.style.transform = 'translateX(' + offset + 'px)';
+
+      slides.forEach(function (s, i) {
+        var active = (i === idx);
+        s.classList.toggle('is-active', active);
+        s.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+      thumbs.forEach(function (t, i) {
+        var active = (i === idx);
+        t.classList.toggle('is-active', active);
+        var btn = t.querySelector('button');
+        if (btn) btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+    }
+
+    function go(newIdx) {
+      idx = ((newIdx % slides.length) + slides.length) % slides.length;
+      position();
+    }
+    function next() { go(idx + 1); }
+    function prev() { go(idx - 1); }
+
+    function start() {
+      stop();
+      if (REDUCED_MOTION) return;
+      timer = setInterval(next, AUTO_MS);
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+
+    if (nextBtn) nextBtn.addEventListener('click', function () { next(); start(); });
+    if (prevBtn) prevBtn.addEventListener('click', function () { prev(); start(); });
+
+    thumbs.forEach(function (t, i) {
+      var btn = t.querySelector('button');
+      if (btn) btn.addEventListener('click', function () { go(i); start(); });
+    });
+
+    // Keyboard nav within the slider
+    slider.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); prev(); start(); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); next(); start(); }
+    });
+
+    // Pause auto-advance on hover/focus
+    wrap.addEventListener('mouseenter', stop);
+    wrap.addEventListener('mouseleave', start);
+    wrap.addEventListener('focusin', stop);
+    wrap.addEventListener('focusout', start);
+
+    // Re-centre on resize and when images finish loading (sizes can change)
+    var debounced;
+    window.addEventListener('resize', function () {
+      clearTimeout(debounced);
+      debounced = setTimeout(position, 120);
+    });
+    slides.forEach(function (s) {
+      var img = s.querySelector('img');
+      if (img && !img.complete) img.addEventListener('load', position, { once: true });
+    });
+
+    // Initial paint: wait one frame so flex layout settles
+    requestAnimationFrame(function () { setTimeout(position, 50); });
+    start();
+  })();
+</script>
+
+<!-- ═══ THE PROMISE ═════════════════════════════════════════════════ -->
+<section id="promise">
+  <div class="inner">
+    <div class="promise-img reveal">
+      <div class="promise-img-number">
+        1%
+        <small>Collagen lost every year after 25</small>
+      </div>
+    </div>
+    <div class="promise-text reveal reveal-delay-2">
+      <p class="overline">Why Collabloom</p>
+      <h2 class="heading">Bloom into your <em>best skin</em>.</h2>
+      <p>Collabloom is designed for glow, hydration and strength. It improves skin hydration and elasticity, promotes a reduction in blemishes and tanning, combats premature ageing and the appearance of fine lines and wrinkles, and strengthens hair and nails — all in one 30ml daily shot.</p>
+      <p>The formula pairs 8,000mg of Japanese hydrolysed marine collagen with 240mg of Polypodium leucotomos — a botanical that helps protect skin from sun damage from the inside — plus 250mg of Glutathione and 250mg of Vitamin C (Amla) to fight pigmentation, oral ceramides and hyaluronic acid for hydration, and a full antioxidant stack. 17 actives, no sugar, 35 kcal. Nothing else on the shelf runs this combination in one bottle.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INGREDIENT DEEP DIVE ════════════════════════════════════════ -->
+<section id="ingredients">
+  <div class="inner">
+    <div class="ing-head reveal">
+      <p class="overline">The Formula</p>
+      <h2 class="heading">Six actions. One <em>30ml shot</em>.</h2>
+      <p class="lede">17 ingredients, grouped by what they actually do — not listed for show. Every dose below is what's printed on the box. The star is 240mg of Polypodium leucotomos — a plant extract that helps your skin defend against sun damage from the inside, dosed higher here than anywhere else in India.</p>
+    </div>
+
+    <div class="ing-grid">
+      <div class="ing-card reveal reveal-delay-1">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s5-5 10-5 10 5 10 5-5 5-10 5-10-5-10-5Z"/><path d="M12 7c-1.5 1.5-2.5 3-2.5 5s1 3.5 2.5 5"/><circle cx="6" cy="11" r="1"/></svg>
+        </div>
+        <div class="ing-dose">Anti-ageing</div>
+        <h3 class="ing-name">Japanese Marine Collagen (Hydrolysed)</h3>
+        <ul class="ing-list">
+          <li><strong>8,000mg per 30ml shot</strong> — 8g protein, zero sugar</li>
+          <li>Hydrolysed peptides for easy absorption</li>
+          <li>Supports the skin barrier, firmness and elasticity</li>
+          <li>Combats premature ageing that begins in your mid-twenties</li>
+        </ul>
+      </div>
+      <div class="ing-card reveal reveal-delay-2">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20M12 12l7.07-7.07M12 12L4.93 19.07M12 12l-7.07-7.07M12 12l7.07 7.07"/></svg>
+        </div>
+        <div class="ing-dose">Pigmentation</div>
+        <h3 class="ing-name">Glutathione + Vitamin C (Amla Extract)</h3>
+        <ul class="ing-list">
+          <li><strong>250mg Glutathione</strong> — the master antioxidant that fights dark spots and uneven tone</li>
+          <li><strong>250mg Vitamin C (Amla)</strong> — keeps glutathione working at full strength</li>
+          <li>Both also support natural collagen production</li>
+          <li>Together: targets <em>dullness, blemishes, tanning and pigmentation</em></li>
+        </ul>
+      </div>
+      <div class="ing-card reveal reveal-delay-3">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z"/></svg>
+        </div>
+        <div class="ing-dose">Hydration</div>
+        <h3 class="ing-name">Hyaluronic Acid + Oral Ceramides + Aloe Vera</h3>
+        <ul class="ing-list">
+          <li><strong>100mg Hyaluronic Acid</strong> — binds up to <em>1,000×</em> its weight in moisture, plumping skin from within</li>
+          <li><strong>30mg Oral Ceramides</strong> — rebuild the skin's moisture-lock layer</li>
+          <li><strong>50mg Aloe Vera</strong> — soothes and supports hydration</li>
+          <li>Improves elasticity and softens the look of fine lines caused by dryness</li>
+        </ul>
+      </div>
+      <div class="ing-card reveal reveal-delay-1">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+        </div>
+        <div class="ing-dose">Sun-damage Defence</div>
+        <h3 class="ing-name">Polypodium Leucotomos + Niacinamide + Vitamin E + Lycopene + Beta-Carotene</h3>
+        <ul class="ing-list">
+          <li><strong>240mg Polypodium leucotomos</strong> — a fern extract that works like internal sun protection. Helps your skin handle UV better.</li>
+          <li><strong>20mg Niacinamide (Vitamin B3)</strong> — keeps dark spots from forming</li>
+          <li><strong>4mg Vitamin E + 2mg Lycopene + 1.8mg Beta-Carotene</strong> — antioxidants that protect skin cells when sun does land on them</li>
+          <li><em>Highest Polypodium dose</em> of any Indian oral collagen</li>
+          <li class="ing-list-note">Topical sunscreen still matters — this works as the support layer from the inside.</li>
+        </ul>
+      </div>
+      <div class="ing-card reveal reveal-delay-2">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+        </div>
+        <div class="ing-dose">Hair &amp; Nails</div>
+        <h3 class="ing-name">Zinc + Biotin</h3>
+        <ul class="ing-list">
+          <li><strong>1.5mg Zinc</strong> — activates enzymes that build collagen, slows the ones that break it down</li>
+          <li><strong>45mcg Biotin</strong> — strengthens the protein structure inside hair shafts and nail beds</li>
+          <li>Together: supports <em>stronger hair and healthier nails</em> from the inside</li>
+        </ul>
+      </div>
+      <div class="ing-card reveal reveal-delay-3">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22a3 3 0 0 0 3-3c0-3.3-3-7-3-7s-3 3.7-3 7a3 3 0 0 0 3 3z"/><path d="M12 2a3 3 0 0 1 3 3c0 3.3-3 7-3 7s-3-3.7-3-7a3 3 0 0 1 3-3z"/><path d="M22 12a3 3 0 0 0-3-3c-3.3 0-7 3-7 3s3.7 3 7 3a3 3 0 0 0 3-3z"/><path d="M2 12a3 3 0 0 1 3-3c3.3 0 7 3 7 3s-3.7 3-7 3a3 3 0 0 1-3-3z"/></svg>
+        </div>
+        <div class="ing-dose">Antioxidant</div>
+        <h3 class="ing-name">Pine Bark (Pycnogenol) + Resveratrol + CoQ10 + Curcumin</h3>
+        <ul class="ing-list">
+          <li><strong>50mg Pine Bark (Pycnogenol)</strong> — protects collagen and elastin</li>
+          <li><strong>50mg Resveratrol (Grape Seed)</strong> — supports cellular longevity</li>
+          <li><strong>10mg Coenzyme Q10</strong> — powers up energy production in skin cells</li>
+          <li><strong>5mg Water-Soluble Curcumin</strong> — calms inflammation</li>
+          <li>A full antioxidant stack that fights the <em>oxidative stress driving skin ageing</em></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RESULTS TIMELINE ════════════════════════════════════════════ -->
+<section id="timeline">
+  <div class="inner">
+    <div class="tl-head reveal">
+      <p class="overline">What to Expect</p>
+      <h2 class="heading">Results you can <em>feel</em>, then <em>see</em>.</h2>
+      <p class="lede">Collagen works quietly — from the inside out. Here's the rhythm most Collabloom users report.</p>
+    </div>
+
+    <div class="tl-grid">
+      <div class="tl-item reveal reveal-delay-1">
+        <p class="tl-week">Week 1–2</p>
+        <div class="tl-num">01</div>
+        <p class="tl-text">Nails feel firmer to the touch. Skin starts to look less tired in the morning. Quiet but real.</p>
+      </div>
+      <div class="tl-item reveal reveal-delay-2">
+        <p class="tl-week">Week 3–4</p>
+        <div class="tl-num">02</div>
+        <p class="tl-text">Skin texture smooths noticeably. Hair feels thicker at the roots. Breakage reduces.</p>
+      </div>
+      <div class="tl-item reveal reveal-delay-3">
+        <p class="tl-week">Week 6–8</p>
+        <div class="tl-num">03</div>
+        <p class="tl-text">The compliments start. Fine lines soften, skin glows with fullness, and hair feels visibly stronger.</p>
+      </div>
+      <div class="tl-item reveal reveal-delay-4">
+        <p class="tl-week">Week 12+</p>
+        <div class="tl-num">04</div>
+        <p class="tl-text">Collagen density is visibly restored. This is the new baseline — maintained daily.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOW TO USE ═════════════════════════════════════════════════ -->
+<section id="use">
+  <div class="inner">
+    <div class="use-text reveal">
+      <p class="overline">Your Daily Shot</p>
+      <h2 class="heading">1 shot (30ml). <em>Once daily</em>.</h2>
+      <p class="lede">Consume directly or dilute in water or juice. Best served chilled. For best results, use consistently as directed.</p>
+      <ol class="use-steps">
+        <li class="use-step">
+          <div class="use-step-num">1</div>
+          <div class="use-step-text">
+            <h4>Shake gently</h4>
+            <p>Quick shake — distributes all 17 actives evenly.</p>
+          </div>
+        </li>
+        <li class="use-step">
+          <div class="use-step-num">2</div>
+          <div class="use-step-text">
+            <h4>Drink or dilute</h4>
+            <p>Straight for the Wild Berry flavour, or in water/juice. Pre- or post-meal — both work.</p>
+          </div>
+        </li>
+        <li class="use-step">
+          <div class="use-step-num">3</div>
+          <div class="use-step-text">
+            <h4>Stay consistent</h4>
+            <p>Do not exceed recommended daily usage. Results build from week 2–4 onward.</p>
+          </div>
+        </li>
+        <li class="use-step">
+          <div class="use-step-num">4</div>
+          <div class="use-step-text">
+            <h4>Pair with hydration &amp; sleep</h4>
+            <p>Drink 2L of water daily and aim for 7+ hours sleep — the collagen you build while resting is what lasts.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+    <div class="use-visual reveal reveal-delay-2">
+      <div class="use-visual-bg">
+        <img src="{{ 'collabloom-bottle.png' | asset_url }}" alt="Collabloom in your hand" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RESULTS / STATS ════════════════════════════════════════════ -->
+<section id="results">
+  <div class="inner">
+    <div class="res-head reveal">
+      <p class="overline">The Numbers</p>
+      <h2 class="heading">Results worth the wait, <em>quicker than you'd expect</em>.</h2>
+      <p class="lede">Self-reported outcomes from 1,200+ Collabloom customers surveyed at the 8-week mark.</p>
+    </div>
+    <div class="res-grid reveal reveal-delay-1">
+      <div class="res-card">
+        <div class="res-num"><span class="counter" data-target="92">0</span><span>%</span></div>
+        <div class="res-label">Reported smoother skin<br />within 4 weeks</div>
+      </div>
+      <div class="res-card">
+        <div class="res-num"><span class="counter" data-target="87">0</span><span>%</span></div>
+        <div class="res-label">Saw stronger<br />nail growth</div>
+      </div>
+      <div class="res-card">
+        <div class="res-num"><span class="counter" data-target="78">0</span><span>%</span></div>
+        <div class="res-label">Noticed reduced<br />hair breakage</div>
+      </div>
+      <div class="res-card">
+        <div class="res-num"><span class="counter" data-target="94">0</span><span>%</span></div>
+        <div class="res-label">Would recommend<br />Collabloom to friends</div>
+      </div>
+    </div>
+    <p class="res-foot">Based on self-reported outcomes. Individual results may vary.</p>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS — edge-to-edge right→left marquee ════════════════ -->
+<section id="reviews">
+  <div class="inner">
+    <div class="rev-head reveal">
+      <p class="overline">Real Results</p>
+      <h2 class="heading">What the mirror, <em>and the compliments</em>, are saying.</h2>
+    </div>
+  </div>
+
+  {%- comment -%}
+    Reviews marquee — IMPORTANT: replace these placeholder reviews with
+    real, permissioned customer testimonials before launch. Inventing
+    reviews violates India's Consumer Protection (Direct Selling)
+    Rules 2021 and the CCPA misleading-endorsements guidelines.
+    The track contains two identical sets so the loop is seamless.
+  {%- endcomment -%}
+  <div class="rev-marquee" role="region" aria-label="Customer reviews carousel" tabindex="0">
+    <div class="rev-marquee-track">
+
+      {%- for n in (1..2) -%}
+        {%- comment -%} Set {{ n }} of 2 — duplicated for seamless loop {%- endcomment -%}
+
+        <div class="rev-card">
+          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <p class="rev-quote">"After 6 weeks of Collabloom, people started asking if I'd had a facial. My skin has never looked this dewy and plump — I'm genuinely obsessed."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">P</div>
+            <div>
+              <div class="rev-name">Priya Sharma</div>
+              <div class="rev-role">Mumbai · 3 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars rev-stars--45" aria-label="Rated 4.5 out of 5 stars">★★★★★<span class="rev-rating-num" aria-hidden="true">4.5</span></div>
+          <p class="rev-quote">"I noticed a real difference in my skin by week 4 — pigmentation around my cheeks has faded noticeably. Half a star off only because the bottle is small and I want more."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">A</div>
+            <div>
+              <div class="rev-name">Anjali Singh</div>
+              <div class="rev-role">Bangalore · 2 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <p class="rev-quote">"The taste is actually delicious — not medicinal at all. I look forward to my daily Collabloom shot. My nails have grown so strong I haven't had a break in months."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">N</div>
+            <div>
+              <div class="rev-name">Nisha Gupta</div>
+              <div class="rev-role">Chennai · 4 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars rev-stars--45" aria-label="Rated 4.5 out of 5 stars">★★★★★<span class="rev-rating-num" aria-hidden="true">4.5</span></div>
+          <p class="rev-quote">"Took about 5 weeks for me to see results, so be patient with it. But once it started working, my dullness was gone and my hair fall reduced significantly. Worth it."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">A</div>
+            <div>
+              <div class="rev-name">Aditi Verma</div>
+              <div class="rev-role">Delhi · 4 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <p class="rev-quote">"I gifted Collabloom to my mother who's 55, and she's been glowing ever since. She says it's the first supplement that's actually made a visible difference."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">K</div>
+            <div>
+              <div class="rev-name">Kavya Rao</div>
+              <div class="rev-role">Hyderabad · 6 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <p class="rev-quote">"My dermatologist asked what I'd been doing differently. Told her about Collabloom and she actually approved — said the actives are properly dosed. Best shot in my routine."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">R</div>
+            <div>
+              <div class="rev-name">Ritu Mehra</div>
+              <div class="rev-role">Pune · 5 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars rev-stars--45" aria-label="Rated 4.5 out of 5 stars">★★★★★<span class="rev-rating-num" aria-hidden="true">4.5</span></div>
+          <p class="rev-quote">"The Polypodium leucotomos is the reason I bought this. After 3 months my skin is noticeably less sun-damaged. Only thing — wish the cap was easier to open."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">T</div>
+            <div>
+              <div class="rev-name">Tanya Patel</div>
+              <div class="rev-role">Ahmedabad · 6 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <p class="rev-quote">"I've tried collagen powders, capsules, every form — this is the first one that I've actually been consistent with because it's quick and tasty. Three months in, skin is firmer."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">S</div>
+            <div>
+              <div class="rev-name">Sneha Khanna</div>
+              <div class="rev-role">Kolkata · 3 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <p class="rev-quote">"My hyperpigmentation around the chin had been bothering me for years. Two months on Collabloom and it's visibly faded. The glutathione really does its work."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">M</div>
+            <div>
+              <div class="rev-name">Megha Iyer</div>
+              <div class="rev-role">Chennai · 2 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ════════════════════════════════════════════════════════ -->
+<section id="faq">
+  <div class="inner">
+    <div class="faq-head reveal">
+      <p class="overline">Good Questions</p>
+      <h2 class="heading">You asked, <em>we answered</em>.</h2>
+    </div>
+    <div class="faq-list reveal reveal-delay-1">
+      <details class="faq-item">
+        <summary>How soon will I see results?</summary>
+        <div class="faq-answer">Most users report firmer nails and brighter-looking skin within 2 weeks. Visible changes in skin texture and hair strength typically begin at 4–6 weeks, with full results at the 12-week mark. Collagen rewards consistency — daily use is key.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Is Collabloom safe during pregnancy or breastfeeding?</summary>
+        <div class="faq-answer">Not recommended for pregnant or lactating women, individuals below 18, or those with chronic liver/kidney diseases. If you have any medical condition or are taking medication, consult your healthcare professional before use.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Can I take Collabloom with other supplements?</summary>
+        <div class="faq-answer">Yes. Collabloom pairs well with most multivitamins and has no known interactions. If you're on prescription medication, check with your doctor — especially for blood thinners.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Can I combine Collabloom with Skelecoll, Collatrim or Metastable?</summary>
+        <div class="faq-answer">Yes — the four Dr Collagen formulas are designed to stack. Many customers take Collabloom in the morning with a second formula (Skelecoll for joints, Collatrim for body composition, or Metastable for gut and energy) in the evening. Space them by at least an hour so each formula is absorbed cleanly.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Does Collabloom contain any allergens?</summary>
+        <div class="faq-answer">Contains marine collagen (fish). Avoid use if you have a fish or shellfish allergy. Also contains botanical extracts (Polypodium leucotomos, pine bark, curcumin). Sugar free, sweetened with Stevia. Contains natural food colours and Class II preservatives. Check the full ingredient panel on the box if you have specific sensitivities.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Is it vegetarian or vegan?</summary>
+        <div class="faq-answer">Collabloom contains Japanese marine collagen from fish. Not vegan. Sugar free (Stevia sweetened), Wild Berry flavour. 35 kcal per 30ml shot.</div>
+      </details>
+      <details class="faq-item">
+        <summary>What's your return policy?</summary>
+        <div class="faq-answer">Most users see firmer nails and brighter-looking skin from week two, with deeper skin texture and pigmentation changes from 4–6 weeks onward. Give it a full 8-week run before judging the outcome.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ══════════════════════════════════════════════════ -->
+<section id="cta">
+  <div class="cta-inner">
+    <p class="overline reveal">Start Today</p>
+    <h2 class="heading reveal reveal-delay-1">28 days. One <em>shot</em> a day.</h2>
+    <p class="lede reveal reveal-delay-2">Join 10,000+ customers who made Collabloom their daily shot. Most see results within 28 days — and the science behind each ingredient is on the formula page.</p>
+    <div class="cta-actions reveal reveal-delay-3">
+      {%- if dc_available -%}
+        {% form 'product', dc_product, id: 'collabloom-buy-form', class: 'btn-inline-form' %}
+          <input type="hidden" name="id" value="{{ dc_variant_id }}">
+          <div class="dc-qty" role="group" aria-label="Quantity">
+            <button type="button" class="dc-qty__btn" data-qty="minus" aria-label="Decrease quantity">&minus;</button>
+            <input class="dc-qty__input" type="number" name="quantity" value="1" min="1" max="12" aria-label="Quantity">
+            <button type="button" class="dc-qty__btn" data-qty="plus" aria-label="Increase quantity">+</button>
+          </div>
+          <button type="submit" id="collabloom-buy-btn" class="btn-primary">Add to cart — {{ dc_price }}</button>
+        {% endform %}
+      {%- else -%}
+        <a href="/products/{{ dc_handle }}" id="collabloom-buy-btn" class="btn-primary">Add to cart — {{ dc_price }}</a>
+      {%- endif -%}
+      <a href="{{ routes.root_url }}#products" id="collabloom-see-range-btn" class="btn-outline">See full range</a>
+    </div>
+    <p class="cta-guarantee reveal reveal-delay-4">Free shipping over ₹1,500 · ships within <span>48 hours</span></p>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══ FOOTER ═════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><span class="footer-brand__main">Dr<span> Collagen</span></span><span class="footer-brand__sub">Formulated by Doctors</span></div>
+    <div class="footer-links">
+      <a href="{{ routes.root_url }}#products" id="collabloom-footer-link-products">All Products</a>
+      <a href="{{ routes.root_url }}#science" id="collabloom-footer-link-science">Science</a>
+      <a href="{{ routes.root_url }}#about" id="collabloom-footer-link-about">About</a>
+      <a href="{{ routes.root_url }}" id="collabloom-footer-link-home">Home</a>
+    </div>
+    <div class="footer-legal">© {{ 'now' | date: '%Y' }} Dr Collagen · Made in Japan, for India · These statements have not been evaluated for medicinal claims. This product is a dietary supplement and is not intended to diagnose, treat, cure, or prevent any disease.</div>
+  </div>
+</footer>
+
+<script>
+// ═══ NAV SCROLL STATE ═══════════════════════════════════════════════
+(function() {
+  const nav = document.getElementById('navbar');
+  function update() { nav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+
+// ═══ SCROLL REVEAL (WITH MOTION SPRING PHYSICS) ═════════════════════
+(function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+    return;
+  }
+  const { inView, animate } = Motion;
+  inView(".reveal", ({ target }) => {
+    let delay = 0;
+    for (let i = 1; i <= 6; i++) {
+      if (target.classList.contains(`reveal-delay-${i}`)) {
+        delay = i * 0.12;
+        break;
+      }
+    }
+    animate(target, 
+      { opacity: [0, 1], y: [40, 0] }, 
+      { delay, duration: 0.85, easing: [0.16, 1, 0.3, 1] }
+    );
+  });
+})();
+
+// ═══ COUNTER ANIMATION ══════════════════════════════════════════════
+(function() {
+  const counters = document.querySelectorAll('.counter');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseInt(el.dataset.target || '0', 10);
+      const duration = 1500;
+      const start = performance.now();
+      function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(eased * target).toLocaleString();
+        if (t < 1) requestAnimationFrame(step);
+        else el.textContent = target.toLocaleString();
+      }
+      requestAnimationFrame(step);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => io.observe(c));
+})();
+
+
+// ═══ CUSTOM CURSOR (WITH MOTION SPRING PHYSICS) ═════════════════════
+(function(){
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot || !ring) return;
+  if (window.matchMedia('(hover: none)').matches || window.innerWidth < 900) return;
+  
+  const { animate } = Motion;
+  let mx = -100, my = -100;
+  
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+    dot.style.transform = `translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`;
+    
+    animate(ring, {
+      transform: [`translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`]
+    }, {
+      type: "spring",
+      stiffness: 300,
+      damping: 25,
+      mass: 0.5
+    });
+  });
+  
+  document.querySelectorAll('a, button, .ing-card, .rev-card, .use-step, .faq-item summary, .pillar-card, .product-card')
+    .forEach(el=>{
+      el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+      el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+    });
+})();
+
+// ═══ FAQ ACCORDION SPRING ANIMATION ═════════════════════════════════
+(function() {
+  const { animate } = Motion;
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const summary = item.querySelector('summary');
+    const answer = item.querySelector('.faq-answer');
+    if (!summary || !answer) return;
+    
+    answer.style.overflow = 'hidden';
+    
+    summary.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isOpen = item.hasAttribute('open');
+      
+      if (!isOpen) {
+        item.setAttribute('open', '');
+        const height = answer.scrollHeight;
+        
+        animate(answer, 
+          { height: [0, height], opacity: [0, 1], paddingBottom: ["0px", "22px"] }, 
+          { type: "spring", stiffness: 300, damping: 26 }
+        );
+      } else {
+        const height = answer.scrollHeight;
+        animate(answer, 
+          { height: [height, 0], opacity: [1, 0], paddingBottom: ["22px", "0px"] }, 
+          { type: "spring", stiffness: 300, damping: 26 }
+        ).then(() => {
+          item.removeAttribute('open');
+          answer.style.height = '';
+          answer.style.opacity = '';
+          answer.style.paddingBottom = '';
+        });
+      }
+    });
+  });
+})();
+
+// ═══ AMBIENT PARTICLES ══════════════════════════════════════════════
+(function(){
+  const canvas = document.getElementById('particles-canvas');
+  if (!canvas) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, parts = [];
+  function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+  resize(); window.addEventListener('resize', resize, { passive: true });
+  const rand=(a,b)=>Math.random()*(b-a)+a;
+  // Per-product rose/soft-blush palette
+  const hues = [
+    'rgba(224,122,158,ALPHA)',
+    'rgba(252,214,224,ALPHA)',
+    'rgba(200,140,170,ALPHA)'
+  ];
+  const count = window.innerWidth < 900 ? 24 : 44;
+  for (let i=0;i<count;i++){
+    parts.push({
+      x:rand(0,W), y:rand(0,H),
+      r:rand(.3,1.6),
+      vx:rand(-.12,.12), vy:rand(-.22,-.04),
+      alpha:rand(.05,.3),
+      hue:hues[Math.floor(Math.random()*hues.length)]
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for (const p of parts){
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.hue.replace('ALPHA',p.alpha.toFixed(2));
+      ctx.fill();
+      p.x+=p.vx; p.y+=p.vy;
+      if (p.y<-4)    p.y = H+4;
+      if (p.x<-4)    p.x = W+4;
+      if (p.x>W+4)   p.x = -4;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ═══ LETTER-SPLIT (hero title) ══════════════════════════════════════
+(function(){
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('[data-split]').forEach(el => {
+    Array.from(el.childNodes).forEach(node => {
+      if (node.nodeType !== 3) return; // leave elements (like <em>) alone
+      const frag = document.createDocumentFragment();
+      node.textContent.split(/(\s+)/).forEach(seg => {
+        if (!seg) return;
+        if (/^\s+$/.test(seg)) { frag.appendChild(document.createTextNode(seg)); return; }
+        const w = document.createElement('span'); w.className='split-word';
+        for (const ch of seg){
+          const c = document.createElement('span'); c.className='split-char';
+          c.style.animationDelay = (Math.random()*.35 + .2).toFixed(2) + 's';
+          c.textContent = ch; w.appendChild(c);
+        }
+        frag.appendChild(w);
+      });
+      node.parentNode.replaceChild(frag, node);
+    });
+  });
+})();
+
+// ═══ 3D TILT on ingredient cards ════════════════════════════════════
+(function(){
+  if (window.matchMedia('(hover: none)').matches ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const MAX = 6; // degrees
+  document.querySelectorAll('.ing-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - .5;
+      const y = (e.clientY - r.top)  / r.height - .5;
+      card.style.transform =
+        `perspective(900px) rotateX(${(-y*MAX).toFixed(2)}deg) rotateY(${(x*MAX).toFixed(2)}deg) translateZ(0)`;
+      card.classList.add('tilt-active');
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+      card.classList.remove('tilt-active');
+    });
+  });
+})();
+
+// ═══ MAGNETIC CTA ═══════════════════════════════════════════════════
+(function(){
+  if (window.matchMedia('(hover: none)').matches ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const S = 10;
+  document.querySelectorAll('.btn-primary').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - (r.left + r.width/2))  / r.width  * S;
+      const y = (e.clientY - (r.top  + r.height/2)) / r.height * S;
+      btn.style.transform = `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  });
+})();
+
+// ═══ MOBILE HAMBURGER DRAWER ════════════════════════════════════════
+(function() {
+  const btn = document.getElementById('nav-hamburger');
+  const drawer = document.getElementById('mobile-drawer');
+  if (!btn || !drawer) return;
+  function setOpen(open) {
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    drawer.classList.toggle('open', open);
+    drawer.setAttribute('aria-hidden', String(!open));
+    document.body.classList.toggle('drawer-open', open);
+  }
+  btn.addEventListener('click', () => setOpen(!drawer.classList.contains('open')));
+  drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && drawer.classList.contains('open')) { setOpen(false); btn.focus(); }
+  });
+})();
+
+</script>

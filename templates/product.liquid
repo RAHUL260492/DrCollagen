@@ -1,0 +1,155 @@
+{% comment %}
+  Default product template — for any product NOT covered by the four
+  flagship landing pages. Luxury two-column layout with parallax bottle,
+  reveal animations, and sticky add-to-cart on mobile.
+{% endcomment %}
+
+<style>
+  .product-default {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: var(--space-6) clamp(20px, 4vw, 48px);
+    font-family: var(--dc-body);
+    color: var(--dc-fg);
+  }
+  .product-default-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 72px;
+    align-items: start;
+  }
+  @media (max-width: 880px) {
+    .product-default-grid { grid-template-columns: 1fr; gap: 36px; }
+  }
+
+  /* Calm product plate: a soft warm background, no animated glow, gentle
+     drop-shadow on the bottle. Image holds the eye, not the chrome. */
+  .product-media {
+    background: var(--dc-bg-soft);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    min-height: 520px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .product-media img {
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 20px 40px rgba(26, 18, 37, 0.10));
+    transition: transform var(--dur-slow) var(--ease);
+  }
+  .product-media:hover img { transform: translateY(-3px); }
+
+  .product-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--dc-accent);
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  .product-info h1 {
+    font-family: var(--dc-heading);
+    font-size: clamp(34px, 4.5vw, 52px);
+    font-weight: 400;
+    line-height: 1.08;
+    margin: 0 0 20px;
+    color: var(--dc-ink);
+    letter-spacing: -0.018em;
+  }
+  .product-price {
+    font-family: var(--dc-heading);
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--dc-ink);
+    margin: 0 0 32px;
+  }
+  .product-desc {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--dc-fg-muted);
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+  .product-desc p { margin: 0 0 14px; }
+
+  .product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 440px;
+  }
+  .product-variant-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .product-variant-row label {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--dc-fg-subtle);
+    min-width: 80px;
+  }
+
+  .product-sticky {
+    position: sticky;
+    top: 96px;
+  }
+
+  @media (max-width: 720px) {
+    .product-sticky { position: static; }
+  }
+</style>
+
+<section class="product-default">
+  <div class="product-default-grid">
+    <div class="product-media dc-reveal-scale">
+      {% if product.featured_image %}
+        <img src="{{ product.featured_image | image_url: width: 800 }}"
+             alt="{{ product.featured_image.alt | default: product.title | escape }}"
+             loading="eager"
+             class="dc-parallax"
+             data-speed="0.06">
+      {% endif %}
+    </div>
+
+    <div class="product-info product-sticky">
+      <p class="product-eyebrow dc-reveal-up">{{ product.type | default: 'Dr Collagen' }}</p>
+      <h1 class="dc-reveal-up dc-delay-1">{{ product.title }}</h1>
+      <p class="product-price dc-reveal-up dc-delay-2">{{ product.price | money }}</p>
+      <div class="product-desc dc-reveal-up dc-delay-3 rte">
+        {{ product.description }}
+      </div>
+
+      {% form 'product', product, class: 'product-form dc-reveal-up dc-delay-4' %}
+        {% if product.variants.size > 1 %}
+          <div class="product-variant-row">
+            <label for="variant-select">Variant</label>
+            <select name="id" id="variant-select" class="dc-select">
+              {% for variant in product.variants %}
+                <option value="{{ variant.id }}" {% if variant == product.selected_or_first_available_variant %}selected{% endif %}>
+                  {{ variant.title }} — {{ variant.price | money }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        {% else %}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        {% endif %}
+
+        <button type="submit" class="dc-btn dc-btn--primary" style="justify-content:center;">
+          {% if product.available %}
+            Add to Cart
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          {% else %}
+            Sold Out
+          {% endif %}
+        </button>
+      {% endform %}
+    </div>
+  </div>
+</section>

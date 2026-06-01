@@ -1,0 +1,47 @@
+<section class="dc-account-page">
+  <p class="dc-account-back"><a class="dc-account-eyebrow" href="{{ routes.account_url }}">&larr; Back to account</a></p>
+  <h1 class="dc-account-page__title">Order {{ order.name }}</h1>
+  <p class="dc-account-page__sub">Placed on {{ order.created_at | date: '%B %d, %Y at %I:%M %p' }}</p>
+
+  <div class="dc-account-table-wrap">
+    <table class="dc-account-table dc-account-table--order">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th class="dc-account-table__right">Qty</th>
+          <th class="dc-account-table__right">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for line_item in order.line_items %}
+          <tr>
+            <td>{{ line_item.title }}</td>
+            <td class="dc-account-table__right">{{ line_item.quantity }}</td>
+            <td class="dc-account-table__right">{{ line_item.final_line_price | money }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr class="dc-account-table__sub">
+          <td colspan="2" class="dc-account-table__right">Subtotal</td>
+          <td class="dc-account-table__right">{{ order.subtotal_price | money }}</td>
+        </tr>
+        <tr class="dc-account-table__sub">
+          <td colspan="2" class="dc-account-table__right">Shipping</td>
+          <td class="dc-account-table__right">{{ order.shipping_price | money }}</td>
+        </tr>
+        <tr class="dc-account-table__total">
+          <td colspan="2" class="dc-account-table__right">Total</td>
+          <td class="dc-account-table__right dc-account-table__big">{{ order.total_price | money }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  {% if order.shipping_address %}
+    <h2 class="dc-account-section-title">Shipping address</h2>
+    <address class="dc-account-address">
+      {{ order.shipping_address | format_address }}
+    </address>
+  {% endif %}
+</section>

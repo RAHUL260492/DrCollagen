@@ -1,0 +1,18 @@
+{
+  "current": {
+    "tagline": "Japanese Marine Collagen, redefined.",
+    "color_accent": "#e8b72e",
+    "color_accent_deep": "#b8903a",
+    "color_ink": "#1a1a1a",
+    "color_footer_bg": "#1a1225"
+  },
+  "presets": {
+    "Default": {
+      "tagline": "Japanese Marine Collagen, redefined.",
+      "color_accent": "#e8b72e",
+      "color_accent_deep": "#b8903a",
+      "color_ink": "#1a1a1a",
+      "color_footer_bg": "#1a1225"
+    }
+  }
+}

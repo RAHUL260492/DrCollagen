@@ -1,0 +1,111 @@
+{% comment %}All collections — luxury grid with reveal stagger{% endcomment %}
+
+<style>
+  .collections-list {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: var(--space-6) clamp(20px, 4vw, 48px);
+    font-family: var(--dc-body);
+    color: var(--dc-fg);
+  }
+  .collections-list-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 64px;
+  }
+  .collections-list-head h1 {
+    font-family: var(--dc-heading);
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 400;
+    margin: 0 0 18px;
+    color: var(--dc-ink);
+    letter-spacing: -0.015em;
+  }
+  .collections-list-head p {
+    color: var(--dc-fg-muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+  .collections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 32px;
+  }
+  .collection-tile {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--dc-bg-soft);
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    isolation: isolate;
+    transition: transform var(--dur-med) var(--ease);
+  }
+  .collection-tile:hover {
+    transform: translateY(-3px);
+  }
+  .collection-tile img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--dur-slow) var(--ease);
+  }
+  .collection-tile:hover img { transform: scale(1.03); }
+  .collection-tile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,.55) 100%);
+    z-index: 1;
+  }
+  .collection-tile-body {
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 24px;
+    color: #fff;
+    z-index: 2;
+  }
+  .collection-tile-body h2 {
+    font-family: var(--dc-heading);
+    font-size: 28px;
+    font-weight: 400;
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+  }
+  .collection-tile-body p {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: 0;
+    opacity: 0.88;
+  }
+</style>
+
+<section class="collections-list">
+  <header class="collections-list-head">
+    <p class="dc-eyebrow dc-reveal-up" style="margin-bottom:12px;">Browse</p>
+    <h1 class="dc-reveal-up dc-delay-1">Collections</h1>
+    <p class="dc-reveal-up dc-delay-2">Find what you need — by outcome, ingredient, or routine.</p>
+  </header>
+
+  <div class="collections-grid">
+    {% for collection in collections %}
+      <a href="{{ collection.url }}"
+         class="collection-tile dc-reveal-up{% cycle '', ' dc-delay-1', ' dc-delay-2' %}"
+         aria-label="{{ collection.title | escape }}, {{ collection.products_count }} products">
+        {% if collection.image %}
+          <img src="{{ collection.image | image_url: width: 800 }}" alt="" loading="lazy">
+        {% endif %}
+        <div class="collection-tile-body">
+          <h2>{{ collection.title }}</h2>
+          <p>{{ collection.products_count }} product{% if collection.products_count != 1 %}s{% endif %}</p>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>

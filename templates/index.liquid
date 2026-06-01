@@ -1,0 +1,3012 @@
+<style>
+    /* ─── DESIGN TOKENS ─────────────────────────────────────────── */
+    :root {
+      --accent:       #e8b72e;
+      --accent-glow:  rgba(232,183,46,.3);
+      --accent-soft:  rgba(232,183,46,.08);
+      --gold:         #b8903a;
+      --gold-dim:     rgba(184,144,58,.2);
+      --bg:           #ffffff;
+      --fg:           #1a1225;
+      --fg-muted:     #5a5268;
+      --fg-subtle:    #6b6472;
+      --heading:      'Playfair Display', Georgia, serif;
+      --body:         'DM Sans', -apple-system, sans-serif;
+
+      /* Legacy aliases to prevent breakage: */
+      --ink:          var(--bg);
+      --warm-white:   var(--fg);
+      --warm-dim:     var(--fg-muted);
+      --muted:        var(--fg-subtle);
+      --blush:        var(--bg);
+      --charcoal:     var(--bg);
+      --surface:      var(--bg);
+      --cream:        var(--bg);
+    }
+    /* Token naming is legacy from a dark-to-light redesign. Semantic intent:
+       --ink = page background (white); --warm-white = primary text. A full
+       rename is pending — do not add new uses of --blush/--cream/--surface/
+       --charcoal; prefer --ink. */
+
+    /* ─── METALLIC GOLD TEXT TREATMENT ───────────────────────────── */
+    /* Applied to italicized emphasis in headings — luminous shining gold */
+    .st-title em, .st-h2 em, .st-quote em,
+    .section-title em, .about-text h2 em, .science-text h2 em,
+    .showcase-heading em {
+      /* Lightest stop raised from #fff5c2 (1.1:1 on white) to #d9a93a (≈4.5:1)
+         so gold-shimmer headings meet WCAG AA across the gradient band. */
+      background: linear-gradient(
+        135deg,
+        #d9a93a 0%,
+        #c99a2a 22%,
+        #c29123 42%,
+        #b88a24 58%,
+        #8a6a1e 78%,
+        #5e4a14 100%
+      );
+      background-size: 220% 220%;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+      filter: drop-shadow(0 1px 0 rgba(255,240,170,.55))
+              drop-shadow(0 0 14px rgba(232,183,46,.45));
+      animation: gold-shimmer 5.5s ease-in-out infinite;
+    }
+    @keyframes gold-shimmer {
+      0%,100% { background-position: 0% 50%; }
+      50%     { background-position: 100% 50%; }
+    }
+
+    /* ─── RESET ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--body);
+      background: var(--ink);
+      color: var(--warm-white);
+      overflow-x: hidden;
+      cursor: default;
+    }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; border: none; background: none; font-family: var(--body); }
+
+    /* ─── FOCUS VISIBILITY (WCAG 2.4.7) ─────────────────────────── */
+    :focus { outline: none; }
+    a:focus-visible, button:focus-visible, .btn-primary:focus-visible,
+    .btn-outline:focus-visible, .nav-cta:focus-visible,
+    .product-card:focus-visible, .pillar-card:focus-visible,
+    .ingr-card:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 8px;
+    }
+    /* Skip-to-content link (visually hidden until focused) */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      z-index: 10000;
+      padding: 12px 18px;
+      background: var(--warm-white);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      border-radius: 0 0 10px 0;
+    }
+    .skip-link:focus {
+      left: 0;
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* ─── CUSTOM CURSOR ──────────────────────────────────────────── */
+    #cursor-dot {
+      position: fixed; top: 0; left: 0; z-index: 9998;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--warm-white);
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      mix-blend-mode: difference;
+      transition: width .2s, height .2s;
+    }
+    #cursor-ring {
+      position: fixed; top: 0; left: 0; z-index: 9997;
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: border-color .3s, width .3s, height .3s, box-shadow .3s;
+    }
+    body.hovering #cursor-ring {
+      width: 52px; height: 52px;
+      box-shadow: 0 0 18px var(--accent-glow);
+      border-color: var(--gold);
+    }
+
+    /* ─── FILM GRAIN ─────────────────────────────────────────────── */
+    #film-grain {
+      position: fixed; inset: -50%; z-index: 100;
+      width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+      opacity: 0.032;
+      pointer-events: none;
+      animation: grain-move 0.6s steps(2) infinite;
+    }
+    @keyframes grain-move {
+      0%   { transform: translate(0,0); }
+      25%  { transform: translate(-3px,2px); }
+      50%  { transform: translate(2px,-3px); }
+      75%  { transform: translate(3px,1px); }
+      100% { transform: translate(-1px,3px); }
+    }
+
+    /* ─── VIGNETTE ───────────────────────────────────────────────── */
+    #vignette {
+      position: fixed; inset: 0; z-index: 99;
+      background: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(232,183,46,.06) 100%);
+      pointer-events: none;
+    }
+
+    /* ─── PARTICLES ──────────────────────────────────────────────── */
+    #particles-canvas {
+      position: fixed; inset: 0; z-index: 15;
+      pointer-events: none;
+      opacity: 0.45;
+    }
+
+    /* ─── LOADER ─────────────────────────────────────────────────── */
+    #loader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--ink);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 24px;
+      transition: opacity .7s ease, filter .7s ease;
+    }
+    #loader.fade-out { opacity: 0; filter: blur(8px); pointer-events: none; }
+    .loader-brand {
+      font-family: var(--heading);
+      font-size: clamp(18px, 3vw, 26px);
+      font-weight: 300;
+      letter-spacing: .35em;
+      text-transform: uppercase;
+      color: var(--warm-white);
+    }
+    .loader-lines {
+      display: flex; flex-direction: column; gap: 6px; align-items: center;
+    }
+    .loader-lines span {
+      display: block; height: 1px; background: var(--muted);
+    }
+    .loader-lines span:nth-child(1) { width: 40px; }
+    .loader-lines span:nth-child(2) { width: 80px; }
+    .loader-track {
+      width: 140px; height: 2px; background: rgba(0,0,0,.08); border-radius: 2px; overflow: hidden;
+    }
+    .loader-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      border-radius: 2px;
+      width: 0%;
+      transition: width .05s linear;
+    }
+    .loader-pct {
+      font-size: 10px; font-weight: 500; letter-spacing: .2em;
+      color: var(--muted); text-transform: uppercase;
+    }
+
+    /* ─── NAV ────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      padding: 24px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background .4s ease, padding .4s ease, backdrop-filter .4s ease, border-color .4s ease;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(255,255,255,.82);
+      backdrop-filter: blur(18px) saturate(130%);
+      -webkit-backdrop-filter: blur(18px) saturate(130%);
+      border-bottom-color: rgba(0,0,0,.05);
+      padding: 16px 48px;
+    }
+    .nav-logo {
+      font-family: var(--heading);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: .08em;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links {
+      display: flex; gap: 36px; list-style: none;
+    }
+    .nav-links a {
+      font-size: 12px; font-weight: 500;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: #2a2235;
+      transition: color .3s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0; right: 100%;
+      height: 1px; background: var(--accent);
+      transition: right .3s;
+    }
+    .nav-links a:hover { color: var(--warm-white); }
+    .nav-links a:hover::after { right: 0; }
+
+    /* Products dropdown */
+    .nav-links .has-dropdown { position: relative; }
+    .nav-links .has-dropdown > a .caret {
+      display: inline-block;
+      font-size: 10px;
+      margin-left: 4px;
+      transition: transform .3s;
+      letter-spacing: 0;
+    }
+    .nav-links .has-dropdown:hover > a .caret { transform: rotate(180deg); }
+    .nav-links .dropdown {
+      position: absolute;
+      top: calc(100% + 14px);
+      left: -24px;
+      min-width: 320px;
+      background: rgba(255,255,255,.98);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 14px;
+      padding: 10px 0;
+      box-shadow: 0 22px 60px rgba(0,0,0,.14), 0 2px 6px rgba(0,0,0,.04);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: opacity .28s, transform .28s, visibility .28s;
+      list-style: none;
+      z-index: 200;
+    }
+    .nav-links .has-dropdown:hover > .dropdown,
+    .nav-links .has-dropdown:focus-within > .dropdown {
+      opacity: 1; visibility: visible; transform: translateY(0);
+    }
+    .nav-links .dropdown::before {
+      content: '';
+      position: absolute;
+      top: -14px; left: 0; right: 0; height: 14px;
+    }
+    .nav-links .dropdown li { list-style: none; }
+    .nav-links .dropdown a {
+      display: block;
+      padding: 12px 22px;
+      font-family: var(--heading);
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: .02em;
+      text-transform: none;
+      color: #2a2235;
+      transition: background .25s, color .25s, padding-left .25s;
+    }
+    .nav-links .dropdown a em {
+      font-style: normal;
+      font-family: var(--body);
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(42,34,53,.5);
+      margin-left: 6px;
+    }
+    .nav-links .dropdown a sup {
+      font-size: 8px;
+      vertical-align: super;
+    }
+    .nav-links .dropdown a::after { display: none; }
+    .nav-links .dropdown a:hover {
+      background: rgba(0,0,0,.04);
+      color: var(--accent);
+      padding-left: 26px;
+    }
+    .nav-links .dropdown a:hover em { color: var(--accent); opacity: .7; }
+    .nav-links .dropdown .dropdown-divider {
+      height: 1px;
+      background: rgba(0,0,0,.07);
+      margin: 6px 18px;
+    }
+    .nav-links .dropdown .view-all {
+      font-family: var(--body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    /* Dark-section override for dropdown content */
+    nav.in-dark-section .nav-links .dropdown a { color: #2a2235; }
+    nav.in-dark-section .nav-links .dropdown a em { color: rgba(42,34,53,.5); }
+    .nav-cta {
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase;
+      padding: 10px 24px;
+      border: 1px solid rgba(232,205,135,.4);
+      color: var(--accent);
+      border-radius: 40px;
+      transition: background .3s, color .3s, border-color .3s;
+    }
+    .nav-cta:hover {
+      background: var(--accent);
+      color: var(--ink);
+      border-color: var(--accent);
+    }
+
+    /* ─── HAMBURGER (mobile nav toggle) ─────────────────────────── */
+    .nav-hamburger {
+      display: none;               /* shown via media query at ≤900px */
+      width: 44px; height: 44px;   /* WCAG 2.5.5 touch target */
+      padding: 0;
+      background: transparent;
+      border: none;
+      position: relative;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-hamburger span {
+      position: absolute;
+      left: 10px; right: 10px;
+      height: 1.5px;
+      background: var(--warm-white);
+      border-radius: 2px;
+      transition: transform .3s ease, opacity .3s ease, top .3s ease;
+    }
+    .nav-hamburger span:nth-child(1) { top: 15px; }
+    .nav-hamburger span:nth-child(2) { top: 21px; }
+    .nav-hamburger span:nth-child(3) { top: 27px; }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(1) { top: 21px; transform: rotate(45deg); }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(3) { top: 21px; transform: rotate(-45deg); }
+
+    /* ─── MOBILE DRAWER ─────────────────────────────────────────── */
+    #mobile-drawer {
+      position: fixed; inset: 0; z-index: 490;
+      background: rgba(255,255,255,.98);
+      backdrop-filter: blur(20px) saturate(130%);
+      -webkit-backdrop-filter: blur(20px) saturate(130%);
+      display: flex; flex-direction: column;
+      padding: 96px 32px 40px;
+      opacity: 0; visibility: hidden;
+      transform: translateY(-8px);
+      transition: opacity .3s ease, transform .3s ease, visibility .3s ease;
+    }
+    #mobile-drawer.open {
+      opacity: 1; visibility: visible; transform: translateY(0);
+    }
+    #mobile-drawer .drawer-links {
+      list-style: none; display: flex; flex-direction: column; gap: 8px;
+      margin: 0; padding: 0;
+    }
+    #mobile-drawer .drawer-links > li > a,
+    #mobile-drawer .drawer-links .drawer-heading {
+      display: block;
+      padding: 16px 12px;
+      font-family: var(--heading);
+      font-size: 22px;
+      font-weight: 400;
+      color: #2a2235;
+      letter-spacing: .02em;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    #mobile-drawer .drawer-sub {
+      list-style: none;
+      padding: 4px 0 12px 16px;
+      margin: 0;
+      display: flex; flex-direction: column; gap: 2px;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    #mobile-drawer .drawer-sub a {
+      display: block;
+      padding: 10px 12px;
+      font-family: var(--body);
+      font-size: 14px;
+      color: #2a2235;
+      letter-spacing: .02em;
+    }
+    #mobile-drawer .drawer-sub a em {
+      font-style: normal;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-left: 6px;
+    }
+    #mobile-drawer .drawer-sub a sup { font-size: 9px; }
+    #mobile-drawer .drawer-cta {
+      margin-top: auto;
+      padding-top: 24px;
+      display: flex; justify-content: center;
+    }
+    body.drawer-open { overflow: hidden; }
+
+    /* ─── SCROLL ANIMATION HERO ─────────────────────────────────── */
+    #scroll-hero { position: relative; height: 350vh; background: #ffffff; }
+    #canvas-container {
+      position: sticky; top: 0; width: 100%; height: 100vh; overflow: hidden;
+      background: #ffffff;
+    }
+    #product-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    #canvas-left-grad {
+      position: absolute; top: 0; left: 0; bottom: 0; width: 58%;
+      background: linear-gradient(to right, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 100%);
+      pointer-events: none;
+      transition: opacity .45s ease;
+    }
+    #canvas-bottom-grad {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 200px;
+      background: linear-gradient(to top, rgba(255,255,255,.8) 0%, transparent 100%);
+      pointer-events: none;
+      transition: opacity .45s ease;
+    }
+    /* Hide the overlay-readability gradient when no scroll-text is visible
+       so baked-in infographic labels on Frame 2 / Frame 3 stay legible. */
+    #scroll-hero.no-overlay #canvas-left-grad,
+    #scroll-hero.no-overlay #canvas-bottom-grad { opacity: 0; }
+    #canvas-tint { position: absolute; inset: 0; pointer-events: none; transition: background .8s ease; }
+
+    /* Chapter markers */
+    #chapter-markers {
+      position: fixed; right: 28px; top: 50%; transform: translateY(-50%);
+      z-index: 200; display: flex; flex-direction: column; align-items: center;
+      transition: opacity .4s ease;
+    }
+    #chapter-markers.hidden { opacity: 0; pointer-events: none; }
+    .chapter-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      border: 1.5px solid rgba(26,18,37,.28); background: rgba(26,18,37,.04);
+      position: relative; cursor: pointer;
+      transition: border-color .3s, background .3s, transform .3s, box-shadow .3s;
+    }
+    .chapter-dot.active {
+      border-color: var(--accent); background: var(--accent);
+      transform: scale(1.35); box-shadow: 0 0 14px var(--accent-glow);
+    }
+    .chapter-dot::after {
+      content: attr(data-label);
+      position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+      font-size: 9px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+      color: rgba(26,18,37,.55); white-space: nowrap;
+      opacity: 0; pointer-events: none; transition: opacity .3s;
+    }
+    .chapter-dot:hover::after, .chapter-dot.active::after { opacity: 1; color: var(--accent); }
+    .chapter-line {
+      width: 1px; height: 34px; background: rgba(26,18,37,.12); position: relative; overflow: hidden;
+    }
+    .chapter-fill {
+      position: absolute; top: 0; left: 0; right: 0; height: 0%;
+      background: var(--accent); transition: height .08s linear;
+    }
+
+    /* Scroll text overlays */
+    .scroll-text {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 80px 6vw 80px 10vw; z-index: 20; pointer-events: none;
+      opacity: 0; transform: translateX(-24px);
+      transition: opacity .55s ease, transform .55s ease, filter .55s ease;
+      filter: blur(6px); max-width: 760px;
+    }
+    .scroll-text.visible { opacity: 1; transform: translateX(0); filter: blur(0); pointer-events: auto; }
+    .st-overline {
+      font-size: 10px; font-weight: 500; letter-spacing: .4em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+    }
+    .st-title {
+      font-family: var(--heading); font-size: clamp(52px,7.5vw,110px);
+      font-weight: 300; line-height: 1.05; color: #1a1225; margin-bottom: 22px;
+    }
+    .st-title em { font-style: italic; color: var(--accent); }
+    .st-title .split-char {
+      display: inline-block; opacity: 0; transform: translateY(30px);
+      animation: char-in .55s forwards;
+    }
+    /* Word wrapper — keeps characters of a single word from breaking apart */
+    .split-word { display: inline-block; white-space: nowrap; }
+    .st-h2 {
+      font-family: var(--heading); font-size: clamp(34px,4.5vw,64px);
+      font-weight: 300; line-height: 1.15; color: #1a1225; margin-bottom: 26px;
+    }
+    .st-h2 em { font-style: italic; color: var(--accent); }
+    .st-sub {
+      font-size: clamp(15px,1.4vw,19px); font-weight: 300;
+      color: rgba(26,18,37,.60); line-height: 1.75; margin-bottom: 28px; max-width: 480px;
+    }
+    .st-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .st-quote-mark {
+      font-family: var(--heading); font-size: 80px; font-weight: 300;
+      color: var(--accent); line-height: .7; margin-bottom: 10px;
+    }
+    .st-quote {
+      font-family: var(--heading); font-size: clamp(28px,3.8vw,54px);
+      font-weight: 300; font-style: italic; color: #1a1225;
+      line-height: 1.3; margin-bottom: 22px;
+    }
+    .st-quote em { color: var(--accent); font-style: normal; }
+    .st-divider { width: 48px; height: 1px; background: var(--accent); margin-bottom: 12px; }
+    .st-attr { font-size: 11px; letter-spacing: .25em; text-transform: uppercase; color: rgba(26,18,37,.7); }
+    .st-feature-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .st-feature-list li {
+      font-size: 13px; font-weight: 300; color: rgba(26,18,37,.75);
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 15px; background: rgba(26,18,37,.04);
+      border: 1px solid rgba(26,18,37,.08); border-radius: 10px;
+      backdrop-filter: blur(8px);
+    }
+    .st-feat-icon { font-size: 16px; flex-shrink: 0; }
+    .st-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .st-grid-cell {
+      background: rgba(255,255,255,.55); border: 1px solid rgba(232,183,46,.15);
+      border-radius: 14px; padding: 14px;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    }
+    .st-grid-cell span { font-size: 18px; display: block; margin-bottom: 5px; }
+    .st-grid-cell strong { font-size: 12px; font-weight: 500; color: #1a1225; display: block; margin-bottom: 3px; }
+    .st-grid-cell p { font-size: 11px; font-weight: 300; color: rgba(26,18,37,.5); line-height: 1.5; margin: 0; }
+
+    /* Glass stat bar inside st-1 */
+    .st-stat-bar {
+      display: inline-flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      gap: 0; margin-top: 32px;
+      background: rgba(255,255,255,.85);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(232,183,46,.45);
+      border-radius: 16px;
+      box-shadow:
+        0 10px 30px rgba(138,106,30,.12),
+        inset 0 1px 0 rgba(255,255,255,.75);
+      overflow: visible;
+      max-width: 100%;
+    }
+    .st-stat {
+      flex: 1 1 auto;
+      min-width: 0;
+      padding: 12px 14px;
+      text-align: center;
+      border-right: 1px solid rgba(138,106,30,.18);
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      gap: 6px;
+      box-sizing: border-box;
+    }
+    .st-stat:last-child { border-right: none; }
+    /* Inline wrapper — keeps the number and unit on the same line. */
+    .st-stat-num {
+      display: inline-flex !important;
+      align-items: baseline;
+      gap: 2px;
+      white-space: nowrap !important;
+      line-height: 1;
+      justify-content: center;
+    }
+    .st-num {
+      font-family: var(--heading); font-size: 24px; font-weight: 600;
+      line-height: 1;
+      letter-spacing: -.01em;
+      white-space: nowrap !important;
+      background: linear-gradient(135deg, #e8b72e 0%, #c99a2a 45%, #9c7818 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+    }
+    .st-unit {
+      font-size: 15px; font-weight: 700; line-height: 1;
+      white-space: nowrap !important;
+      background: linear-gradient(135deg, #e8b72e 0%, #c99a2a 45%, #9c7818 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+    }
+    .st-label {
+      font-size: 9px; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: rgba(26,18,37,.78);
+      line-height: 1.35;
+      text-align: center;
+      max-width: 11ch;
+    }
+
+    /* Scroll hint */
+    #scroll-hint-anim {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      z-index: 25; pointer-events: none;
+      opacity: 0; animation: fade-up .8s 1.8s forwards;
+    }
+    #scroll-hint-anim span {
+      font-size: 9px; letter-spacing: .3em; text-transform: uppercase;
+      color: rgba(26,18,37,.4);
+    }
+
+    /* Buttons */
+    .btn-primary {
+      position: relative; overflow: hidden;
+      padding: 13px 32px;
+      background: linear-gradient(135deg, #8a6a1e 0%, #5e4a14 50%, #1a1225 100%);
+      color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: .2em;
+      text-transform: uppercase; border-radius: 40px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.25),
+        inset 0 -1px 0 rgba(0,0,0,.35),
+        0 6px 18px rgba(26,18,37,.3),
+        0 0 0 1px rgba(26,18,37,.45);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      transition: transform .3s, box-shadow .3s, filter .3s; display: inline-block;
+    }
+    .btn-primary::before {
+      content: ""; position: absolute; top: 0; left: -120%; width: 60%; height: 100%;
+      background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.55) 50%, transparent 80%);
+      transform: skewX(-18deg); pointer-events: none;
+      transition: left .9s cubic-bezier(.2,.8,.2,1);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.10) saturate(1.1);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.35),
+        inset 0 -1px 0 rgba(0,0,0,.4),
+        0 16px 44px rgba(26,18,37,.4),
+        0 0 0 1px rgba(26,18,37,.55);
+    }
+    .btn-primary:hover::before { left: 120%; }
+    .btn-outline {
+      padding: 13px 32px; border: 1px solid rgba(26,18,37,.25); color: rgba(26,18,37,.8);
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; border-radius: 40px;
+      transition: border-color .3s, background .3s; display: inline-block;
+    }
+    .btn-outline:hover { border-color: rgba(26,18,37,.5); background: rgba(26,18,37,.05); }
+    /* Light-section btn-outline override */
+    .marquee-section ~ * .btn-outline,
+    #products .btn-outline, #science .btn-outline, #stats .btn-outline,
+    #about .btn-outline, #cta .btn-outline {
+      border-color: rgba(26,18,37,.2); color: var(--warm-white);
+    }
+
+    .scroll-hint-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, rgba(26,18,37,.55), transparent);
+      animation: line-pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes line-pulse {
+      0%,100% { opacity: .3; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+
+    /* Shared stat items (used in stats section) */
+    .stat-item {
+      flex: 1; padding: 20px 0; text-align: center;
+      border-right: 1px solid rgba(0,0,0,.06);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num { font-family: var(--heading); font-size: clamp(22px,2.5vw,32px); font-weight: 300; color: var(--warm-white); }
+    .stat-num span { color: var(--accent); }
+    .stat-label { font-size: 9px; font-weight: 500; letter-spacing: .25em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+    /* ─── MARQUEE ────────────────────────────────────────────────── */
+    .marquee-section {
+      padding: 20px 0;
+      background: #1a1225;
+      color: #f4f0ea;
+      border-top: 1px solid rgba(0,0,0,.05);
+      border-bottom: 1px solid rgba(0,0,0,.05);
+      overflow: hidden;
+    }
+    .marquee-section .marquee-item { color: rgba(244,240,234,.75); }
+    .marquee-section .marquee-item .dot { background: var(--accent); }
+    .marquee-track {
+      display: flex; gap: 0;
+      animation: marquee-scroll 28s linear infinite;
+      white-space: nowrap;
+    }
+    .marquee-section:hover .marquee-track,
+    .marquee-section:focus-within .marquee-track { animation-play-state: paused; }
+    .marquee-item {
+      display: flex; align-items: center; gap: 40px;
+      padding: 0 40px;
+      font-size: 11px; font-weight: 600; letter-spacing: .3em;
+      text-transform: uppercase; color: var(--warm-dim);
+    }
+    .marquee-item .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+    @keyframes marquee-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ─── SECTION SHARED ─────────────────────────────────────────── */
+    .section-header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+    .section-overline {
+      font-size: 11px; font-weight: 700; letter-spacing: .32em;
+      text-transform: uppercase; color: var(--accent-deep);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: var(--heading);
+      font-size: clamp(28px,4vw,52px);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--warm-white);
+    }
+    .section-title em { font-style: italic; color: var(--accent); }
+    .section-body {
+      font-size: clamp(14px,1.2vw,16px);
+      font-weight: 300;
+      color: var(--warm-dim);
+      line-height: 1.8;
+      max-width: 560px;
+      margin: 20px auto 0;
+    }
+    /* Reveal — failsafe-first: starts hidden, but a CSS animation auto-
+       reveals after 1.5s even if Motion One / theme.js fail to load.
+       The JS observer still adds .visible for the smooth transition path. */
+    @keyframes dc-reveal-failsafe {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      animation: dc-reveal-failsafe .8s ease 1.5s forwards;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity .8s ease, transform .8s ease;
+      animation: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+    }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+    .reveal-delay-5 { transition-delay: .5s; }
+    .reveal-delay-6 { transition-delay: .6s; }
+
+    /* ─── PRODUCTS ───────────────────────────────────────────────── */
+    #products {
+      padding: 120px 48px;
+      background: #ffffff;
+      position: relative;
+    }
+    #products::before {
+      content: '';
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 60%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(232,183,46,.35), transparent);
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .product-card {
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      transition: transform .4s cubic-bezier(.2,.8,.2,1), border-color .4s, box-shadow .4s;
+    }
+    .product-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(232,183,46,.03) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .product-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(232,183,46,.25);
+      box-shadow: 0 24px 60px rgba(0,0,0,.10), 0 0 0 1px rgba(232,183,46,.08);
+    }
+    .product-image-wrap {
+      height: 280px;
+      background: linear-gradient(160deg, var(--blush) 0%, #fbf4de 100%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .product-image-wrap img {
+      height: 220px; width: auto; object-fit: contain;
+      transition: transform .6s cubic-bezier(.2,.8,.2,1);
+      filter: drop-shadow(0 16px 32px rgba(0,0,0,.15));
+    }
+    .product-card:hover .product-image-wrap img {
+      transform: scale(1.08) translateY(-6px);
+    }
+    .product-badge {
+      position: absolute; top: 16px; right: 16px;
+      font-size: 9px; font-weight: 600; letter-spacing: .2em;
+      text-transform: uppercase;
+      padding: 5px 12px; border-radius: 20px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(232,205,135,.25);
+      color: var(--accent);
+    }
+    /* Coming Soon pill — sits in the top-right of the image, ink-on-ivory,
+       quieter than the Best Seller / New Formula gold pills so it reads
+       as an editorial note rather than a promotional badge. */
+    .product-soon-pill {
+      position: absolute; top: 16px; right: 16px;
+      font-size: 9px; font-weight: 600; letter-spacing: .2em;
+      text-transform: uppercase;
+      padding: 5px 12px; border-radius: 20px;
+      background: rgba(26, 18, 37, 0.92);
+      color: #fff;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 2;
+    }
+    .product-card.is-coming-soon .product-image-wrap img,
+    .product-card.is-coming-soon .bottle-placeholder {
+      filter: saturate(0.85);
+      opacity: 0.92;
+      transition: filter 360ms var(--dc-ease-soft, ease), opacity 360ms ease, transform 360ms ease;
+    }
+    .product-card.is-coming-soon:hover .product-image-wrap img,
+    .product-card.is-coming-soon:hover .bottle-placeholder {
+      filter: saturate(1);
+      opacity: 1;
+    }
+    .product-shimmer {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 80px;
+      background: linear-gradient(to top, #ffffff, transparent);
+    }
+    .product-info {
+      padding: 28px 28px 32px;
+    }
+    .product-category {
+      font-size: 10px; font-weight: 700; letter-spacing: .24em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .product-name {
+      font-family: var(--heading);
+      font-size: clamp(20px, 2vw, 26px);
+      font-weight: 400;
+      color: var(--warm-white);
+      margin-bottom: 12px;
+      letter-spacing: .02em;
+    }
+    .product-desc {
+      font-size: 13px; font-weight: 300;
+      color: var(--warm-dim); line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .product-benefits {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-bottom: 24px;
+    }
+    .benefit-chip {
+      font-size: 10px; font-weight: 400; letter-spacing: .05em;
+      padding: 4px 12px; border-radius: 20px;
+      background: rgba(0,0,0,.03);
+      border: 1px solid rgba(0,0,0,.08);
+      color: var(--warm-dim);
+    }
+    .product-cta {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .product-cta a,
+    .product-cta .cta-label {
+      font-size: 11px; font-weight: 500; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--accent);
+      display: flex; align-items: center; gap: 8px;
+      transition: gap .3s;
+    }
+    .product-cta a:hover { gap: 14px; }
+    .product-cta a .arrow,
+    .product-cta .cta-label .arrow {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid rgba(232,205,135,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      transition: background .3s, border-color .3s;
+    }
+    .product-cta a:hover .arrow,
+    .product-card:hover .product-cta .arrow {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--ink);
+    }
+    .product-card:hover .product-cta .cta-label { gap: 14px; }
+    /* Whole card clickable — card is an anchor */
+    a.product-card { text-decoration: none; display: block; color: inherit; cursor: pointer; }
+
+    /* Product-specific accent gradients */
+    .product-card.collabloom .product-image-wrap {
+      background: linear-gradient(160deg, #fde4ec 0%, #fef0f3 100%);
+    }
+    .product-card.collabloom .product-category,
+    .product-card.collabloom .product-cta a,
+    .product-card.collabloom .product-cta .cta-label { color: #e07a9e; }
+    .product-card.collabloom .product-badge { background: rgba(224,122,158,.08); border-color: rgba(224,122,158,.22); color: #b05578; }
+    .product-card.collabloom:hover { border-color: rgba(224,122,158,.28); }
+
+    .product-card.skelecoll .product-image-wrap {
+      background: linear-gradient(160deg, #f3e5d2 0%, #fbf4e6 100%);
+    }
+    .product-card.skelecoll .product-category,
+    .product-card.skelecoll .product-cta a,
+    .product-card.skelecoll .product-cta .cta-label { color: #b0845c; }
+    .product-card.skelecoll .product-badge { background: rgba(176,132,92,.08); border-color: rgba(176,132,92,.22); color: #7d5a3e; }
+    .product-card.skelecoll:hover { border-color: rgba(176,132,92,.28); }
+
+    .product-card.metastable .product-image-wrap {
+      background: linear-gradient(160deg, #eef8e8 0%, #f5faf0 100%);
+    }
+    .product-card.metastable .product-category,
+    .product-card.metastable .product-cta a,
+    .product-card.metastable .product-cta .cta-label { color: #4a8a2e; }
+    .product-card.metastable .product-badge { background: rgba(74,138,46,.07); border-color: rgba(74,138,46,.2); color: #4a8a2e; }
+    .product-card.metastable:hover { border-color: rgba(74,138,46,.25); }
+
+    .product-card.collatrim .product-image-wrap {
+      background: linear-gradient(160deg, #ebeed6 0%, #f4f6e5 100%);
+    }
+    .product-card.collatrim .product-category,
+    .product-card.collatrim .product-cta a,
+    .product-card.collatrim .product-cta .cta-label { color: #627636; }
+    .product-card.collatrim .product-badge { background: rgba(143,168,82,.08); border-color: rgba(143,168,82,.22); color: #627636; }
+    .product-card.collatrim:hover { border-color: rgba(143,168,82,.28); }
+
+    /* Placeholder bottle SVG for products without images */
+    .bottle-placeholder {
+      width: 80px;
+      opacity: .35;
+    }
+
+    /* ─── SCIENCE STRIP ──────────────────────────────────────────── */
+    #science {
+      padding: 100px 48px;
+      background: linear-gradient(180deg, #fbf8f1 0%, #fdfaf4 100%);
+      border-top: 1px solid rgba(0,0,0,.05);
+      border-bottom: 1px solid rgba(0,0,0,.05);
+    }
+    .science-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    .science-text .label {
+      font-size: 10px; font-weight: 500; letter-spacing: .4em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .science-text h2 {
+      font-family: var(--heading);
+      font-size: clamp(28px, 3.5vw, 48px);
+      font-weight: 300;
+      line-height: 1.2;
+      margin-bottom: 24px;
+    }
+    .science-text h2 em { font-style: italic; color: var(--accent); }
+    .science-text p {
+      font-size: 15px; font-weight: 300;
+      color: var(--warm-dim); line-height: 1.85;
+      margin-bottom: 16px;
+    }
+    .science-text .read-more {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--accent);
+      margin-top: 12px;
+      transition: gap .3s;
+    }
+    .science-text .read-more:hover { gap: 16px; }
+    .science-pillars {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .pillar-card {
+      background: rgba(255,255,255,.7);
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 18px;
+      padding: 24px 20px;
+      transition: background .3s, border-color .3s, box-shadow .3s;
+    }
+    .pillar-card:hover {
+      background: #ffffff;
+      border-color: rgba(232,183,46,.2);
+      box-shadow: 0 8px 24px rgba(232,183,46,.08);
+    }
+    .pillar-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+    }
+    .pillar-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 1.5;
+    }
+    .pillar-name {
+      font-size: 13px; font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--warm-white);
+      margin-bottom: 8px;
+    }
+    .pillar-desc {
+      font-size: 12px; font-weight: 300;
+      color: var(--muted); line-height: 1.6;
+    }
+
+    /* ─── STATS ──────────────────────────────────────────────────── */
+    #stats {
+      padding: 100px 48px;
+      background: #ffffff;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .stats-inner {
+      max-width: 1000px; margin: 0 auto;
+    }
+    .stats-header { text-align: center; margin-bottom: 72px; }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 24px; overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,.05);
+    }
+    .stat-card {
+      background: #ffffff;
+      padding: 48px 24px;
+      text-align: center;
+      position: relative;
+      transition: background .3s;
+    }
+    .stat-card:hover { background: var(--blush); }
+    .stat-card::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .stat-card:hover::after { opacity: 1; }
+    .stat-big {
+      font-family: var(--heading);
+      font-size: clamp(32px,4vw,56px);
+      font-weight: 300;
+      color: var(--warm-white);
+      margin-bottom: 10px;
+    }
+    .stat-big .counter { color: var(--accent); }
+    .stat-card .stat-label {
+      font-size: 10px; font-weight: 500; letter-spacing: .25em;
+      text-transform: uppercase; color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ─── ABOUT ──────────────────────────────────────────────────── */
+    #about {
+      padding: 120px 48px;
+      background: linear-gradient(180deg, #fdfaf4 0%, #ffffff 100%);
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .about-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 96px; align-items: center;
+    }
+    .about-visual {
+      position: relative;
+    }
+    .about-img-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    .about-img-cell {
+      border-radius: 18px; overflow: hidden;
+      background: var(--blush);
+      border: 1px solid rgba(0,0,0,.05);
+    }
+    .about-img-cell.tall { grid-row: span 2; }
+    .about-img-cell .inner {
+      height: 100%; min-height: 180px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .about-img-cell img {
+      width: 100%; height: 100%; object-fit: contain;
+      border-radius: 12px;
+    }
+    .about-float-badge {
+      position: absolute; bottom: -20px; right: -20px;
+      background: #ffffff;
+      border: 1px solid rgba(232,183,46,.2);
+      border-radius: 18px;
+      padding: 20px 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .about-float-badge .num {
+      font-family: var(--heading);
+      font-size: 36px; font-weight: 300;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .about-float-badge .txt {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: var(--muted); margin-top: 4px;
+    }
+    .about-text .label {
+      font-size: 10px; font-weight: 500; letter-spacing: .4em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .about-text h2 {
+      font-family: var(--heading);
+      font-size: clamp(28px, 3.5vw, 48px);
+      font-weight: 300; line-height: 1.2;
+      margin-bottom: 28px;
+    }
+    .about-text h2 em { font-style: italic; color: var(--accent); }
+    .about-text p {
+      font-size: 15px; font-weight: 300;
+      color: var(--warm-dim); line-height: 1.85;
+      margin-bottom: 16px;
+    }
+    .about-qualities {
+      display: flex; flex-direction: column; gap: 12px;
+      margin-top: 32px;
+    }
+    .quality-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 18px;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 12px;
+      transition: border-color .3s, background .3s, box-shadow .3s;
+    }
+    .quality-row:hover {
+      border-color: rgba(232,183,46,.25);
+      background: var(--blush);
+      box-shadow: 0 4px 16px rgba(232,183,46,.07);
+    }
+    .quality-row .q-icon {
+      width: 32px; height: 32px; border-radius: 10px;
+      background: var(--accent-soft);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0;
+    }
+    .quality-row .q-text {
+      font-size: 13px; font-weight: 400;
+      color: var(--warm-white);
+    }
+    .quality-row .q-text span {
+      display: block; font-weight: 300; font-size: 11px;
+      color: var(--muted); margin-top: 2px;
+    }
+
+    /* ─── TESTIMONIALS ───────────────────────────────────────────── */
+    #testimonials {
+      padding: 120px 48px;
+      background: #fbf8f1;
+      overflow: hidden;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .testimonials-track {
+      display: flex; gap: 24px;
+      animation: testimonial-scroll 40s linear infinite;
+      width: max-content;
+    }
+    .testimonials-track:hover { animation-play-state: paused; }
+    @keyframes testimonial-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .testi-card {
+      width: 340px; flex-shrink: 0;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.04);
+    }
+    .testi-stars {
+      color: var(--gold); font-size: 13px; letter-spacing: 2px;
+      margin-bottom: 14px;
+    }
+    .testi-quote {
+      font-size: 14px; font-weight: 300;
+      color: var(--warm-dim); line-height: 1.75;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+    .testi-author {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .testi-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; color: var(--ink);
+    }
+    .testi-name { font-size: 13px; font-weight: 500; color: var(--warm-white); }
+    .testi-role { font-size: 11px; font-weight: 300; color: var(--muted); }
+
+    /* ─── INGREDIENTS FEATURE ────────────────────────────────────── */
+    #ingredients {
+      padding: 120px 48px;
+      background: #ffffff;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .ingredients-inner {
+      max-width: 1100px; margin: 0 auto;
+    }
+    .ingredients-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+      margin-top: 72px;
+    }
+    .ingr-card {
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 20px;
+      padding: 32px 28px;
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+    }
+    .ingr-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(232,183,46,.2);
+      box-shadow: 0 20px 50px rgba(0,0,0,.08);
+    }
+    .ingr-num {
+      font-family: var(--heading);
+      font-size: 48px; font-weight: 300;
+      color: rgba(232,183,46,.6);
+      line-height: 1; margin-bottom: 16px;
+    }
+    .ingr-name {
+      font-size: 14px; font-weight: 500;
+      color: var(--warm-white);
+      letter-spacing: .04em; margin-bottom: 10px;
+    }
+    .ingr-desc {
+      font-size: 13px; font-weight: 300;
+      color: var(--warm-dim); line-height: 1.7;
+    }
+    .ingr-tag {
+      display: inline-block; margin-top: 14px;
+      font-size: 9px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase;
+      padding: 4px 10px; border-radius: 20px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(232,205,135,.2);
+      color: var(--accent);
+    }
+
+    /* ─── CTA SECTION ────────────────────────────────────────────── */
+    #cta {
+      padding: 140px 48px;
+      background: linear-gradient(180deg, #fdfaf4 0%, #faf3dc 100%);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    #cta::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,183,46,.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-overline {
+      font-size: 10px; font-weight: 500; letter-spacing: .4em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .cta-title {
+      font-family: var(--heading);
+      font-size: clamp(32px, 5vw, 68px);
+      font-weight: 300; line-height: 1.15;
+      margin-bottom: 24px;
+    }
+    .cta-title em { font-style: italic; color: var(--accent); }
+    .cta-sub {
+      font-size: clamp(14px, 1.3vw, 17px);
+      font-weight: 300; color: var(--warm-dim);
+      max-width: 480px; margin: 0 auto 48px;
+      line-height: 1.75;
+    }
+    .cta-actions {
+      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────────────── */
+    footer {
+      background: var(--warm-white);
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding: 80px 48px 40px;
+      color: var(--cream);
+    }
+    .footer-inner {
+      max-width: 1200px; margin: 0 auto;
+    }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px;
+      padding-bottom: 56px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      margin-bottom: 32px;
+    }
+    .footer-brand .logo {
+      font-family: var(--heading);
+      font-size: 22px; font-weight: 600;
+      letter-spacing: .08em; margin-bottom: 16px;
+      color: #ffffff;
+    }
+    .footer-brand .logo span { color: var(--accent); }
+    .footer-brand p {
+      font-size: 13px; font-weight: 300;
+      color: rgba(255,255,255,.55); line-height: 1.7; max-width: 260px;
+    }
+    .footer-social {
+      display: flex; gap: 10px; margin-top: 20px;
+    }
+    .social-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: var(--muted);
+      transition: border-color .3s, color .3s, background .3s;
+    }
+    .social-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .footer-col h4 {
+      font-size: 11px; font-weight: 600; letter-spacing: .25em;
+      text-transform: uppercase; color: #ffffff;
+      margin-bottom: 20px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 10px; }
+    .footer-col a {
+      font-size: 13px; font-weight: 300;
+      color: rgba(255,255,255,.5);
+      transition: color .3s;
+    }
+    .footer-col a:hover { color: #ffffff; }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    }
+    .footer-legal {
+      font-size: 11px; font-weight: 300; color: rgba(255,255,255,.4);
+    }
+    .footer-cert {
+      display: flex; gap: 20px;
+    }
+    .cert-badge {
+      font-size: 9px; font-weight: 500; letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: 5px 12px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.15);
+      color: rgba(255,255,255,.5);
+    }
+
+    /* ─── ANIMATIONS ─────────────────────────────────────────────── */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes char-in {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── NAV DARK-SECTION AWARENESS ─────────────────────────────── */
+    nav.in-dark-section { color: #f4f0ea; }
+    nav.in-dark-section .nav-logo { color: #f4f0ea; }
+    nav.in-dark-section .nav-links a { color: rgba(244,240,234,.6); }
+    nav.in-dark-section .nav-links a:hover { color: #f4f0ea; }
+    nav.in-dark-section .nav-cta { border-color: rgba(244,240,234,.3); color: rgba(244,240,234,.8); }
+    nav.in-dark-section .nav-cta:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    nav.scrolled.in-dark-section {
+      background: rgba(14,11,20,.72);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      border-bottom-color: rgba(255,255,255,.08);
+    }
+    nav.in-dark-section .nav-hamburger span {
+      background: #f4f0ea;
+    }
+    nav.in-dark-section .nav-hamburger[aria-expanded="true"] span {
+      background: var(--warm-white);
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────────── */
+
+    /* Tablet ≤ 900px */
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      nav.scrolled { padding: 14px 24px; }
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .nav-hamburger { display: block; }
+
+      /* Light sections */
+      #products, #science, #stats, #about, #ingredients, #cta, #testimonials { padding: 80px 24px; }
+      .science-inner, .about-inner { grid-template-columns: 1fr; gap: 48px; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .ingredients-grid { grid-template-columns: 1fr 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+      .about-float-badge { right: 0; bottom: -16px; }
+
+      /* Scroll hero — reduce overlay width, stat bar wraps */
+      .scroll-text { max-width: 520px; padding: 90px 5vw 60px; }
+      .st-stat-bar { width: 100%; max-width: 440px; }
+      .st-stat { flex: 1 1 50%; min-width: 50%; padding: 16px 10px; gap: 8px; }
+      .st-stat:nth-child(2n) { border-right: none; }
+      .st-stat:nth-child(-n+2) { border-bottom: 1px solid rgba(138,106,30,.18); }
+      .st-num { font-size: 28px; }
+      .st-unit { font-size: 17px; }
+      .st-label { font-size: 10px; }
+      .st-grid-cell p { font-size: 10px; }
+      #chapter-markers { right: 14px; }
+      .chapter-dot::after { display: none; }
+    }
+
+    /* Mobile ≤ 600px */
+    @media (max-width: 600px) {
+      /* Hide cursor, set normal cursor */
+      #cursor-dot, #cursor-ring { display: none; }
+      body { cursor: auto; }
+      button, a { cursor: pointer; }
+
+      /* Light sections */
+      .products-grid { grid-template-columns: 1fr; }
+      .science-pillars { grid-template-columns: 1fr; }
+      .ingredients-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+
+      /* Scroll hero — full-width overlay, vertically centered text */
+      #scroll-hero { height: 320vh; }
+      .scroll-text {
+        max-width: 100%; padding: 40px 24px 120px;   /* extra bottom padding so CTAs clear hero image */
+        justify-content: center;
+        top: 0; bottom: auto; height: 100vh;
+      }
+      /* Near-opaque wash so headline and CTAs stay legible over the hero canvas. */
+      #canvas-left-grad { width: 100%;
+        background: linear-gradient(to bottom, rgba(255,255,255,.92) 0%, rgba(255,255,255,.80) 45%, rgba(255,255,255,.90) 100%);
+        top: 0; bottom: 0; height: 100%;
+      }
+      #product-canvas { opacity: 0.55; }   /* dim the hero canvas behind text */
+      #canvas-bottom-grad { display: none; }
+
+      /* Stat bar stacks as 2x2 grid */
+      .st-stat-bar { display: grid; grid-template-columns: 1fr 1fr; width: 100%; max-width: 100%; }
+      .st-stat { border-right: none; border-bottom: 1px solid rgba(138,106,30,.14); padding: 12px 14px; }
+      .st-stat:nth-child(odd) { border-right: 1px solid rgba(138,106,30,.14); }
+      .st-stat:nth-last-child(-n+2) { border-bottom: none; }
+
+      /* Grid sections single col on mobile */
+      .st-grid { grid-template-columns: 1fr; }
+
+      /* Title sizes — larger on mobile */
+      .st-title { font-size: clamp(40px, 11vw, 68px); }
+      .st-h2 { font-size: clamp(30px, 8.5vw, 50px); }
+      .st-quote { font-size: clamp(26px, 7vw, 40px); }
+      .st-quote-mark { font-size: 64px; }
+      .st-sub { font-size: clamp(14px, 3.8vw, 17px); }
+
+      /* Feature list items smaller */
+      .st-feature-list li { font-size: 12px; padding: 10px 12px; }
+
+      /* Chapter markers — hide on mobile */
+      #chapter-markers { display: none; }
+
+      /* Scroll hint position */
+      #scroll-hint-anim { bottom: 16px; }
+
+      /* Buttons — slightly smaller on mobile */
+      .btn-primary, .btn-outline { padding: 12px 24px; font-size: 10px; }
+
+      /* Performance: reduce particles, hide grain */
+      #film-grain { display: none; }
+    }
+
+    /* Small mobile ≤ 380px */
+    @media (max-width: 380px) {
+      .scroll-text { padding: 40px 16px 100px; }
+      .st-title { font-size: 28px; }
+      .st-h2 { font-size: 22px; }
+      .st-stat-bar { grid-template-columns: 1fr 1fr; }
+      .st-num { font-size: 28px; }
+      .st-unit { font-size: 17px; }
+      .st-label { font-size: 9px; letter-spacing: .14em; }
+      .nav-logo { font-size: 17px; }
+      .nav-cta { padding: 8px 16px; font-size: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  
+    /* Logo lockup: Dr Collagen + "Formulated by Doctors" subtitle */
+    .nav-logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 3px;
+    }
+    .nav-logo__main { font: inherit; }
+    .nav-logo__sub {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.55);
+      white-space: nowrap;
+    }
+    nav.in-dark-section .nav-logo__sub,
+    nav.scrolled-dark .nav-logo__sub { color: rgba(255,255,255,.65); }
+    .footer-brand,
+    .logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 4px;
+    }
+    .footer-brand__main, .logo__main { font: inherit; }
+    .footer-brand__sub, .logo__sub {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+      white-space: nowrap;
+    }
+    /* Global section-header.liquid uses .dc-logo */
+    .dc-logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 3px;
+    }
+    .dc-logo__main { font: inherit; }
+    .dc-logo__sub {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.55);
+      white-space: nowrap;
+    }
+
+  
+    /* ─── FORMULATED BY DOCTORS strip ──────────────────────────────── */
+    #doctor-strip {
+      background: linear-gradient(135deg, #faf6e8 0%, #f5f0d8 100%);
+      border-top: 1px solid rgba(184, 144, 58, .2);
+      border-bottom: 1px solid rgba(184, 144, 58, .2);
+      padding: 80px 24px;
+    }
+    .doc-strip-inner {
+      max-width: 980px; margin: 0 auto;
+      display: flex; align-items: center; gap: 48px;
+    }
+    .doc-strip-icon {
+      flex: 0 0 auto;
+      width: 96px; height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #e8b72e 0%, #c99a2a 50%, #9c7818 100%);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 52px; line-height: 1;
+      box-shadow: 0 14px 36px rgba(184, 144, 58, .32);
+    }
+    .doc-strip-content { flex: 1 1 auto; }
+    .doc-strip-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(26px, 3.4vw, 40px);
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: -.018em;
+      margin: 8px 0 14px;
+      color: var(--ink, #1a1225);
+    }
+    .doc-strip-heading em {
+      font-style: italic;
+      color: var(--accent-deep, #b8903a);
+    }
+    .doc-strip-lede {
+      font-size: 16px; line-height: 1.7;
+      color: var(--muted, #6b6472);
+      margin: 0 0 22px;
+      max-width: 640px;
+    }
+    .doc-strip-pills {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin: 0; padding: 0; list-style: none;
+    }
+    .doc-strip-pills li {
+      display: inline-flex; align-items: center;
+      padding: 7px 14px;
+      font-size: 12px; font-weight: 600;
+      letter-spacing: .04em;
+      color: var(--accent-deep, #b8903a);
+      background: rgba(184, 144, 58, .08);
+      border: 1px solid rgba(184, 144, 58, .3);
+      border-radius: 999px;
+    }
+    @media (max-width: 720px) {
+      #doctor-strip { padding: 56px 20px; }
+      .doc-strip-inner { flex-direction: column; align-items: flex-start; gap: 28px; }
+      .doc-strip-icon { width: 72px; height: 72px; font-size: 38px; }
+      .doc-strip-lede { font-size: 15px; }
+    }
+
+  
+    /* Typewriter heading — types out character-by-character on scroll-in */
+    .doc-strip-heading[data-typewriter] {
+      min-height: 1.2em;
+      color: #1a1225;
+    }
+    /* Regular text segments: explicit black, kill any inherited gradient
+       so the heading is never tinted by a global em/heading rule. */
+    .doc-strip-heading[data-typewriter] .tw-segment {
+      display: inline;
+      color: #1a1225 !important;
+      -webkit-text-fill-color: #1a1225 !important;
+      background: none !important;
+      -webkit-background-clip: initial !important;
+              background-clip: initial !important;
+      font-style: normal;
+    }
+    /* The single emphasized word ("doctors"): accent gold/walnut, italic. */
+    .doc-strip-heading[data-typewriter] em.tw-segment {
+      color: var(--accent-deep, #b8903a) !important;
+      -webkit-text-fill-color: var(--accent-deep, #b8903a) !important;
+      font-style: italic;
+    }
+    .tw-caret {
+      display: inline-block;
+      width: 0.45ch;
+      color: var(--accent-deep);
+      margin-left: 3px;
+      animation: tw-caret-blink 0.95s steps(2) infinite;
+      vertical-align: -1px;
+    }
+    @keyframes tw-caret-blink {
+      0%, 50%   { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tw-caret { animation: none; opacity: 0; }
+    }
+
+  </style>
+
+<!-- ═══ SKIP TO CONTENT (keyboard users) ═════════════════════════════ -->
+<a href="#main" class="skip-link">Skip to content</a>
+
+<!-- ═══ CUSTOM CURSOR ═══════════════════════════════════════════════ -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- ═══ FILM GRAIN ══════════════════════════════════════════════════ -->
+<div id="film-grain"></div>
+
+<!-- ═══ VIGNETTE ════════════════════════════════════════════════════ -->
+<div id="vignette"></div>
+
+<!-- ═══ PARTICLES ═══════════════════════════════════════════════════ -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- ═══ LOADER ══════════════════════════════════════════════════════ -->
+<div id="loader">
+  <div class="loader-lines">
+    <span></span>
+    <span></span>
+  </div>
+  <div class="loader-brand">Dr Collagen</div>
+  <div class="loader-lines">
+    <span></span>
+    <span></span>
+  </div>
+  <div class="loader-track">
+    <div class="loader-fill" id="loader-fill"></div>
+  </div>
+  <div class="loader-pct" id="loader-pct">0%</div>
+</div>
+
+<!-- ═══ NAV ═════════════════════════════════════════════════════════ -->
+<nav id="navbar" aria-label="Primary">
+  <div class="nav-logo" id="nav-logo"><span class="nav-logo__main">Dr<span> Collagen</span></span><span class="nav-logo__sub">Formulated by Doctors</span></div>
+  <ul class="nav-links">
+    <li class="has-dropdown">
+      <a href="#products" id="nav-link-products-dropdown" aria-haspopup="true" aria-expanded="false">Products <span class="caret" aria-hidden="true">▾</span></a>
+      <ul class="dropdown">
+        <li><a href="/pages/collabloom" id="nav-dropdown-collabloom">Collabloom<sup>™</sup> <em>· Skin · Hair · Nails</em></a></li>
+        <li><a href="/pages/skelecoll" id="nav-dropdown-skelecoll">Skelecoll<sup>™</sup> <em>· Bone · Joint · Cartilage</em></a></li>
+        <li><a href="/pages/collatrim" id="nav-dropdown-collatrim">Collatrim<sup>™</sup> <em>· Body · Metabolism · Tone</em></a></li>
+        <li><a href="/pages/metastable" id="nav-dropdown-metastable">Metastable<sup>™</sup> <em>· Energy · Gut · Immunity</em></a></li>
+        <li class="dropdown-divider" aria-hidden="true"></li>
+        <li><a href="#products" id="nav-dropdown-view-all" class="view-all">View All Products →</a></li>
+      </ul>
+    </li>
+    <li><a href="#science" id="nav-link-science">Science</a></li>
+    <li><a href="#about" id="nav-link-about">About</a></li>
+    {% if settings.show_testimonials %}<li><a href="#testimonials" id="nav-link-testimonials">Reviews</a></li>{% endif %}
+  </ul>
+  <a href="#products" id="nav-cta-shop" class="nav-cta">Shop the range</a>
+  <button id="nav-hamburger" class="nav-hamburger"
+          aria-label="Open menu" aria-controls="mobile-drawer" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ═══ MOBILE DRAWER ═══════════════════════════════════════════════ -->
+<aside id="mobile-drawer" aria-hidden="true" aria-label="Mobile menu">
+  <ul class="drawer-links">
+    <li>
+      <span class="drawer-heading">Products</span>
+      <ul class="drawer-sub">
+        <li><a href="/pages/collabloom" id="drawer-link-collabloom">Collabloom<sup>™</sup> <em>Skin · Hair · Nails</em></a></li>
+        <li><a href="/pages/skelecoll" id="drawer-link-skelecoll">Skelecoll<sup>™</sup> <em>Bone · Joint · Cartilage</em></a></li>
+        <li><a href="/pages/collatrim" id="drawer-link-collatrim">Collatrim<sup>™</sup> <em>Body · Metabolism · Tone</em></a></li>
+        <li><a href="/pages/metastable" id="drawer-link-metastable">Metastable<sup>™</sup> <em>Energy · Gut · Immunity</em></a></li>
+      </ul>
+    </li>
+    <li><a href="#science" id="drawer-link-science">Science</a></li>
+    <li><a href="#about" id="drawer-link-about">About</a></li>
+    {% if settings.show_testimonials %}<li><a href="#testimonials" id="drawer-link-testimonials">Reviews</a></li>{% endif %}
+  </ul>
+  <div class="drawer-cta">
+    <a href="#products" id="drawer-cta-shop" class="btn-primary">Shop the Range</a>
+  </div>
+</aside>
+
+<main id="main">
+
+<!-- ═══ SCROLL ANIMATION HERO ════════════════════════════════════════ -->
+<!-- Chapter markers (fixed right) -->
+<div id="chapter-markers">
+  <div class="chapter-dot active" data-label="The Body"></div>
+  <div class="chapter-line"><div class="chapter-fill"></div></div>
+  <div class="chapter-dot" data-label="The Science"></div>
+  <div class="chapter-line"><div class="chapter-fill"></div></div>
+  <div class="chapter-dot" data-label="The Range"></div>
+</div>
+
+<section id="scroll-hero">
+  <!-- Sticky canvas container -->
+  <div id="canvas-container">
+    <canvas id="product-canvas"></canvas>
+    <!-- Left gradient for text readability -->
+    <div id="canvas-left-grad"></div>
+    <!-- Bottom gradient -->
+    <div id="canvas-bottom-grad"></div>
+    <!-- Tint overlay -->
+    <div id="canvas-tint"></div>
+  </div>
+
+  <!-- Scroll text overlays (fixed, toggled by JS) -->
+
+  <!-- Act 1: Hero intro — overlays the muscular physique (Frame 1) -->
+  <div class="scroll-text" id="st-1" data-show-at="0" data-hide-at="0.26">
+    <p class="st-overline">Dr Collagen · Marine Collagen</p>
+    <h1 class="st-title" data-split>Fuel&nbsp;what's<br><em>within</em></h1>
+    <p class="st-sub">Recovery, mobility, structural strength —<br>built on micro-hydrolysed marine collagen.</p>
+    <div class="st-actions">
+      <a href="#products" id="hero-shop-range-btn" class="btn-primary">Shop the Range</a>
+      <a href="#science" id="hero-the-science-btn" class="btn-outline">The Science</a>
+    </div>
+
+    <!-- Stat glass bar -->
+    <div class="st-stat-bar">
+      <div class="st-stat"><span class="st-stat-num"><span class="st-num counter" data-target="10000">0</span><span class="st-unit">+</span></span><span class="st-label">Customers</span></div>
+      <div class="st-stat"><span class="st-stat-num"><span class="st-num">10</span><span class="st-unit">g</span></span><span class="st-label">Up to · per shot</span></div>
+      <div class="st-stat"><span class="st-stat-num"><span class="st-num">2,000</span><span class="st-unit">Da</span></span><span class="st-label">Micro-hydrolysed</span></div>
+      <div class="st-stat"><span class="st-stat-num"><span class="st-num">28</span><span class="st-unit">+</span></span><span class="st-label">Days to results</span></div>
+    </div>
+  </div>
+
+  <!-- Act 2: Quote hook — stays on screen across the full Frame 2 dwell -->
+  <div class="scroll-text" id="st-2" data-show-at="0.30" data-hide-at="0.58">
+    <p class="st-overline">The Foundation</p>
+    <div class="st-quote-mark">"</div>
+    <blockquote class="st-quote">Skin, joints, ligaments, tendons —<br>they all run on <em>collagen</em>.</blockquote>
+    <div class="st-divider"></div>
+    <p class="st-attr">— Dr Collagen</p>
+  </div>
+
+  <!-- Act 3: Product preamble — stays on screen until the hero releases -->
+  <div class="scroll-text" id="st-3" data-show-at="0.60" data-hide-at="0.99">
+    <p class="st-overline">The Range</p>
+    <h2 class="st-h2">Four formulas.<br>One <em>protein</em>.</h2>
+    <p class="st-sub" style="max-width:420px;">Same micro-hydrolysed marine collagen base. Different co-factors, dosed for the result you're after.</p>
+    <div class="st-actions" style="margin-top:28px;">
+      <a href="#products" id="hero-explore-all-products-btn" class="btn-primary">Explore All Products</a>
+    </div>
+  </div>
+
+  <!-- Scroll hint -->
+  <div id="scroll-hint-anim">
+    <span>Scroll to explore</span>
+    <div class="scroll-hint-line"></div>
+  </div>
+</section>
+
+<!-- ═══ MARQUEE ══════════════════════════════════════════════════════ -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <!-- First copy -->
+    <div class="marquee-item"><span class="dot"></span> Japanese Marine Collagen</div>
+    <div class="marquee-item"><span class="dot"></span> Hydrolysed Peptides</div>
+    <div class="marquee-item"><span class="dot"></span> Skin · Hair · Nails</div>
+    <div class="marquee-item"><span class="dot"></span> Joints &amp; Bones</div>
+    <div class="marquee-item"><span class="dot"></span> Dermatologist Approved</div>
+    <div class="marquee-item"><span class="dot"></span> No Artificial Fillers</div>
+    <div class="marquee-item"><span class="dot"></span> Clinically Tested</div>
+    <div class="marquee-item"><span class="dot"></span> Made in Japan</div>
+    <!-- Duplicate for seamless loop -->
+    <div class="marquee-item"><span class="dot"></span> Japanese Marine Collagen</div>
+    <div class="marquee-item"><span class="dot"></span> Hydrolysed Peptides</div>
+    <div class="marquee-item"><span class="dot"></span> Skin · Hair · Nails</div>
+    <div class="marquee-item"><span class="dot"></span> Joints &amp; Bones</div>
+    <div class="marquee-item"><span class="dot"></span> Dermatologist Approved</div>
+    <div class="marquee-item"><span class="dot"></span> No Artificial Fillers</div>
+    <div class="marquee-item"><span class="dot"></span> Clinically Tested</div>
+    <div class="marquee-item"><span class="dot"></span> Made in Japan</div>
+  </div>
+</div>
+
+<!-- ═══ PRODUCTS ═════════════════════════════════════════════════════ -->
+<section id="products">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-header reveal">
+      <p class="section-overline">The Range</p>
+      <h2 class="section-title">Pick the formula for <em>your goal</em></h2>
+      <p class="section-body">Same micro-hydrolysed marine collagen in every shot. The co-factor stack changes — vitamins, minerals, botanicals — so each product targets one outcome: skin, joints, body composition, or gut and energy.</p>
+    </div>
+
+    <div class="products-grid">
+
+      <!-- COLLABLOOM -->
+      <a href="/pages/collabloom" id="product-card-collabloom" class="product-card collabloom reveal reveal-delay-1">
+        <div class="product-image-wrap">
+          <!-- Shopify: replace src with {{ 'collabloom.png' | asset_url }} -->
+          <img src="{{ 'collabloom-bottle.png' | asset_url }}" alt="Collabloom bottle — marine collagen shot for skin, hair and nails" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <svg class="bottle-placeholder" style="display:none;" viewBox="0 0 60 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="0" width="20" height="10" rx="4" fill="#b05578"/>
+            <rect x="15" y="10" width="30" height="130" rx="8" fill="#fde4ec"/>
+            <rect x="15" y="10" width="30" height="130" rx="8" fill="url(#bloom)" opacity="0.6"/>
+            <rect x="17" y="40" width="26" height="70" rx="4" fill="#e07a9e" opacity="0.18"/>
+            <text x="30" y="80" text-anchor="middle" fill="#7a3c5a" font-size="4" font-family="serif">COLLABLOOM</text>
+            <defs><linearGradient id="bloom" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e07a9e" stop-opacity="0.22"/><stop offset="100%" stop-color="#b05578" stop-opacity="0.08"/></linearGradient></defs>
+          </svg>
+          <div class="product-shimmer"></div>
+          <span class="product-badge">Best Seller</span>
+        </div>
+        <div class="product-info">
+          <p class="product-category">Skin · Hair · Nails</p>
+          <h3 class="product-name">Collabloom™</h3>
+          <p class="product-desc">8,000mg Japanese marine collagen + 250mg Glutathione + 240mg Polypodium leucotomos (sun-damage defence) + Oral Ceramides + Hyaluronic Acid. 17 actives for glow, hydration, sun protection and strength — in one 30ml Wild Berry shot.</p>
+          <div class="product-benefits">
+            <span class="benefit-chip">Fine Lines</span>
+            <span class="benefit-chip">Pigmentation</span>
+            <span class="benefit-chip">Sun Defence</span>
+            <span class="benefit-chip">Hydration</span>
+          </div>
+          <div class="product-cta">
+            <span class="cta-label">Shop Collabloom <span class="arrow">→</span></span>
+          </div>
+        </div>
+      </a>
+
+      <!-- SKELECOLL -->
+      <a href="/pages/skelecoll" id="product-card-skelecoll" class="product-card skelecoll reveal reveal-delay-2">
+        <div class="product-image-wrap">
+          <!-- Shopify: replace src with {{ 'skelecoll.png' | asset_url }} -->
+          <img src="{{ 'skelecoll-bottle.png' | asset_url }}" alt="Skelecoll bottle — Type II collagen for bone, joint and cartilage support" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <svg class="bottle-placeholder" style="display:none;" viewBox="0 0 60 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="0" width="20" height="10" rx="4" fill="#7d5a3e"/>
+            <rect x="15" y="10" width="30" height="130" rx="8" fill="#f3e5d2"/>
+            <rect x="17" y="40" width="26" height="70" rx="4" fill="#b0845c" opacity="0.25"/>
+            <text x="30" y="72" text-anchor="middle" fill="#4a2f18" font-size="3.5" font-family="serif">SKELECOLL</text>
+          </svg>
+          <div class="product-shimmer"></div>
+          <span class="product-badge">New Formula</span>
+        </div>
+        <div class="product-info">
+          <p class="product-category">Bones · Joints · Muscles</p>
+          <h3 class="product-name">Skelecoll™</h3>
+          <p class="product-desc">10,000mg Japanese marine collagen + 1,000mg L-Carnitine + 500mg Cissus Quadrangularis + Glucosamine + Calcium + D3. 13 actives for recovery, mobility and strength — in one 30ml Cola shot.</p>
+          <div class="product-benefits">
+            <span class="benefit-chip">Joint Flexibility</span>
+            <span class="benefit-chip">Bone Strength</span>
+            <span class="benefit-chip">Muscle Endurance</span>
+            <span class="benefit-chip">Post-Workout Recovery</span>
+          </div>
+          <div class="product-cta">
+            <span class="cta-label">Shop Skelecoll <span class="arrow">→</span></span>
+          </div>
+        </div>
+      </a>
+
+      <!-- COLLATRIM -->
+      <a href="/pages/collatrim" id="product-card-collatrim" class="product-card collatrim is-coming-soon reveal reveal-delay-3">
+        <div class="product-image-wrap">
+          <!-- Shopify: replace src with {{ 'collatrim.png' | asset_url }} -->
+          <img src="{{ 'collatrim-bottle.png' | asset_url }}" alt="Collatrim bottle — collagen with metabolism support for body composition and skin tone" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <svg class="bottle-placeholder" style="display:none;" viewBox="0 0 60 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="0" width="20" height="10" rx="4" fill="#627636"/>
+            <rect x="15" y="10" width="30" height="130" rx="8" fill="#ebeed6"/>
+            <rect x="17" y="40" width="26" height="70" rx="4" fill="#8fa852" opacity="0.2"/>
+            <text x="30" y="72" text-anchor="middle" fill="#3e4b1e" font-size="3.5" font-family="serif">COLLATRIM</text>
+          </svg>
+          <div class="product-shimmer"></div>
+          <span class="product-soon-pill">Coming soon</span>
+        </div>
+        <div class="product-info">
+          <p class="product-category">Body · Metabolism · Tone</p>
+          <h3 class="product-name">Collatrim™</h3>
+          <p class="product-desc">8g hydrolysed marine collagen with green coffee bean extract, Garcinia Cambogia, Lactospore probiotic, Moringa and Chromium. For body composition, a settled gut, and skin that stays firm through change.</p>
+          <div class="product-benefits">
+            <span class="benefit-chip">Body Composition</span>
+            <span class="benefit-chip">Gut Health</span>
+            <span class="benefit-chip">Reduced Bloating</span>
+            <span class="benefit-chip">Skin Firmness</span>
+          </div>
+          <div class="product-cta">
+            <span class="cta-label">Notify me when it launches <span class="arrow">→</span></span>
+          </div>
+        </div>
+      </a>
+
+      <!-- METASTABLE -->
+      <a href="/pages/metastable" id="product-card-metastable" class="product-card metastable is-coming-soon reveal reveal-delay-4">
+        <div class="product-image-wrap">
+          <!-- Shopify: replace src with {{ 'metastable.png' | asset_url }} -->
+          <img src="{{ 'metastable-bottle.png' | asset_url }}" alt="Metastable bottle — collagen with adaptogens and probiotics for energy, gut and immunity" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <svg class="bottle-placeholder" style="display:none;" viewBox="0 0 60 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="0" width="20" height="10" rx="4" fill="#c8a060"/>
+            <rect x="15" y="10" width="30" height="130" rx="8" fill="#ecf8e4"/>
+            <rect x="17" y="40" width="26" height="70" rx="4" fill="#4a8a2e" opacity="0.15"/>
+            <text x="30" y="70" text-anchor="middle" fill="#1a3010" font-size="3" font-family="serif">METASTABLE</text>
+          </svg>
+          <div class="product-shimmer"></div>
+          <span class="product-soon-pill">Coming soon</span>
+        </div>
+        <div class="product-info">
+          <p class="product-category">Energy · Gut · Immunity</p>
+          <h3 class="product-name">Metastable™</h3>
+          <p class="product-desc">Marine collagen with KSM-66 Ashwagandha, Rhodiola, prebiotic inulin, and a full B-complex. Built for athletes who train hard — gut lining, sustained energy, immune resilience.</p>
+          <div class="product-benefits">
+            <span class="benefit-chip">Gut Lining</span>
+            <span class="benefit-chip">Energy Balance</span>
+            <span class="benefit-chip">Immunity</span>
+            <span class="benefit-chip">Vitality</span>
+          </div>
+          <div class="product-cta">
+            <span class="cta-label">Notify me when it launches <span class="arrow">→</span></span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FORMULATED BY DOCTORS STRIP ═══════════════════════════════════ -->
+<section id="doctor-strip">
+  <div class="doc-strip-inner reveal">
+    <div class="doc-strip-icon" aria-hidden="true">⚕</div>
+    <div class="doc-strip-content">
+      <p class="section-overline">The Difference</p>
+      <h2 class="doc-strip-heading" data-typewriter aria-label="Formulated by doctors. Not by marketers.">
+        <span class="tw-segment" data-text="Formulated by "></span><em class="tw-segment" data-text="doctors"></em><span class="tw-segment" data-text=". Not by marketers."></span><span class="tw-caret" aria-hidden="true">&#9612;</span>
+      </h2>
+      <p class="doc-strip-lede">Every Dr Collagen shot is developed by medical practitioners against published clinical data — dosed for results, formulated for safety, manufactured at FSSAI- and GMP-certified facilities, lab-tested batch by batch.</p>
+      <ul class="doc-strip-pills">
+        <li>Medical formulation</li>
+        <li>Clinically backed doses</li>
+        <li>FSSAI · GMP · Lab tested</li>
+        <li>No proprietary blends</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SCIENCE STRIP ═════════════════════════════════════════════════ -->
+<section id="science">
+  <div class="science-inner">
+    <div class="science-text reveal">
+      <p class="label">How it works</p>
+      <h2>Engineered to <em>absorb</em>.<br>Built to perform.</h2>
+      <p>Most collagen supplements are too large to cross the intestinal wall. Dr Collagen peptides are micro-hydrolysed to under 2,000 Daltons — small enough to clear the gut barrier and reach connective tissue where it matters.</p>
+      <p>Each formula pairs marine collagen with the co-factors collagen synthesis actually needs — Vitamin C, Zinc, Biotin — so fibroblasts have what they need to rebuild.</p>
+      <a href="#about" id="science-read-story-btn" class="read-more">Read the story →</a>
+    </div>
+    <div class="science-pillars reveal reveal-delay-2">
+      <div class="pillar-card">
+        <div class="pillar-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0-14 0"/><path d="M9 14h6"/><path d="M12 2v12"/><path d="M12 2a2 2 0 1 0-4 0"/><path d="M12 2a2 2 0 1 1 4 0"/></svg>
+        </div>
+        <h3 class="pillar-name">Micro-hydrolysed</h3>
+        <div class="pillar-desc">Peptide chains under 2,000 Da. Small enough to cross the gut wall and reach skin, joints, and connective tissue.</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s5-5 10-5 10 5 10 5-5 5-10 5-10-5-10-5Z"/><path d="M12 7c-1.5 1.5-2.5 3-2.5 5s1 3.5 2.5 5"/><circle cx="6" cy="11" r="1"/></svg>
+        </div>
+        <h3 class="pillar-name">Japanese marine source</h3>
+        <div class="pillar-desc">Deep-sea fish collagen. Closer to human collagen structure than bovine or porcine alternatives, and sustainably harvested.</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/><circle cx="7" cy="16" r="4"/><circle cx="17" cy="16" r="4"/></svg>
+        </div>
+        <h3 class="pillar-name">Co-factor stack</h3>
+        <div class="pillar-desc">Vitamin C, Zinc, and Biotin — the cofactors fibroblasts need to actually synthesise collagen. Without them, peptides go to waste.</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1 8a7 7 0 0 1-9 10Z"/><path d="M19 2c-2.26 4.33-5.27 7.14-8 10"/></svg>
+        </div>
+        <h3 class="pillar-name">Clean formula</h3>
+        <div class="pillar-desc">No artificial fillers, preservatives, or heavy metals. Every batch is third-party tested before it ships.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STATS ════════════════════════════════════════════════════════ -->
+<section id="stats">
+  <div class="stats-inner">
+    <div class="stats-header reveal">
+      <p class="section-overline">The numbers</p>
+      <h2 class="section-title">What the data <em>shows</em></h2>
+    </div>
+    <div class="stats-grid reveal reveal-delay-1">
+      <div class="stat-card">
+        <div class="stat-big"><span class="counter" data-target="10">0</span><span style="color:var(--accent)">g</span></div>
+        <div class="stat-label">up to 10g active marine<br>collagen per daily shot</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-big"><span class="counter" data-target="2000">0</span><span style="color:var(--accent)">Da</span></div>
+        <div class="stat-label">micro-hydrolysed<br>peptide size — under 2,000</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-big"><span class="counter" data-target="17">0</span></div>
+        <div class="stat-label">actives in every<br>Collabloom shot</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-big"><span class="counter" data-target="10000">0</span><span style="color:var(--accent)">+</span></div>
+        <div class="stat-label">customers across India,<br>and counting</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ════════════════════════════════════════════════════════ -->
+<section id="about">
+  <div class="about-inner">
+    <div class="about-visual reveal">
+      <div class="about-img-grid">
+        <div class="about-img-cell tall">
+          <div class="inner" style="background:linear-gradient(160deg,#faf3dc,#fbf6e3); min-height:320px;">
+            <svg viewBox="0 0 80 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:180px;opacity:.5;">
+              <rect x="26" y="0" width="28" height="14" rx="5" fill="#c8a060"/>
+              <rect x="18" y="14" width="44" height="170" rx="12" fill="#f7edf2"/>
+              <rect x="18" y="14" width="44" height="170" rx="12" fill="url(#aboutGrad)" opacity="0.6"/>
+              <rect x="20" y="50" width="40" height="100" rx="6" fill="#e8b72e" opacity="0.12"/>
+              <text x="40" y="95" text-anchor="middle" fill="#4a3040" font-size="6" font-family="Georgia, serif" font-weight="400" letter-spacing="1">Dr</text>
+              <text x="40" y="107" text-anchor="middle" fill="#e8b72e" font-size="5" font-family="Georgia, serif" letter-spacing="2">COLLAGEN</text>
+              <defs><linearGradient id="aboutGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8b72e" stop-opacity="0.18"/><stop offset="100%" stop-color="#b8903a" stop-opacity="0.08"/></linearGradient></defs>
+            </svg>
+          </div>
+        </div>
+        <div class="about-img-cell">
+          <div class="inner" style="background:linear-gradient(135deg,#edf8f9,#f5fafb);min-height:140px;flex-direction:column;gap:8px;">
+            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:300;color:var(--accent);">Up to 10g</div>
+            <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#9a95a2;">Marine Collagen / Shot</div>
+          </div>
+        </div>
+        <div class="about-img-cell">
+          <div class="inner" style="background:linear-gradient(135deg,#faf3dc,#fbf6e3);min-height:140px;flex-direction:column;gap:8px;">
+            <div style="font-size:28px;">🐠</div>
+            <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);">Japanese Source</div>
+          </div>
+        </div>
+      </div>
+      <div class="about-float-badge">
+        <div class="num">2024</div>
+        <div class="txt">Est. India</div>
+      </div>
+    </div>
+
+    <div class="about-text reveal reveal-delay-2">
+      <p class="label">Our story</p>
+      <h2>Held to pharma <em>standards</em>,<br>not marketing promises.</h2>
+      <p>Dr Collagen was started on one principle: collagen supplements should be developed and tested the way medicines are. Every formula starts in the lab, with a clinical question, and ships only after the data backs the dose.</p>
+      <p>Our team — dermatologists, nutritionists, food scientists — sources Japanese deep-sea marine collagen and stacks it with co-factors that are clinically validated, not marketing-validated. No filler ingredients to round out a label.</p>
+
+      <div class="about-qualities">
+        <div class="quality-row">
+          <div class="q-icon">✓</div>
+          <div class="q-text">
+            Dermatologist formulated
+            <span>Every product reviewed by board-certified dermatologists.</span>
+          </div>
+        </div>
+        <div class="quality-row">
+          <div class="q-icon">🏭</div>
+          <div class="q-text">
+            GMP-certified facility
+            <span>Manufactured to pharmaceutical-grade standards.</span>
+          </div>
+        </div>
+        <div class="quality-row">
+          <div class="q-icon">🌿</div>
+          <div class="q-text">
+            Full-label transparency
+            <span>Every active and its dose printed on the label. No proprietary blends.</span>
+          </div>
+        </div>
+        <div class="quality-row">
+          <div class="q-icon">🔬</div>
+          <div class="q-text">
+            Third-party tested
+            <span>Every batch independently verified for purity and dose.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ KEY INGREDIENTS ═══════════════════════════════════════════════ -->
+<section id="ingredients">
+  <div class="ingredients-inner">
+    <div class="section-header reveal">
+      <p class="section-overline">What's inside</p>
+      <h2 class="section-title">Every ingredient, <em>working</em></h2>
+      <p class="section-body">No fillers, no bulking agents, no proprietary blends. Each active below earns its place — for a reason we can defend on the label.</p>
+    </div>
+    <div class="ingredients-grid">
+      <div class="ingr-card reveal reveal-delay-1">
+        <div class="ingr-num">01</div>
+        <h3 class="ingr-name">Marine collagen peptides</h3>
+        <div class="ingr-desc">Hydrolysed to under 2,000 Daltons from Japanese deep-sea fish. Closer to human collagen than bovine sources, and absorbed roughly 1.5× faster.</div>
+        <span class="ingr-tag">Primary active</span>
+      </div>
+      <div class="ingr-card reveal reveal-delay-2">
+        <div class="ingr-num">02</div>
+        <h3 class="ingr-name">Vitamin C (ascorbic acid)</h3>
+        <div class="ingr-desc">Required for collagen synthesis. Without it, fibroblasts can't form the stable triple-helix structure that gives collagen its strength. Non-negotiable in every formula.</div>
+        <span class="ingr-tag">Co-factor</span>
+      </div>
+      <div class="ingr-card reveal reveal-delay-3">
+        <div class="ingr-num">03</div>
+        <h3 class="ingr-name">Biotin (vitamin B7)</h3>
+        <div class="ingr-desc">Builds keratin, the protein matrix that gives hair shafts their tensile strength and nails their hardness. Works in concert with collagen, not in place of it.</div>
+        <span class="ingr-tag">Hair &amp; nail</span>
+      </div>
+      <div class="ingr-card reveal reveal-delay-4">
+        <div class="ingr-num">04</div>
+        <h3 class="ingr-name">Zinc gluconate</h3>
+        <div class="ingr-desc">Activates the enzymes that remodel collagen fibre, and slows the matrix metalloproteinases that break collagen down faster as you age.</div>
+        <span class="ingr-tag">Structural</span>
+      </div>
+      <div class="ingr-card reveal reveal-delay-5">
+        <div class="ingr-num">05</div>
+        <h3 class="ingr-name">Hyaluronic acid</h3>
+        <div class="ingr-desc">Native to skin connective tissue. Binds up to 1,000× its weight in water — the reason hydrated skin reads as firm and full instead of dry and creased.</div>
+        <span class="ingr-tag">Hydration</span>
+      </div>
+      <div class="ingr-card reveal reveal-delay-6">
+        <div class="ingr-num">06</div>
+        <h3 class="ingr-name">Natural fruit concentrates</h3>
+        <div class="ingr-desc">Real fruit, not artificial flavouring. Carries the taste — and adds a small dose of polyphenols and antioxidants while it's at it.</div>
+        <span class="ingr-tag">Flavour</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS ══════════════════════════════════════════════════
+     Gated by settings.show_testimonials. Disabled by default — the
+     six original entries used invented reviewer names, which violates
+     India's Consumer Protection (Direct Selling) Rules 2021 and the
+     CCPA misleading-endorsements guidelines. Replace the cards below
+     with real, permissioned customer reviews, then enable the toggle
+     in Online Store → Customize → Theme settings → Brand.
+     ════════════════════════════════════════════════════════════════ -->
+{% if settings.show_testimonials %}
+<section id="testimonials">
+  <div style="max-width:1200px;margin:0 auto 56px;">
+    <div class="section-header reveal">
+      <p class="section-overline">Customer reviews</p>
+      <h2 class="section-title">From people who <em>stuck with it</em></h2>
+    </div>
+  </div>
+  <div class="testimonials-track">
+    <!-- Real testimonials -->
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"After 6 weeks of Collabloom, people started asking if I'd had a facial. My skin has never looked this dewy and plump — I'm genuinely obsessed."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">P</div>
+        <div><div class="testi-name">Priya Sharma</div><div class="testi-role">Mumbai · Collabloom User</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"I was sceptical about collagen drinks, but Skelecoll genuinely reduced my knee pain within a month. My physio couldn't believe the improvement."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">R</div>
+        <div><div class="testi-name">Rajesh Mehta</div><div class="testi-role">Delhi · Skelecoll User</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"Collatrim helped me through my weight-loss journey without the sagging skin I feared. The formula is brilliant — skin stayed firm throughout."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">A</div>
+        <div><div class="testi-name">Ananya Kapoor</div><div class="testi-role">Bangalore · Collatrim User</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"Metastable has transformed my gut health. Three months in and my bloating is completely gone — my energy is through the roof and my skin is clearer too."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">S</div>
+        <div><div class="testi-name">Sneha Patel</div><div class="testi-role">Pune · Metastable User</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"The taste is actually delicious — not like medicinal supplements at all. I look forward to my daily Collabloom shot. My nails have grown so strong!"</p>
+      <div class="testi-author">
+        <div class="testi-avatar">N</div>
+        <div><div class="testi-name">Nisha Gupta</div><div class="testi-role">Chennai · Collabloom User</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"I gifted Collabloom to my mother who's 55, and she's been glowing ever since. She says it's the first supplement that's actually made a visible difference."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">K</div>
+        <div><div class="testi-name">Kavya Rao</div><div class="testi-role">Hyderabad · Collabloom User</div></div>
+      </div>
+    </div>
+    <!-- Duplicate set for seamless loop — hidden from assistive tech -->
+    <div class="testi-card" aria-hidden="true">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"After 6 weeks of Collabloom, people started asking if I'd had a facial. My skin has never looked this dewy and plump — I'm genuinely obsessed."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">P</div>
+        <div><div class="testi-name">Priya Sharma</div><div class="testi-role">Mumbai · Collabloom User</div></div>
+      </div>
+    </div>
+    <div class="testi-card" aria-hidden="true">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"I was sceptical about collagen drinks, but Skelecoll genuinely reduced my knee pain within a month. My physio couldn't believe the improvement."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">R</div>
+        <div><div class="testi-name">Rajesh Mehta</div><div class="testi-role">Delhi · Skelecoll User</div></div>
+      </div>
+    </div>
+    <div class="testi-card" aria-hidden="true">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"Collatrim helped me through my weight-loss journey without the sagging skin I feared. The formula is brilliant — skin stayed firm throughout."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">A</div>
+        <div><div class="testi-name">Ananya Kapoor</div><div class="testi-role">Bangalore · Collatrim User</div></div>
+      </div>
+    </div>
+    <div class="testi-card" aria-hidden="true">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"Metastable has transformed my gut health. Three months in and my bloating is completely gone — my energy is through the roof and my skin is clearer too."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">S</div>
+        <div><div class="testi-name">Sneha Patel</div><div class="testi-role">Pune · Metastable User</div></div>
+      </div>
+    </div>
+    <div class="testi-card" aria-hidden="true">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"The taste is actually delicious — not like medicinal supplements at all. I look forward to my daily Collabloom shot. My nails have grown so strong!"</p>
+      <div class="testi-author">
+        <div class="testi-avatar">N</div>
+        <div><div class="testi-name">Nisha Gupta</div><div class="testi-role">Chennai · Collabloom User</div></div>
+      </div>
+    </div>
+    <div class="testi-card" aria-hidden="true">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"I gifted Collabloom to my mother who's 55, and she's been glowing ever since. She says it's the first supplement that's actually made a visible difference."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">K</div>
+        <div><div class="testi-name">Kavya Rao</div><div class="testi-role">Hyderabad · Collabloom User</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ═══ CTA ═══════════════════════════════════════════════════════════ -->
+<section id="cta">
+  <div style="position:relative;z-index:10;">
+    <p class="cta-overline reveal">Try the shot</p>
+    <h2 class="cta-title reveal reveal-delay-1">One daily shot.<br>Four <em>weeks</em> to feel it.</h2>
+    <p class="cta-sub reveal reveal-delay-2">Pick the formula for your goal. Take it daily. Most customers see results within 28 days — and the full ingredient science is on every product page.</p>
+    <div class="cta-actions reveal reveal-delay-3">
+      <a href="#products" id="bottom-cta-shop-btn" class="btn-primary">Shop the range</a>
+      <a href="{{ routes.all_products_collection_url }}" id="bottom-cta-visit-store-btn" class="btn-outline">Visit full store</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══ FOOTER ════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo"><span class="logo__main">Dr<span> Collagen</span></span><span class="logo__sub">Formulated by Doctors</span></div>
+        <p>Japanese marine collagen, micro-hydrolysed and stacked with the co-factors collagen synthesis needs. Four formulas, four outcomes — skin, joints, body composition, gut and energy.</p>
+        <div class="footer-social">
+          <a href="#" id="footer-social-instagram" class="social-btn" aria-label="Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.6" cy="6.4" r="1" fill="currentColor"/></svg>
+          </a>
+          <a href="#" id="footer-social-facebook" class="social-btn" aria-label="Facebook">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M13.5 22v-8h2.7l.4-3.1h-3.1V9c0-.9.3-1.5 1.6-1.5h1.6V4.7C16.4 4.6 15.5 4.5 14.5 4.5c-2.2 0-3.8 1.4-3.8 3.9v2.5H8v3.1h2.7V22h2.8z"/></svg>
+          </a>
+          <a href="#" id="footer-social-youtube" class="social-btn" aria-label="YouTube">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M22 7.1c-.2-1.1-1-2-2.1-2.3C17.9 4.4 12 4.4 12 4.4s-5.9 0-7.9.4C3 5.1 2.2 6 2 7.1 1.6 9.1 1.6 12 1.6 12s0 2.9.4 4.9c.2 1.1 1 2 2.1 2.3 2 .4 7.9.4 7.9.4s5.9 0 7.9-.4c1.1-.3 1.9-1.2 2.1-2.3.4-2 .4-4.9.4-4.9s0-2.9-.4-4.9zM10 15.5V8.5L15.8 12 10 15.5z"/></svg>
+          </a>
+          <a href="#" id="footer-social-twitter" class="social-btn" aria-label="X (Twitter)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M17.9 3h3.3l-7.3 8.4 8.6 11.6h-6.7l-5.3-6.9-6 6.9H1.2l7.8-8.9L.8 3h6.9l4.8 6.3L17.9 3zm-1.2 18h1.8L7.5 4.8H5.5L16.7 21z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="/pages/collabloom" id="footer-link-products-collabloom">Collabloom™</a></li>
+          <li><a href="/pages/skelecoll" id="footer-link-products-skelecoll">Skelecoll™</a></li>
+          <li><a href="/pages/collatrim" id="footer-link-products-collatrim">Collatrim™</a></li>
+          <li><a href="/pages/metastable" id="footer-link-products-metastable">Metastable™</a></li>
+          <li><a href="#products" id="footer-link-products-all">View All</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#" id="footer-link-company-about">About Us</a></li>
+          <li><a href="#" id="footer-link-company-science">Science &amp; Research</a></li>
+          <li><a href="#" id="footer-link-company-sustainability">Sustainability</a></li>
+          <li><a href="#" id="footer-link-company-press">Press</a></li>
+          <li><a href="#" id="footer-link-company-careers">Careers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#" id="footer-link-support-contact">Contact Us</a></li>
+          <li><a href="#" id="footer-link-support-faq">FAQs</a></li>
+          <li><a href="#" id="footer-link-support-shipping">Shipping &amp; Returns</a></li>
+          <li><a href="#" id="footer-link-support-privacy">Privacy Policy</a></li>
+          <li><a href="#" id="footer-link-support-terms">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <!-- LEGAL: this line was rewritten to an India-appropriate disclaimer. Have counsel confirm before launch. -->
+      <p class="footer-legal">© {{ 'now' | date: '%Y' }} Dr Collagen. All rights reserved. These statements have not been evaluated for medicinal claims. This product is a dietary supplement and is not intended to diagnose, treat, cure, or prevent any disease.</p>
+      <div class="footer-cert">
+        <span class="cert-badge">FSSAI Licensed</span>
+        <span class="cert-badge">GMP Certified</span>
+        <span class="cert-badge">Lab Tested</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ═══ MOBILE HAMBURGER DRAWER ════════════════════════════════════════
+(function() {
+  const btn = document.getElementById('nav-hamburger');
+  const drawer = document.getElementById('mobile-drawer');
+  if (!btn || !drawer) return;
+  function setOpen(open) {
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    drawer.classList.toggle('open', open);
+    drawer.setAttribute('aria-hidden', String(!open));
+    document.body.classList.toggle('drawer-open', open);
+  }
+  btn.addEventListener('click', () => {
+    setOpen(!drawer.classList.contains('open'));
+  });
+  // Close on link tap inside drawer
+  drawer.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => setOpen(false));
+  });
+  // Close on Esc
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && drawer.classList.contains('open')) {
+      setOpen(false);
+      btn.focus();
+    }
+  });
+})();
+
+// ═══ DROPDOWN ARIA STATE ═══════════════════════════════════════════
+(function() {
+  document.querySelectorAll('.has-dropdown').forEach(li => {
+    const trigger = li.querySelector('a');
+    if (!trigger) return;
+    function setExpanded(v) { trigger.setAttribute('aria-expanded', String(v)); }
+    li.addEventListener('mouseenter', () => setExpanded(true));
+    li.addEventListener('mouseleave', () => setExpanded(false));
+    li.addEventListener('focusin',   () => setExpanded(true));
+    li.addEventListener('focusout',  () => setExpanded(false));
+  });
+})();
+
+// ═══ CUSTOM CURSOR (WITH MOTION SPRING PHYSICS) ═════════════════════
+(function() {
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot || !ring || window.innerWidth < 600) return;
+
+  const { animate } = Motion;
+  let mx = -100, my = -100;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+    dot.style.transform = `translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`;
+    
+    animate(ring, {
+      transform: [`translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`]
+    }, {
+      type: "spring",
+      stiffness: 300,
+      damping: 25,
+      mass: 0.5
+    });
+  });
+
+  document.querySelectorAll('a, button, .product-card, .pillar-card, .ingr-card').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+})();
+
+// ═══ PARTICLES ══════════════════════════════════════════════════════
+(function() {
+  const canvas = document.getElementById('particles-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function rand(min, max) { return Math.random() * (max - min) + min; }
+
+  // Blue / gold particles
+  for (let i = 0; i < 45; i++) {
+    particles.push({
+      x: rand(0, W), y: rand(0, H),
+      r: rand(0.3, 1.6),
+      vx: rand(-0.15, 0.15),
+      vy: rand(-0.2, -0.05),
+      alpha: rand(0.04, 0.28),
+      hue: rand(0, 1) > 0.6 ? 'rgba(232,205,135,' : 'rgba(200,160,96,'
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.hue + p.alpha + ')';
+      ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+      if (p.y < -4)  p.y = H + 4;
+      if (p.x < -4)  p.x = W + 4;
+      if (p.x > W+4) p.x = -4;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ═══ LOADER — controlled by frame animation, stub here ══════════════
+(function() {
+  // Loader hide is triggered by frame animation JS once first frame loads
+  // Just ensure loader stays visible initially
+})();
+
+// ═══ NAV SCROLL + HERO-ZONE AWARENESS ═══════════════════════════════
+(function() {
+  const nav     = document.getElementById('navbar');
+  const hero    = document.getElementById('scroll-hero');
+  const markers = document.getElementById('chapter-markers');
+  const darkSections = document.querySelectorAll('.marquee-section, footer');
+
+  function update() {
+    const scrolled = window.scrollY > 80;
+    nav.classList.toggle('scrolled', scrolled);
+
+    // Bounding-box collision detection for dark sections
+    const navRect = nav.getBoundingClientRect();
+    let inDark = false;
+    for (const section of darkSections) {
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= navRect.bottom && rect.bottom >= navRect.top) {
+        inDark = true;
+        break;
+      }
+    }
+    nav.classList.toggle('in-dark-section', inDark);
+
+    // Are we inside the sticky hero zone? (hero bottom still below viewport top)
+    if (hero) {
+      const heroRect = hero.getBoundingClientRect();
+      const inHero   = heroRect.top <= 0 && heroRect.bottom > window.innerHeight * 0.25;
+
+      // Chapter markers only visible while inside the hero
+      if (markers) markers.classList.toggle('hidden', !inHero);
+
+      // Hide scroll-text overlays once outside the hero zone
+      if (!inHero) {
+        document.querySelectorAll('.scroll-text').forEach(el => el.classList.remove('visible'));
+      }
+
+      // Scroll hint only while at very top of hero
+      const scrollHint = document.getElementById('scroll-hint-anim');
+      if (scrollHint) {
+        scrollHint.style.opacity = (inHero && window.scrollY < window.innerHeight * 0.4) ? '' : '0';
+      }
+    }
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+
+// ═══ LETTER SPLIT — handled inside frame animation init ─────────────
+// (no-op here; executed after first frame loads)
+
+// ═══ SCROLL REVEAL (WITH MOTION SPRING PHYSICS) ═════════════════════
+(function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+    return;
+  }
+  const { inView, animate } = Motion;
+  inView(".reveal", ({ target }) => {
+    let delay = 0;
+    for (let i = 1; i <= 6; i++) {
+      if (target.classList.contains(`reveal-delay-${i}`)) {
+        delay = i * 0.12;
+        break;
+      }
+    }
+    animate(target, 
+      { opacity: [0, 1], y: [40, 0] }, 
+      { 
+        delay, 
+        duration: 0.85, 
+        easing: [0.16, 1, 0.3, 1] // spring physics curve
+      }
+    );
+  });
+})();
+
+// ═══ COUNTER ANIMATION ──────────────────────────────────────────────
+(function() {
+  const counters = document.querySelectorAll('.counter');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseInt(el.dataset.target || '0', 10);
+      const duration = 1500;
+      const start = performance.now();
+      function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        // ease-out cubic
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(eased * target).toLocaleString();
+        if (t < 1) requestAnimationFrame(step);
+        else el.textContent = target.toLocaleString();
+      }
+      requestAnimationFrame(step);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => io.observe(c));
+})();
+
+// ═══ SMOOTH HOVER GLOW ON PRODUCT CARDS ─────────────────────────────
+(function() {
+  document.querySelectorAll('.product-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width  * 100).toFixed(1);
+      const y = ((e.clientY - rect.top)  / rect.height * 100).toFixed(1);
+      card.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(232,183,46,.05) 0%, transparent 55%), #ffffff`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.background = '';
+    });
+  });
+})();
+
+// ═══ SCROLL-DRIVEN FRAME ANIMATION ──────────────────────────────────
+(function() {
+  const FRAME_COUNT = 3;
+  const FRAME_URLS  = [
+    {{ 'hero-frame-0001.webp' | asset_url | json }},
+    {{ 'hero-frame-0002.webp' | asset_url | json }},
+    {{ 'hero-frame-0003.webp' | asset_url | json }}
+  ];
+  const LERP_FACTOR = 0.09;
+
+  // ── Dwell engine ──────────────────────────────────────────────────
+  // 3 frames → 3 long dwells (each lets the baked-in infographic read)
+  const DWELL_CENTERS = [0.10, 0.50, 0.90];
+  const DWELL_WIDTH   = 0.090;
+  const DWELL_PEAK    = 4.2;
+  const REMAP_N       = 2000;
+
+  function buildLUT() {
+    const lut = new Float32Array(REMAP_N + 1);
+    let sum = 0;
+    for (let i = 0; i <= REMAP_N; i++) {
+      const t = i / REMAP_N;
+      let density = 1;
+      for (const c of DWELL_CENTERS) {
+        const d = (t - c) / DWELL_WIDTH;
+        density += (DWELL_PEAK - 1) * Math.exp(-0.5 * d * d);
+      }
+      sum += density;
+      lut[i] = sum;
+    }
+    const max = lut[REMAP_N];
+    for (let i = 0; i <= REMAP_N; i++) lut[i] /= max;
+    return lut;
+  }
+  const lut = buildLUT();
+
+  function remapProgress(raw) {
+    let lo = 0, hi = REMAP_N;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (lut[mid] < raw) lo = mid + 1; else hi = mid;
+    }
+    return lo / REMAP_N;
+  }
+
+  // ── Canvas & elements ─────────────────────────────────────────────
+  const section   = document.getElementById('scroll-hero');
+  const container = document.getElementById('canvas-container');
+  const canvas    = document.getElementById('product-canvas');
+  const ctx       = canvas.getContext('2d');
+  const tint      = document.getElementById('canvas-tint');
+  const chapterMarkers = document.getElementById('chapter-markers');
+  const dots       = chapterMarkers ? chapterMarkers.querySelectorAll('.chapter-dot') : [];
+  const lines      = chapterMarkers ? chapterMarkers.querySelectorAll('.chapter-line') : [];
+  const fills      = chapterMarkers ? chapterMarkers.querySelectorAll('.chapter-fill') : [];
+  const scrollHint = document.getElementById('scroll-hint-anim');
+  const scrollTexts = document.querySelectorAll('.scroll-text');
+
+  // ── Resize canvas ─────────────────────────────────────────────────
+  function resizeCanvas() {
+    canvas.width  = window.innerWidth  * Math.min(window.devicePixelRatio, 2);
+    canvas.height = window.innerHeight * Math.min(window.devicePixelRatio, 2);
+    canvas.style.width  = '100%';
+    canvas.style.height = '100%';
+    if (frames[currentFrameIdx]) drawFrame(currentFrameIdx);
+  }
+  window.addEventListener('resize', resizeCanvas);
+
+  // ── Frame storage ─────────────────────────────────────────────────
+  const frames = new Array(FRAME_COUNT).fill(null);
+  let loadedCount = 0;
+  let currentFrameIdx = 0;
+  let targetFrameIdx  = 0;
+  let animStarted = false;
+
+  function padNum(n) { return String(n).padStart(4, '0'); }
+
+  function loadFrame(i, cb) {
+    if (frames[i]) { if (cb) cb(); return; }
+    const img = new Image();
+    img.onload = () => {
+      frames[i] = img;
+      loadedCount++;
+      updateLoader();
+      if (cb) cb();
+    };
+    img.onerror = () => { loadedCount++; updateLoader(); if (cb) cb(); };
+    img.src = FRAME_URLS[i];
+  }
+
+  function updateLoader() {
+    const pct = Math.round((loadedCount / FRAME_COUNT) * 100);
+    const fill = document.getElementById('loader-fill');
+    const pctEl = document.getElementById('loader-pct');
+    if (fill)  fill.style.width = pct + '%';
+    if (pctEl) pctEl.textContent = pct + '%';
+    if (loadedCount >= FRAME_COUNT && !animStarted) startAnimation();
+  }
+
+  // Critical frames first (evenly spaced), then rest
+  const CRITICAL_COUNT = FRAME_COUNT;
+  let criticalLoaded = 0;
+  function loadCritical() {
+    for (let i = 0; i < CRITICAL_COUNT; i++) {
+      const idx = Math.round((i / (CRITICAL_COUNT - 1)) * (FRAME_COUNT - 1));
+      loadFrame(idx, () => {
+        criticalLoaded++;
+        if (criticalLoaded === 1) {
+          // Show first frame immediately
+          resizeCanvas();
+          drawFrame(0);
+          hideLoader();
+        }
+        if (criticalLoaded >= CRITICAL_COUNT) loadRemaining();
+      });
+    }
+  }
+
+  function loadRemaining() {
+    for (let i = 0; i < FRAME_COUNT; i++) {
+      if (!frames[i]) loadFrame(i);
+    }
+  }
+
+  function hideLoader() {
+    const loader = document.getElementById('loader');
+    if (loader) {
+      loader.classList.add('fade-out');
+      setTimeout(() => loader.remove(), 700);
+    }
+  }
+
+  // ── Draw ──────────────────────────────────────────────────────────
+  function drawFrame(idx) {
+    idx = Math.max(0, Math.min(FRAME_COUNT - 1, Math.round(idx)));
+    // Find nearest loaded frame
+    let img = frames[idx];
+    if (!img) {
+      for (let offset = 1; offset < FRAME_COUNT; offset++) {
+        if (frames[idx - offset]) { img = frames[idx - offset]; break; }
+        if (frames[idx + offset]) { img = frames[idx + offset]; break; }
+      }
+    }
+    if (!img) return;
+
+    const cw = canvas.width, ch = canvas.height;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+
+    // Contain-fit: show full bottle, fill background on sides
+    const scale = Math.min(cw / iw, ch / ih);
+    const dw = iw * scale, dh = ih * scale;
+    const dx = (cw - dw) / 2;
+    const dy = window.innerWidth <= 600 ? (ch - dh) * 0.95 : (ch - dh) / 2;
+
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, dx, dy, dw, dh);
+    currentFrameIdx = idx;
+  }
+
+  // ── Scroll progress ───────────────────────────────────────────────
+  function getScrollProgress() {
+    if (!section) return 0;
+    const rect = section.getBoundingClientRect();
+    return Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)));
+  }
+
+  // ── Scroll text visibility ────────────────────────────────────────
+  let currentSection = -1;
+  function updateScrollTexts(raw) {
+    let newSection = -1;
+    scrollTexts.forEach((el, i) => {
+      const showAt = parseFloat(el.dataset.showAt || 0);
+      const hideAt = parseFloat(el.dataset.hideAt || 1);
+      const visible = raw >= showAt && raw < hideAt;
+      el.classList.toggle('visible', visible);
+      if (visible) newSection = i;
+    });
+
+    // Toggle the readability-gradient fade when no overlay is on screen
+    if (section) section.classList.toggle('no-overlay', newSection === -1);
+
+    // Chapter markers — driven by scroll progress bands (not overlay visibility)
+    // so dots stay active during frame-dwell zones when overlays are hidden.
+    // Bands match the 3 dwell centers: Frame 1 (0.10), Frame 2 (0.50), Frame 3 (0.90).
+    const BAND_EDGES = [0.30, 0.70]; // band 0: 0-0.30, band 1: 0.30-0.70, band 2: 0.70-1
+    dots.forEach((dot) => dot.classList.remove('active'));
+    fills.forEach(f => f.style.height = '0%');
+
+    let activeDot = 0;
+    if (raw >= BAND_EDGES[1]) activeDot = 2;
+    else if (raw >= BAND_EDGES[0]) activeDot = 1;
+    if (dots[activeDot]) dots[activeDot].classList.add('active');
+
+    // Fill lines between chapter dots based on progress within each band
+    const bandStarts = [0, BAND_EDGES[0], BAND_EDGES[1]];
+    const bandEnds   = [BAND_EDGES[0], BAND_EDGES[1], 1];
+    for (let i = 0; i < fills.length; i++) {
+      const s0 = bandStarts[i], s1 = bandEnds[i];
+      if (raw >= s1) fills[i].style.height = '100%';
+      else if (raw >= s0) fills[i].style.height = (((raw - s0) / (s1 - s0)) * 100) + '%';
+    }
+
+    // Hide chapter markers and scroll hint after animation zone
+    if (chapterMarkers) chapterMarkers.classList.toggle('hidden', raw >= 0.99);
+    if (scrollHint) scrollHint.style.opacity = raw > 0.05 ? '0' : '';
+  }
+
+  // ── Tint per section ──────────────────────────────────────────────
+  const TINTS = [
+    'transparent',
+    'rgba(232,183,46,.04)',
+    'rgba(100,120,200,.05)',
+    'rgba(80,160,120,.04)',
+    'rgba(180,140,60,.04)',
+  ];
+  let currentTint = 0;
+  function updateTint(raw) {
+    const idx = Math.min(TINTS.length - 1, Math.floor(raw * TINTS.length));
+    if (idx !== currentTint) {
+      currentTint = idx;
+      if (tint) tint.style.background = TINTS[idx];
+    }
+  }
+
+  // ── Animation loop ────────────────────────────────────────────────
+  let rafTarget = 0;
+  let rafCurrent = 0;
+
+  function startAnimation() {
+    animStarted = true;
+
+    // Letter split for first section title — splits TEXT NODES into word groups
+    // (each word is inline-block so it won't break mid-word), then wraps each
+    // character in an animated span. Child elements like <em> are left intact
+    // so their own styling (e.g. metallic-gold background-clip:text) keeps working.
+    document.querySelectorAll('[data-split]').forEach(el => {
+      Array.from(el.childNodes).forEach(node => {
+        if (node.nodeType !== 3) return; // skip element nodes (like <em>)
+        const frag = document.createDocumentFragment();
+        node.textContent.split(/(\s+)/).forEach(segment => {
+          if (!segment) return;
+          if (/^\s+$/.test(segment)) {
+            frag.appendChild(document.createTextNode(segment));
+            return;
+          }
+          const wordSpan = document.createElement('span');
+          wordSpan.className = 'split-word';
+          for (const ch of segment) {
+            const charSpan = document.createElement('span');
+            charSpan.className = 'split-char';
+            charSpan.style.animationDelay =
+              (Math.random() * 0.4 + 0.3).toFixed(2) + 's';
+            charSpan.textContent = ch;
+            wordSpan.appendChild(charSpan);
+          }
+          frag.appendChild(wordSpan);
+        });
+        node.parentNode.replaceChild(frag, node);
+      });
+    });
+
+    function animate() {
+      const raw     = getScrollProgress();
+      const remapped = remapProgress(raw);
+      rafTarget = remapped * (FRAME_COUNT - 1);
+      rafCurrent += (rafTarget - rafCurrent) * LERP_FACTOR;
+      drawFrame(Math.round(rafCurrent));
+      updateScrollTexts(raw);
+      updateTint(raw);
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────
+  // Override the basic loader to tie into frame loading
+  const loaderEl = document.getElementById('loader');
+  if (loaderEl) {
+    // Keep loader until first frame loaded (handled in loadCritical)
+    // Clear the auto-fade loader set earlier
+    const existingFill = document.getElementById('loader-fill');
+    if (existingFill) existingFill.style.width = '0%';
+  }
+
+  loadCritical();
+
+  // Fallback: if the first hero frame hasn't loaded within 4 seconds
+  // (CDN miss, slow network, etc.), force the loader to fade and let
+  // the visitor through to the page rather than stranding them.
+  setTimeout(function () {
+    var loader = document.getElementById('loader');
+    if (loader && !loader.classList.contains('fade-out')) {
+      hideLoader();
+    }
+  }, 4000);
+})();
+
+/* ─── Typewriter heading (doctor strip) ──────────────────────────────
+   Types out each segment of [data-typewriter] elements character by
+   character when scrolled into view. Honors prefers-reduced-motion. */
+(function () {
+  var nodes = document.querySelectorAll('[data-typewriter]');
+  if (!nodes.length) return;
+
+  var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function fillImmediately(heading) {
+    heading.querySelectorAll('.tw-segment').forEach(function (seg) {
+      seg.textContent = seg.dataset.text;
+    });
+  }
+
+  function type(heading) {
+    var segs = Array.prototype.slice.call(heading.querySelectorAll('.tw-segment'));
+    var i = 0, j = 0;
+    function step() {
+      if (i >= segs.length) return;
+      var s = segs[i];
+      var t = s.dataset.text;
+      if (j < t.length) {
+        s.textContent = t.substring(0, ++j);
+        setTimeout(step, 45 + Math.random() * 35);
+      } else {
+        i++; j = 0;
+        setTimeout(step, 90);
+      }
+    }
+    step();
+  }
+
+  if (REDUCED) {
+    nodes.forEach(fillImmediately);
+    return;
+  }
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        type(entry.target);
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.45 });
+
+  nodes.forEach(function (h) { io.observe(h); });
+})();
+</script>

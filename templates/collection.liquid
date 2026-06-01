@@ -1,0 +1,203 @@
+{% comment %}
+  Collection template — luxury grid with stagger reveals, magnetic glow cards.
+{% endcomment %}
+
+<style>
+  .collection-page {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: var(--space-6) clamp(20px, 4vw, 48px);
+    font-family: var(--dc-body);
+    color: var(--dc-ink);
+  }
+  .collection-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto var(--space-5);
+  }
+  .collection-eyebrow {
+    font-size: var(--fs-xs);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--dc-accent);
+    font-weight: 500;
+    margin-bottom: var(--space-2);
+  }
+  .collection-head h1 {
+    font-family: var(--dc-heading);
+    font-size: clamp(var(--fs-2xl), 4.6vw, var(--fs-3xl));
+    font-weight: 400;
+    margin: 0 0 var(--space-2);
+    color: var(--dc-ink);
+    line-height: var(--lh-tight);
+    letter-spacing: var(--ls-tight);
+  }
+  .collection-head .desc {
+    color: var(--dc-muted);
+    line-height: var(--lh-body);
+    font-weight: 400;
+    font-size: var(--fs-base);
+  }
+
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-4);
+  }
+
+  /* Premium product card: no border (whitespace separates), subtle lift,
+     gentle image zoom. One hover effect at a time. */
+  .product-card {
+    background: var(--dc-bg);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+    transition:
+      transform var(--dur-med) var(--ease),
+      box-shadow var(--dur-med) var(--ease);
+    will-change: transform;
+  }
+  .product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-2);
+  }
+
+  .product-card-media {
+    background: var(--dc-bg-soft);
+    aspect-ratio: 4 / 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .product-card-media img {
+    max-height: 78%;
+    width: auto;
+    transition: transform var(--dur-slow) var(--ease);
+  }
+  .product-card:hover .product-card-media img { transform: scale(1.025); }
+
+  .product-card-body { padding: var(--space-3) var(--space-3) var(--space-3); }
+  .product-card-title {
+    font-family: var(--dc-heading);
+    font-size: var(--fs-lg);
+    font-weight: 400;
+    margin: 0 0 6px;
+    color: var(--dc-ink);
+    letter-spacing: -0.005em;
+  }
+  .product-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--fs-sm);
+    color: var(--dc-muted);
+    margin: 0;
+  }
+  .product-card-price {
+    color: var(--dc-ink);
+    font-weight: 500;
+  }
+  .product-card-arrow {
+    color: var(--dc-subtle);
+    transition: color var(--dur-fast) var(--ease-soft),
+                transform var(--dur-fast) var(--ease);
+  }
+  .product-card:hover .product-card-arrow {
+    color: var(--dc-ink);
+    transform: translateX(3px);
+  }
+
+  .product-card-sold-out {
+    position: absolute;
+    top: 18px; left: 18px;
+    background: rgba(255,255,255,0.95);
+    padding: 6px 12px;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--dc-ink);
+    border-radius: var(--dc-radius-pill);
+    backdrop-filter: blur(8px);
+  }
+
+  .collection-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--dc-fg-subtle);
+    font-family: var(--dc-heading);
+    font-size: 22px;
+  }
+
+  .collection-pagination {
+    text-align: center;
+    margin-top: 72px;
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--dc-fg-muted);
+  }
+  .collection-pagination a,
+  .collection-pagination span {
+    display: inline-block;
+    padding: 10px 14px;
+    margin: 0 4px;
+    border-radius: var(--dc-radius-pill);
+    transition: background 220ms, color 220ms;
+  }
+  .collection-pagination a:hover { background: var(--dc-bg-soft); color: var(--dc-accent); }
+  .collection-pagination .current { background: var(--dc-ink); color: #fff; }
+</style>
+
+<section class="collection-page">
+  <header class="collection-head">
+    <p class="collection-eyebrow dc-reveal-up">The range</p>
+    <h1 class="dc-reveal-up dc-delay-1">{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <p class="desc dc-reveal-up dc-delay-2">{{ collection.description }}</p>
+    {% endif %}
+    <div class="dc-divider dc-reveal-up dc-delay-3">·  ·  ·</div>
+  </header>
+
+  <div class="collection-grid">
+    {% for product in collection.products %}
+      <a href="{{ product.url }}"
+         class="product-card dc-reveal-up{% cycle '', ' dc-delay-1', ' dc-delay-2', ' dc-delay-3' %}"
+         aria-label="{{ product.title | escape }}, {{ product.price | money }}">
+        <div class="product-card-media">
+          {% unless product.available %}
+            <span class="product-card-sold-out">Sold out</span>
+          {% endunless %}
+          {% if product.featured_image %}
+            <img src="{{ product.featured_image | image_url: width: 600 }}"
+                 alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                 loading="lazy">
+          {% endif %}
+        </div>
+        <div class="product-card-body">
+          <h3 class="product-card-title">{{ product.title }}</h3>
+          <p class="product-card-meta">
+            <span class="product-card-price">{{ product.price | money }}</span>
+            <span class="product-card-arrow" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </p>
+        </div>
+      </a>
+    {% else %}
+      <p class="collection-empty">No products yet.</p>
+    {% endfor %}
+  </div>
+
+  {% if paginate.pages > 1 %}
+    <nav class="collection-pagination" aria-label="Pagination">
+      {{ paginate | default_pagination }}
+    </nav>
+  {% endif %}
+</section>
+

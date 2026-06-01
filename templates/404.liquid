@@ -1,0 +1,45 @@
+{% comment %}404 Not Found — animated luxury fallback{% endcomment %}
+
+<style>
+  .notfound {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-6) 24px;
+    font-family: var(--dc-body);
+    color: var(--dc-ink);
+  }
+  /* Plain serif numeral, no gradient, no float, no glow. */
+  .notfound-mark {
+    font-family: var(--dc-heading);
+    font-size: clamp(96px, 18vw, 160px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--dc-ink);
+  }
+  .notfound h1 {
+    font-family: var(--dc-heading);
+    font-size: clamp(var(--fs-xl), 3vw, var(--fs-2xl));
+    font-weight: 400;
+    margin: var(--space-2) 0 var(--space-1);
+    color: var(--dc-ink);
+  }
+  .notfound p {
+    color: var(--dc-muted);
+    max-width: 460px;
+    line-height: var(--lh-body);
+    margin: 0 0 var(--space-4);
+    font-weight: 400;
+  }
+</style>
+
+<section class="notfound">
+  <div class="notfound-mark dc-reveal-scale" aria-hidden="true">404</div>
+  <h1 class="dc-reveal-up dc-delay-1">Page not found</h1>
+  <p class="dc-reveal-up dc-delay-2">The page you're looking for has moved or doesn't exist. Try the homepage or jump straight to the range.</p>
+  <a href="{{ routes.root_url }}" class="dc-btn dc-btn--gold dc-reveal-up dc-delay-3">Back to homepage</a>
+</section>

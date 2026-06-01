@@ -1,0 +1,135 @@
+{% comment %}Single article — luxury editorial layout{% endcomment %}
+
+<style>
+  .article-page {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: var(--space-6) clamp(20px, 4vw, 48px) var(--space-7);
+    font-family: var(--dc-body);
+    color: var(--dc-fg);
+  }
+  .article-head {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .article-date {
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--dc-accent);
+    font-weight: 500;
+    margin: 0 0 16px;
+  }
+  .article-title {
+    font-family: var(--dc-heading);
+    font-size: clamp(34px, 5vw, 56px);
+    font-weight: 400;
+    margin: 0 0 16px;
+    line-height: 1.1;
+    color: var(--dc-ink);
+    letter-spacing: -0.015em;
+  }
+  .article-hero {
+    width: 100%;
+    border-radius: var(--dc-radius-lg);
+    margin-bottom: 56px;
+    box-shadow: var(--dc-shadow-sm);
+    overflow: hidden;
+  }
+  .article-hero img { width: 100%; display: block; }
+  .article-content {
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--dc-fg-muted);
+    font-weight: 300;
+  }
+  /* Quieter drop-cap — ink, not gold; gentler scale. */
+  .article-content > p:first-of-type::first-letter {
+    font-family: var(--dc-heading);
+    font-size: 4.2em;
+    float: left;
+    line-height: 0.92;
+    margin: 6px 12px -2px 0;
+    color: var(--dc-ink);
+    font-weight: 400;
+  }
+  .article-content p { margin: 0 0 1.4em; }
+  .article-content h2 {
+    font-family: var(--dc-heading);
+    font-size: clamp(26px, 3.2vw, 36px);
+    font-weight: 400;
+    margin: 56px 0 18px;
+    color: var(--dc-ink);
+    letter-spacing: -0.01em;
+  }
+  .article-content h3 {
+    font-family: var(--dc-heading);
+    font-size: 22px;
+    font-weight: 500;
+    margin: 36px 0 14px;
+    color: var(--dc-ink);
+  }
+  .article-content blockquote {
+    font-family: var(--dc-heading);
+    font-style: italic;
+    font-size: clamp(22px, 2.6vw, 28px);
+    line-height: 1.4;
+    margin: 40px -20px;
+    padding: 24px 32px;
+    border-left: 2px solid var(--dc-accent);
+    background: var(--dc-bg-soft);
+    color: var(--dc-ink);
+    border-radius: 0 var(--dc-radius-md) var(--dc-radius-md) 0;
+  }
+  .article-content img {
+    border-radius: var(--dc-radius-md);
+    margin: 36px 0;
+  }
+  .article-content a {
+    color: var(--dc-accent);
+    border-bottom: 1px solid currentColor;
+    text-decoration: none;
+    transition: color 220ms;
+  }
+  .article-content a:hover { color: var(--dc-accent-bright); }
+  .article-footer {
+    margin-top: 72px;
+    padding-top: 28px;
+    border-top: 1px solid var(--dc-line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .article-tags {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--dc-fg-subtle);
+  }
+</style>
+
+<article class="article-page">
+  <header class="article-head">
+    <p class="article-date dc-reveal-up">{{ article.published_at | date: '%B %d, %Y' }} · {{ article.author }}</p>
+    <h1 class="article-title dc-reveal-up dc-delay-1">{{ article.title }}</h1>
+  </header>
+
+  {% if article.image %}
+    <div class="article-hero dc-reveal-scale dc-delay-2">
+      <img src="{{ article.image | image_url: width: 1400 }}" alt="{{ article.title | escape }}" loading="eager">
+    </div>
+  {% endif %}
+
+  <div class="article-content dc-reveal-up dc-delay-3 rte">
+    {{ article.content }}
+  </div>
+
+  <footer class="article-footer">
+    {% if article.tags.size > 0 %}
+      <p class="article-tags">Tagged: {{ article.tags | join: ', ' }}</p>
+    {% endif %}
+    <a href="{{ blog.url }}" class="dc-link-underline" style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--dc-fg-muted);">← Back to Journal</a>
+  </footer>
+</article>

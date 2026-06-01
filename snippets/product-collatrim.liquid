@@ -1,0 +1,1609 @@
+{%- comment -%}
+  Resolve the live Shopify product so prices and the Buy button always
+  match the storefront. Falls back to launch-pricing static values until
+  the Product is created in admin with the right handle.
+
+  Flip dc_coming_soon to false once Collatrim is in stock and ready to
+  sell — then the standard Add-to-cart flow returns automatically.
+{%- endcomment -%}
+{%- assign dc_handle = 'collatrim' -%}
+{%- assign dc_product = all_products[dc_handle] -%}
+{%- assign dc_coming_soon = true -%}
+{%- if dc_product and dc_product.id != blank -%}
+  {%- assign dc_price = dc_product.price | money -%}
+  {%- if dc_product.compare_at_price > dc_product.price -%}
+    {%- assign dc_was = dc_product.compare_at_price | money -%}
+    {%- assign dc_save_pct = dc_product.compare_at_price | minus: dc_product.price | times: 100.0 | divided_by: dc_product.compare_at_price | round -%}
+  {%- endif -%}
+  {%- assign dc_variant_id = dc_product.selected_or_first_available_variant.id -%}
+  {%- assign dc_available = dc_product.available -%}
+{%- else -%}
+  {%- assign dc_price = '₹2,099' -%}
+  {%- assign dc_was = '₹2,625' -%}
+  {%- assign dc_save_pct = 20 -%}
+  {%- assign dc_available = false -%}
+{%- endif -%}
+{%- if dc_coming_soon -%}{%- assign dc_available = false -%}{%- endif -%}
+
+<style>
+    /* ─── DESIGN TOKENS (per-product theme: Collatrim — light sage/olive green) ─── */
+    :root {
+      --accent:        #8fa852;
+      --accent-deep:   #627636;
+      --accent-glow:   rgba(143,168,82,.32);
+      --accent-soft:   rgba(143,168,82,.10);
+      --theme-1:       #ebeed6;    /* hero background tint */
+      --theme-2:       #f4f6e5;
+      --theme-3:       #d8deb5;
+      --ink:           #1e2512;
+      --warm-dim:      #52593f;
+      --muted:         #6a7258;
+      --heading:       'Playfair Display', Georgia, serif;
+      --body:          'DM Sans', -apple-system, sans-serif;
+    }
+
+    /* ─── METALLIC SAGE ─────────────────────────────────────────── */
+    em.shine, h1 em, h2 em {
+      background: linear-gradient(135deg,#f4f6cd 0%,#d9e2a0 22%,#b4c475 42%,#8fa852 58%,#627636 78%,#3e4b1e 100%);
+      background-size: 220% 220%;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+      filter: drop-shadow(0 1px 0 rgba(224,236,180,.55)) drop-shadow(0 0 14px rgba(143,168,82,.45));
+      animation: shimmer 6s ease-in-out infinite;
+      font-style: italic; font-weight: 400;
+    }
+    @keyframes shimmer { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+    /* ─── RESET ─────────────────────────────────────────────────── */
+    *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--body);
+      background: #ffffff;
+      color: var(--ink);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; border: none; background: none; font-family: var(--body); }
+
+    /* ─── FILM GRAIN ────────────────────────────────────────────── */
+    #film-grain {
+      position: fixed; inset: -50%; z-index: 100;
+      width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+      opacity: 0.028;
+      pointer-events: none;
+      animation: grain-move .6s steps(2) infinite;
+    }
+    @keyframes grain-move {
+      0%{transform:translate(0,0)} 25%{transform:translate(-3px,2px)}
+      50%{transform:translate(2px,-3px)} 75%{transform:translate(3px,1px)}
+      100%{transform:translate(-1px,3px)}
+    }
+
+    /* ─── NAV ───────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      padding: 22px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background .4s ease, padding .4s ease, backdrop-filter .4s ease, border-color .4s ease;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border-bottom-color: rgba(0,0,0,.05);
+      padding: 14px 48px;
+    }
+    .nav-logo {
+      font-family: var(--heading); font-size: 20px; font-weight: 600;
+      letter-spacing: .08em;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-back {
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--warm-dim);
+      display: inline-flex; align-items: center; gap: 10px;
+      transition: color .3s, gap .3s;
+    }
+    .nav-back:hover { color: var(--accent); gap: 14px; }
+    .nav-back .arrow { font-size: 14px; transform: translateY(-1px); }
+    .nav-cta {
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase;
+      padding: 10px 22px; color: var(--accent);
+      border: 1px solid rgba(143,168,82,.42); border-radius: 40px;
+      transition: background .3s, color .3s, border-color .3s;
+    }
+    .nav-cta:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* ─── HERO ──────────────────────────────────────────────────── */
+    #hero {
+      position: relative; min-height: 100vh;
+      background: radial-gradient(ellipse at 30% 20%, var(--theme-1) 0%, var(--theme-2) 50%, #ffffff 100%);
+      padding: 140px 6vw 80px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: center;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: ''; position: absolute;
+      top: -30%; right: -15%;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-soft) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-text { position: relative; z-index: 2; }
+    .hero-breadcrumb {
+      font-size: 11px; font-weight: 700; letter-spacing: .28em;
+      text-transform: uppercase; color: var(--accent-deep);
+      margin-bottom: 24px;
+    }
+    .hero-breadcrumb a { transition: color .3s; }
+    .hero-breadcrumb a:hover { color: var(--accent-deep); }
+    .hero-title {
+      font-family: var(--heading);
+      font-size: clamp(52px, 7vw, 96px);
+      font-weight: 300; line-height: 1.02;
+      margin-bottom: 20px;
+      letter-spacing: -.01em;
+    }
+    .hero-tagline {
+      font-size: clamp(17px, 1.6vw, 21px);
+      font-weight: 300;
+      color: var(--warm-dim);
+      line-height: 1.6;
+      max-width: 480px;
+      margin-bottom: 32px;
+    }
+    .hero-bullets {
+      list-style: none; display: flex; flex-direction: column; gap: 10px;
+      margin-bottom: 40px;
+    }
+    .hero-bullets li {
+      font-size: 14px; font-weight: 400; color: var(--ink);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .hero-bullets li::before {
+      content: '✦'; color: var(--accent);
+      font-size: 12px; flex-shrink: 0;
+    }
+    .hero-actions {
+      display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+    }
+    .btn-primary {
+      position: relative; overflow: hidden;
+      padding: 14px 34px;
+      background: linear-gradient(135deg, #627636 0%, #3e4b1e 50%, #1e2512 100%);
+      color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: .2em;
+      text-transform: uppercase; border-radius: 40px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.15),
+        inset 0 -1px 0 rgba(0,0,0,.35),
+        0 6px 18px rgba(30,37,18,.35),
+        0 0 0 1px rgba(98,118,54,.45);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      transition: transform .3s, box-shadow .3s, filter .3s;
+      display: inline-block;
+    }
+    .btn-primary::before {
+      content: ""; position: absolute; top: 0; left: -120%; width: 60%; height: 100%;
+      background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.55) 50%, transparent 80%);
+      transform: skewX(-18deg); pointer-events: none;
+      transition: left .9s cubic-bezier(.2,.8,.2,1);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.10) saturate(1.1);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.25),
+        inset 0 -1px 0 rgba(0,0,0,.4),
+        0 16px 44px rgba(30,37,18,.4),
+        0 0 0 1px rgba(98,118,54,.55);
+    }
+    .btn-primary:hover::before { left: 120%; }
+    .btn-outline {
+      padding: 14px 30px; border: 1px solid rgba(30,37,18,.22);
+      color: var(--ink);
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; border-radius: 40px;
+      transition: border-color .3s, background .3s;
+    }
+    .btn-outline:hover { border-color: rgba(30,37,18,.5); background: rgba(30,37,18,.03); }
+
+    .hero-price-row {
+      display: flex; align-items: baseline; gap: 18px;
+      margin-bottom: 12px;
+    }
+    .hero-price {
+      font-family: var(--heading);
+      font-size: 30px; font-weight: 400;
+      color: var(--ink);
+    }
+    .hero-price-was {
+      font-size: 16px; font-weight: 300;
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+    .hero-price-save {
+      font-size: 10px; font-weight: 600; letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: 4px 10px; border-radius: 20px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+    }
+
+    .hero-visual {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hero-bottle-wrap {
+      position: relative;
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-18px); }
+    }
+    .hero-bottle-wrap img {
+      height: clamp(340px, 52vh, 560px);
+      width: auto;
+      filter: drop-shadow(0 40px 80px rgba(98,118,54,.32));
+    }
+    .hero-bottle-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: 50%;
+      transform: translateX(-50%);
+      width: 260px; height: 30px;
+      background: radial-gradient(ellipse, rgba(30,37,18,.2) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(8px);
+    }
+    .hero-badge-float {
+      position: absolute; top: 12%; right: 0;
+      background: #fff;
+      border: 1px solid var(--accent-soft);
+      padding: 14px 20px; border-radius: 14px;
+      box-shadow: 0 8px 28px rgba(98,118,54,.13);
+      font-size: 11px; font-weight: 500;
+      letter-spacing: .05em; color: var(--ink);
+      max-width: 180px;
+    }
+    .hero-badge-float strong { color: var(--accent-deep); }
+
+    /* ─── SECTION SHARED ────────────────────────────────────────── */
+    section { padding: 120px 48px; position: relative; }
+    .inner { max-width: 1160px; margin: 0 auto; }
+    .overline {
+      font-size: 11px; font-weight: 700; letter-spacing: .32em;
+      text-transform: uppercase; color: var(--accent-deep);
+      margin-bottom: 18px;
+    }
+    .heading {
+      font-family: var(--heading);
+      font-size: clamp(32px, 4.5vw, 58px);
+      font-weight: 300; line-height: 1.12;
+      letter-spacing: -.01em;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
+    .lede {
+      font-size: clamp(16px, 1.3vw, 19px);
+      font-weight: 300;
+      color: var(--warm-dim);
+      line-height: 1.8;
+      max-width: 620px;
+    }
+
+    /* Reveal — failsafe-first: starts hidden, but a CSS animation auto-
+       reveals after 1.5s even if every JS animation library fails.
+       When the JS observer adds .visible, the smooth transition takes
+       over and the failsafe animation becomes a no-op. */
+    @keyframes dc-reveal-failsafe {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal { opacity: 0; transform: translateY(40px); animation: dc-reveal-failsafe .8s ease 1.5s forwards; }
+    .reveal.visible { opacity: 1; transform: translateY(0); transition: opacity .8s ease, transform .8s ease; animation: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+    }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+
+    /* ─── THE PROMISE / PROBLEM ─────────────────────────────────── */
+    #promise { background: #ffffff; }
+    #promise .inner {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    .promise-img {
+      background: linear-gradient(160deg, var(--theme-3) 0%, var(--theme-2) 100%);
+      border-radius: 24px; padding: 60px;
+      position: relative; overflow: hidden;
+      aspect-ratio: 1/1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .promise-img::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.55) 0%, transparent 60%);
+    }
+    .promise-img-number {
+      position: relative; z-index: 2;
+      font-family: var(--heading);
+      font-size: clamp(80px, 14vw, 220px);
+      font-weight: 300;
+      color: var(--accent-deep);
+      line-height: 1;
+      letter-spacing: -.04em;
+      text-align: center;
+    }
+    .promise-img-number small {
+      display: block; font-size: 14px; font-weight: 500;
+      letter-spacing: .3em; text-transform: uppercase;
+      color: var(--warm-dim); margin-top: 12px;
+      letter-spacing: .25em;
+    }
+    .promise-text p {
+      font-size: 15px; color: var(--warm-dim);
+      line-height: 1.85; margin-bottom: 16px;
+    }
+
+    /* ─── INGREDIENT DEEP-DIVE ──────────────────────────────────── */
+    #ingredients {
+      background: linear-gradient(180deg, #fafbef 0%, #d8deb5 100%);
+      overflow: hidden;
+    }
+    #ingredients .inner { position: relative; }
+    .ing-head { text-align: center; margin-bottom: 80px; }
+    .ing-head .heading { max-width: 720px; margin-left: auto; margin-right: auto; }
+    .ing-head .lede { margin: 20px auto 0; }
+    .ing-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .ing-card {
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,.05);
+      border-radius: 22px;
+      padding: 36px 28px 32px;
+      position: relative;
+      transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s, border-color .4s;
+    }
+    .ing-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(143,168,82,.28);
+      box-shadow: 0 20px 50px rgba(98,118,54,.14);
+    }
+    .ing-icon {
+      width: 56px; height: 56px; border-radius: 16px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 22px;
+    }
+    .ing-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke-width: 1.5;
+    }
+    .ing-name {
+      font-family: var(--heading);
+      font-size: 22px; font-weight: 400;
+      color: var(--ink); margin-bottom: 10px;
+    }
+    .ing-dose {
+      font-size: 11px; font-weight: 600; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--accent-deep);
+      margin-bottom: 16px;
+    }
+    .ing-desc {
+      font-size: 14px; font-weight: 300;
+      color: var(--warm-dim);
+      line-height: 1.75;
+    }
+
+    /* ─── HOW IT WORKS / TIMELINE ───────────────────────────────── */
+    #timeline {
+      background: #ffffff;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .tl-head { text-align: center; margin-bottom: 80px; }
+    .tl-head .heading { max-width: 720px; margin: 0 auto; }
+    .tl-head .lede { margin: 20px auto 0; }
+    .tl-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+      border-top: 1px solid rgba(0,0,0,.08);
+      border-bottom: 1px solid rgba(0,0,0,.08);
+    }
+    .tl-item {
+      padding: 44px 28px;
+      border-right: 1px solid rgba(0,0,0,.08);
+      position: relative;
+      transition: background .3s;
+    }
+    .tl-item:last-child { border-right: none; }
+    .tl-item:hover { background: var(--theme-2); }
+    .tl-week {
+      font-family: var(--heading);
+      font-size: 13px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+    .tl-num {
+      font-family: var(--heading);
+      font-size: 52px; font-weight: 300;
+      color: var(--ink);
+      margin-bottom: 14px; line-height: 1;
+      letter-spacing: -.02em;
+    }
+    .tl-text {
+      font-size: 14px; font-weight: 300;
+      color: var(--warm-dim);
+      line-height: 1.7;
+    }
+
+    /* ─── HOW TO USE ────────────────────────────────────────────── */
+    #use {
+      background: linear-gradient(180deg, #ffffff 0%, #f7f9ea 100%);
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    #use .inner {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    .use-steps {
+      list-style: none; display: flex; flex-direction: column; gap: 24px;
+      margin-top: 36px;
+    }
+    .use-step {
+      display: flex; align-items: flex-start; gap: 20px;
+      padding: 22px 24px;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 16px;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .use-step:hover {
+      border-color: rgba(143,168,82,.3);
+      box-shadow: 0 8px 24px rgba(98,118,54,.1);
+    }
+    .use-step-num {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--accent-soft);
+      border: 1px solid rgba(143,168,82,.26);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--heading); font-size: 15px; font-weight: 500;
+      color: var(--accent-deep);
+      flex-shrink: 0;
+    }
+    .use-step-text h4 {
+      font-size: 14px; font-weight: 500; color: var(--ink);
+      margin-bottom: 4px; letter-spacing: .02em;
+    }
+    .use-step-text p {
+      font-size: 13px; font-weight: 300; color: var(--warm-dim);
+      line-height: 1.65;
+    }
+    .use-visual {
+      position: relative;
+    }
+    .use-visual-bg {
+      background: radial-gradient(ellipse at 50% 50%, var(--theme-1) 0%, var(--theme-2) 60%, transparent 100%);
+      border-radius: 24px;
+      aspect-ratio: 4/5;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px;
+    }
+    .use-visual-bg img {
+      height: 100%; width: auto; max-height: 480px;
+      filter: drop-shadow(0 30px 60px rgba(98,118,54,.28));
+    }
+
+    /* ─── RESULTS STATS ─────────────────────────────────────────── */
+    #results {
+      background: #ffffff;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .res-head { text-align: center; margin-bottom: 72px; }
+    .res-head .heading { max-width: 720px; margin: 0 auto; }
+    .res-head .lede { margin: 20px auto 0; }
+    .res-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 24px; overflow: hidden;
+      background: rgba(0,0,0,.07);
+    }
+    .res-card {
+      background: #ffffff;
+      padding: 48px 24px;
+      text-align: center;
+    }
+    .res-num {
+      font-family: var(--heading);
+      font-size: clamp(32px, 4.2vw, 56px);
+      font-weight: 300;
+      color: var(--ink); line-height: 1;
+      margin-bottom: 14px;
+    }
+    .res-num span { color: var(--accent); }
+    .res-label {
+      font-size: 11px; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--muted);
+      line-height: 1.5;
+    }
+    .res-foot {
+      text-align: center; margin-top: 36px;
+      font-size: 12px; font-style: italic; color: var(--muted);
+    }
+
+    /* ─── TESTIMONIALS ──────────────────────────────────────────── */
+    #reviews {
+      background: linear-gradient(180deg, #ffffff 0%, #ebeed6 100%);
+      overflow: hidden;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .rev-head { text-align: center; margin-bottom: 72px; }
+    .rev-head .heading { max-width: 720px; margin: 0 auto; }
+    .rev-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .rev-card {
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 20px;
+      padding: 32px 28px;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .rev-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(98,118,54,.12);
+    }
+    .rev-stars { color: var(--accent-deep); font-size: 13px; letter-spacing: 2px; margin-bottom: 14px; }
+    .rev-quote { font-size: 15px; font-weight: 300; font-style: italic;
+      color: var(--warm-dim); line-height: 1.75; margin-bottom: 22px; }
+    .rev-author { display: flex; align-items: center; gap: 12px; }
+    .rev-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 600; color: #fff;
+    }
+    .rev-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .rev-role { font-size: 11px; font-weight: 300; color: var(--muted); }
+
+    /* ─── FAQ ───────────────────────────────────────────────────── */
+    #faq {
+      background: #ffffff;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .faq-head { text-align: center; margin-bottom: 60px; }
+    .faq-head .heading { max-width: 600px; margin: 0 auto; }
+    .faq-list {
+      max-width: 760px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .faq-item {
+      background: #f5f7e4;
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color .3s, background .3s;
+    }
+    .faq-item[open] { border-color: rgba(143,168,82,.32); background: #fff; }
+    .faq-item summary {
+      list-style: none;
+      padding: 22px 26px;
+      font-size: 15px; font-weight: 500; color: var(--ink);
+      cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 20px;
+      transition: color .3s;
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary:hover { color: var(--accent-deep); }
+    .faq-item summary::after {
+      content: '+';
+      font-size: 24px; font-weight: 300;
+      color: var(--accent);
+      transition: transform .3s;
+    }
+    .faq-item[open] summary::after { transform: rotate(45deg); }
+    .faq-answer {
+      padding: 0 26px 22px;
+      font-size: 14px; font-weight: 300;
+      color: var(--warm-dim); line-height: 1.8;
+    }
+
+    /* ─── FINAL CTA ─────────────────────────────────────────────── */
+    #cta {
+      background: linear-gradient(135deg, var(--theme-1) 0%, var(--theme-2) 50%, var(--theme-3) 100%);
+      text-align: center;
+      padding: 140px 48px;
+      position: relative; overflow: hidden;
+    }
+    #cta::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(143,168,82,.16) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .cta-inner { position: relative; z-index: 2; max-width: 720px; margin: 0 auto; }
+    .cta-inner .heading {
+      font-size: clamp(36px, 5.5vw, 72px);
+      margin-bottom: 24px;
+    }
+    .cta-inner .lede {
+      margin: 0 auto 40px; font-size: 17px;
+    }
+    .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .cta-guarantee {
+      margin-top: 32px;
+      font-size: 11px; letter-spacing: .15em; text-transform: uppercase;
+      color: var(--warm-dim);
+    }
+    .cta-guarantee span { color: var(--accent-deep); font-weight: 600; }
+
+    /* ─── FOOTER ────────────────────────────────────────────────── */
+    footer {
+      background: #1a1225;
+      color: rgba(255,255,255,.55);
+      padding: 64px 48px 32px;
+    }
+    .footer-inner {
+      max-width: 1160px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 24px;
+    }
+    .footer-brand {
+      font-family: var(--heading);
+      font-size: 20px; font-weight: 600;
+      color: #fff;
+      letter-spacing: .08em;
+    }
+    .footer-brand span { color: var(--accent); }
+    .footer-legal { font-size: 11px; color: rgba(255,255,255,.4); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a {
+      font-size: 12px; color: rgba(255,255,255,.6); letter-spacing: .08em;
+      transition: color .3s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 18px 24px; }
+      nav.scrolled { padding: 12px 24px; }
+      section { padding: 80px 24px; }
+      #hero { grid-template-columns: 1fr; gap: 40px; padding: 120px 24px 60px; }
+      .hero-text { order: 2; }
+      .hero-visual { order: 1; }
+      .hero-badge-float { display: none; }
+      #promise .inner, #use .inner { grid-template-columns: 1fr; gap: 40px; }
+      .ing-grid { grid-template-columns: 1fr 1fr; }
+      .tl-grid { grid-template-columns: 1fr 1fr; }
+      .tl-item { border-right: none; border-bottom: 1px solid rgba(0,0,0,.08); }
+      .tl-item:nth-child(odd) { border-right: 1px solid rgba(0,0,0,.08); }
+      .tl-item:nth-last-child(-n+2) { border-bottom: none; }
+      .res-grid { grid-template-columns: 1fr 1fr; }
+      .rev-grid { grid-template-columns: 1fr; }
+      .nav-back span:not(.arrow) { display: none; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      nav.scrolled { padding: 12px 20px; }
+      .nav-logo { font-size: 17px; }
+      .nav-cta { padding: 8px 16px; font-size: 10px; }
+      section { padding: 64px 20px; }
+      #cta { padding: 96px 20px; }
+      .hero-title { font-size: clamp(42px, 11vw, 64px); }
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .hero-actions .btn-primary, .hero-actions .btn-outline { text-align: center; }
+      .ing-grid { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      #film-grain { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  
+    /* ─── FOCUS VISIBILITY (WCAG 2.4.7) ─────────────────────────── */
+    :focus { outline: none; }
+    a:focus-visible, button:focus-visible, details > summary:focus-visible,
+    .btn-primary:focus-visible, .btn-outline:focus-visible, .nav-cta:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 8px;
+    }
+    .skip-link {
+      position: absolute; left: -9999px; top: 0; z-index: 10000;
+      padding: 12px 18px; background: var(--ink); color: #fff;
+      font-size: 12px; font-weight: 600; letter-spacing: .2em;
+      text-transform: uppercase; border-radius: 0 0 10px 0;
+    }
+    .skip-link:focus { left: 0; outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ─── HAMBURGER + DRAWER ─────────────────────────────────────── */
+    .nav-hamburger {
+      display: none; width: 44px; height: 44px; padding: 0;
+      background: transparent; border: none; position: relative; cursor: pointer;
+    }
+    .nav-hamburger span {
+      position: absolute; left: 10px; right: 10px; height: 1.5px;
+      background: var(--ink); border-radius: 2px;
+      transition: transform .3s ease, opacity .3s ease, top .3s ease;
+    }
+    .nav-hamburger span:nth-child(1) { top: 15px; }
+    .nav-hamburger span:nth-child(2) { top: 21px; }
+    .nav-hamburger span:nth-child(3) { top: 27px; }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(1) { top: 21px; transform: rotate(45deg); }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(3) { top: 21px; transform: rotate(-45deg); }
+    #mobile-drawer {
+      position: fixed; inset: 0; z-index: 490;
+      background: rgba(255,255,255,.98);
+      backdrop-filter: blur(20px) saturate(130%);
+      -webkit-backdrop-filter: blur(20px) saturate(130%);
+      display: flex; flex-direction: column;
+      padding: 96px 32px 40px;
+      opacity: 0; visibility: hidden; transform: translateY(-8px);
+      transition: opacity .3s ease, transform .3s ease, visibility .3s ease;
+    }
+    #mobile-drawer.open { opacity: 1; visibility: visible; transform: translateY(0); }
+    #mobile-drawer .drawer-links { list-style: none; display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; }
+    #mobile-drawer .drawer-links > li > a,
+    #mobile-drawer .drawer-links .drawer-heading {
+      display: block; padding: 16px 12px;
+      font-family: var(--heading); font-size: 22px; font-weight: 400;
+      color: var(--ink); letter-spacing: .02em;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    #mobile-drawer .drawer-sub {
+      list-style: none; padding: 4px 0 12px 16px; margin: 0;
+      display: flex; flex-direction: column; gap: 2px;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    #mobile-drawer .drawer-sub a {
+      display: block; padding: 10px 12px; font-family: var(--body);
+      font-size: 14px; color: var(--ink); letter-spacing: .02em;
+    }
+    #mobile-drawer .drawer-sub a em {
+      font-style: normal; color: var(--muted);
+      font-size: 11px; letter-spacing: .14em; text-transform: uppercase; margin-left: 6px;
+    }
+    #mobile-drawer .drawer-cta { margin-top: auto; padding-top: 24px; display: flex; justify-content: center; }
+    body.drawer-open { overflow: hidden; }
+
+    @media (max-width: 900px) {
+      .nav-back { display: none; }
+      .nav-hamburger { display: block; }
+    }
+
+    /* ─── ELEVATION: CURSOR / PARTICLES / SPLIT / TILT ──────────── */
+    #cursor-dot {
+      position: fixed; top: 0; left: 0; z-index: 9998;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--ink); pointer-events: none;
+      transform: translate(-50%,-50%);
+      mix-blend-mode: difference;
+      transition: width .2s, height .2s;
+    }
+    #cursor-ring {
+      position: fixed; top: 0; left: 0; z-index: 9997;
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: border-color .3s, width .3s, height .3s, box-shadow .3s;
+    }
+    body.hovering #cursor-ring {
+      width: 54px; height: 54px;
+      box-shadow: 0 0 18px var(--accent-glow);
+      border-color: var(--accent-deep);
+    }
+    #particles-canvas {
+      position: fixed; inset: 0; z-index: 15;
+      pointer-events: none; opacity: .55;
+    }
+    @media (max-width: 899px) {
+      #cursor-dot, #cursor-ring { display: none; }
+      #particles-canvas { opacity: .3; }
+    }
+    @media (hover: none) {
+      #cursor-dot, #cursor-ring { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #particles-canvas { display: none; }
+      .split-char { opacity: 1 !important; transform: none !important; animation: none !important; }
+    }
+
+    .split-word { display: inline-block; white-space: nowrap; }
+    .split-char {
+      display: inline-block; opacity: 0;
+      transform: translateY(26px);
+      animation: split-char-in .6s cubic-bezier(.22,.9,.32,1) forwards;
+    }
+    @keyframes split-char-in {
+      from { opacity: 0; transform: translateY(26px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .ing-card {
+      transform-style: preserve-3d;
+      transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease;
+      will-change: transform;
+    }
+    .ing-card.tilt-active {
+      box-shadow: 0 30px 60px -24px var(--accent-glow), 0 10px 30px -12px rgba(0,0,0,.12);
+      border-color: var(--accent-soft);
+    }
+
+    .btn-primary, .btn-outline { will-change: transform; }
+  
+    /* Logo lockup: Dr Collagen + "Formulated by Doctors" subtitle */
+    .nav-logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 3px;
+    }
+    .nav-logo__main { font: inherit; }
+    .nav-logo__sub {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.55);
+      white-space: nowrap;
+    }
+    nav.in-dark-section .nav-logo__sub,
+    nav.scrolled-dark .nav-logo__sub { color: rgba(255,255,255,.65); }
+    .footer-brand,
+    .logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 4px;
+    }
+    .footer-brand__main, .logo__main { font: inherit; }
+    .footer-brand__sub, .logo__sub {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+      white-space: nowrap;
+    }
+    /* Global section-header.liquid uses .dc-logo */
+    .dc-logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 3px;
+    }
+    .dc-logo__main { font: inherit; }
+    .dc-logo__sub {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.55);
+      white-space: nowrap;
+    }
+
+  
+    /* Formulated by Doctors badge — sits just above the hero title */
+    .hero-doc-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px;
+      margin-bottom: 16px;
+      font-size: 11px; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--accent-deep);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .hero-doc-badge span { font-size: 14px; line-height: 1; }
+
+  </style>
+
+<!-- ═══ SKIP TO CONTENT ═════════════════════════════════════════════ -->
+<a href="#main" class="skip-link">Skip to content</a>
+
+<!-- ═══ FILM GRAIN ═══════════════════════════════════════════════ -->
+<div id="film-grain"></div>
+
+<!-- ═══ CUSTOM CURSOR & AMBIENT PARTICLES ═══════════════════════ -->
+<div id="cursor-dot" aria-hidden="true"></div>
+<div id="cursor-ring" aria-hidden="true"></div>
+<canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+<!-- ═══ NAV ══════════════════════════════════════════════════════ -->
+<nav id="navbar" aria-label="Primary">
+  <a href="{{ routes.root_url }}" id="collatrim-nav-logo" class="nav-logo"><span class="nav-logo__main">Dr<span> Collagen</span></span><span class="nav-logo__sub">Formulated by Doctors</span></a>
+  <a href="{{ routes.root_url }}" id="collatrim-nav-back" class="nav-back"><span class="arrow" aria-hidden="true">←</span> <span>Back to Home</span></a>
+  <a href="#cta" id="collatrim-nav-cta-buy" class="nav-cta">Add to cart</a>
+  <button id="nav-hamburger" class="nav-hamburger" aria-label="Open menu" aria-controls="mobile-drawer" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<aside id="mobile-drawer" aria-hidden="true" aria-label="Mobile menu">
+  <ul class="drawer-links">
+    <li>
+      <span class="drawer-heading">Products</span>
+      <ul class="drawer-sub">
+        <li><a href="/pages/collabloom" id="collatrim-drawer-link-collabloom">Collabloom<sup>™</sup> <em>Skin · Hair · Nails</em></a></li>
+        <li><a href="/pages/skelecoll" id="collatrim-drawer-link-skelecoll">Skelecoll<sup>™</sup> <em>Bone · Joint · Cartilage</em></a></li>
+        <li><a href="/pages/collatrim" id="collatrim-drawer-link-collatrim">Collatrim<sup>™</sup> <em>Body · Metabolism · Tone</em></a></li>
+        <li><a href="/pages/metastable" id="collatrim-drawer-link-metastable">Metastable<sup>™</sup> <em>Energy · Gut · Immunity</em></a></li>
+      </ul>
+    </li>
+    <li><a href="{{ routes.root_url }}#science" id="collatrim-drawer-link-science">Science</a></li>
+    <li><a href="{{ routes.root_url }}#about" id="collatrim-drawer-link-about">About</a></li>
+    <li><a href="{{ routes.root_url }}" id="collatrim-drawer-link-home">Home</a></li>
+  </ul>
+  <div class="drawer-cta">
+    <a href="#cta" id="collatrim-drawer-cta" class="btn-primary">Add to cart</a>
+  </div>
+</aside>
+
+
+<main id="main">
+
+<!-- ═══ HERO ═════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-text">
+    <p class="hero-breadcrumb"><a href="{{ routes.root_url }}#products">Our Range</a> · Body · Metabolism · Tone</p>
+    <p class="hero-doc-badge"><span aria-hidden="true">⚕</span> Formulated by Doctors</p>
+    <h1 class="hero-title" data-split>Collatrim<em>™</em></h1>
+    <p class="hero-tagline">8g of marine collagen stacked with green coffee bean extract, Garcinia Cambogia, Chromium, Moringa and Lactospore. Built for body composition, a settled gut, and skin that stays firm through change.</p>
+    <ul class="hero-bullets">
+      <li>8g marine collagen peptides — the structural protein behind lean tissue</li>
+      <li>Green coffee beans + Garcinia Cambogia — metabolic output &amp; appetite</li>
+      <li>Lactospore probiotic + Moringa — gut health, reduced bloating</li>
+      <li>Chromium + L-Carnitine — blood-sugar balance &amp; cellular fat metabolism</li>
+    </ul>
+    {%- if dc_coming_soon -%}
+      <div class="dc-soon-block">
+        <span class="dc-soon-tag">Coming soon</span>
+        <p class="dc-soon-lede">Drop your email — we'll tell you the moment Collatrim opens.</p>
+        {% form 'customer', id: 'collatrim-notify-form', class: 'dc-soon-form' %}
+          {% if form.posted_successfully? %}
+            <p class="dc-soon-success">Thanks — you're on the list. We'll be in touch.</p>
+          {% endif %}
+          <input type="hidden" name="contact[tags]" value="notify, collatrim">
+          <input type="email" name="contact[email]" placeholder="you@email.com" required aria-label="Email" class="dc-soon-input">
+          <button type="submit" class="btn-primary" id="collatrim-notify-btn">Notify me</button>
+        {% endform %}
+      </div>
+      <div class="hero-actions">
+        <a href="#ingredients" id="collatrim-hero-the-formula-btn" class="btn-outline">The formula</a>
+      </div>
+    {%- else -%}
+      <div class="hero-price-row">
+        <span class="hero-price">{{ dc_price }}</span>
+        {%- if dc_was -%}
+          <span class="hero-price-was">{{ dc_was }}</span>
+          <span class="hero-price-save">Save {{ dc_save_pct }}%</span>
+        {%- endif -%}
+      </div>
+      <div class="hero-actions">
+        {%- if dc_available -%}
+          {% form 'product', dc_product, id: 'collatrim-hero-add-form', class: 'btn-inline-form' %}
+            <input type="hidden" name="id" value="{{ dc_variant_id }}">
+            <div class="dc-qty" role="group" aria-label="Quantity">
+              <button type="button" class="dc-qty__btn" data-qty="minus" aria-label="Decrease quantity">&minus;</button>
+              <input class="dc-qty__input" type="number" name="quantity" value="1" min="1" max="12" aria-label="Quantity">
+              <button type="button" class="dc-qty__btn" data-qty="plus" aria-label="Increase quantity">+</button>
+            </div>
+            <button type="submit" id="collatrim-hero-add-to-cart-btn" class="btn-primary">Add to cart</button>
+          {% endform %}
+        {%- else -%}
+          <a href="/products/{{ dc_handle }}" id="collatrim-hero-add-to-cart-btn" class="btn-primary">Add to cart</a>
+        {%- endif -%}
+        <a href="#ingredients" id="collatrim-hero-the-formula-btn" class="btn-outline">The formula</a>
+      </div>
+    {%- endif -%}
+  </div>
+  <div class="hero-visual">
+    <div class="hero-bottle-wrap">
+      <img src="{{ 'collatrim-bottle.png' | asset_url }}" alt="Collatrim bottle" />
+      {%- if dc_coming_soon -%}
+        <div class="hero-badge-float">Launching this season<br />Be the first to know</div>
+      {%- else -%}
+        <div class="hero-badge-float">★ 4.7 · <strong>2,100+ reviews</strong><br />Loved for · Tone &amp; Firmness</div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<!-- ═══ THE PROMISE ═════════════════════════════════════════════════ -->
+<section id="promise">
+  <div class="inner">
+    <div class="promise-img reveal">
+      <div class="promise-img-number">
+        30%
+        <small>Body collagen lost between 30 and 50</small>
+      </div>
+    </div>
+    <div class="promise-text reveal reveal-delay-2">
+      <p class="overline">Why Collatrim</p>
+      <h2 class="heading">Skin that stays supple <em>through the change</em>.</h2>
+      <p>Most body goals focus on the number on the scale. The truer picture sits in body composition — lean muscle, healthy metabolism, and skin that keeps pace as you change shape. For many women, that starts to slip through peri-menopause and menopause, when collagen loss accelerates.</p>
+      <p>Collatrim pairs bioavailable marine collagen with the metabolic co-factors your body actually uses — so as your body changes, firmness, tone, and luminosity come along for the ride.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INGREDIENT DEEP DIVE ════════════════════════════════════════ -->
+<section id="ingredients">
+  <div class="inner">
+    <div class="ing-head reveal">
+      <p class="overline">The Formula</p>
+      <h2 class="heading">Six actives. One <em>body composition</em> goal.</h2>
+      <p class="lede">Every ingredient is dosed against published human trials — chosen for how it works alongside collagen, not around it. No aggressive stimulants. No proprietary blends.</p>
+    </div>
+
+    <div class="ing-grid">
+      <div class="ing-card reveal reveal-delay-1">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s5-5 10-5 10 5 10 5-5 5-10 5-10-5-10-5Z"/><path d="M12 7c-1.5 1.5-2.5 3-2.5 5s1 3.5 2.5 5"/><circle cx="6" cy="11" r="1"/></svg>
+        </div>
+        <div class="ing-dose">8g · Primary Active</div>
+        <h3 class="ing-name">Marine Collagen Peptides</h3>
+        <p class="ing-desc">8g of Type I peptides hydrolysed under 2,000 Daltons. Delivers the amino acid profile — glycine, proline, hydroxyproline — your body needs for skin firmness and lean tissue repair through a body-composition phase.</p>
+      </div>
+      <div class="ing-card reveal reveal-delay-2">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3a4 4 0 0 0-4 4v3a4 4 0 1 0 0 8h8a4 4 0 1 0 0-8V7a4 4 0 0 0-4-4z"/><path d="M9 9h6M9 13h6M9 17h6"/></svg>
+        </div>
+        <div class="ing-dose">Action · Metabolic Output</div>
+        <h3 class="ing-name">Green Coffee Bean Extract</h3>
+        <p class="ing-desc">Standardised for chlorogenic acid — the active in unroasted green coffee. Supports glucose handling after meals and gently raises fat metabolism without the wired feeling of high-dose caffeine. Different mechanism, different molecule from green tea catechins.</p>
+      </div>
+      <div class="ing-card reveal reveal-delay-3">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1 8a7 7 0 0 1-9 10Z"/><path d="M19 2c-2.26 4.33-5.27 7.14-8 10"/></svg>
+        </div>
+        <div class="ing-dose">Action · Appetite</div>
+        <h3 class="ing-name">Garcinia Cambogia (HCA)</h3>
+        <p class="ing-desc">Hydroxycitric acid supports the feeling of fullness and helps the body favour glycogen storage over fat synthesis after meals. The appetite-side lever in a body-composition stack.</p>
+      </div>
+      <div class="ing-card reveal reveal-delay-1">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 5v-2M12 21v-2M5 12h-2M21 12h-2M16.95 7.05l1.41-1.41M5.64 18.36l1.41-1.41M16.95 16.95l1.41 1.41M5.64 5.64l1.41 1.41"/></svg>
+        </div>
+        <div class="ing-dose">Action · Gut Health</div>
+        <h3 class="ing-name">Lactospore Probiotic + Moringa</h3>
+        <p class="ing-desc">Lactospore is a shelf-stable <em>Bacillus coagulans</em> spore — it survives stomach acid and germinates in the small intestine, supporting a balanced microbiome and reducing the bloating that comes with dietary changes. Moringa adds polyphenols, micronutrients and gentle digestive support. The gut side is what makes the body-composition work feel sustainable.</p>
+      </div>
+      <div class="ing-card reveal reveal-delay-2">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18M3 7h18M6 7l-3 6h6l-3-6ZM18 7l-3 6h6l-3-6ZM4 21h16"/></svg>
+        </div>
+        <div class="ing-dose">Action · Blood Sugar</div>
+        <h3 class="ing-name">Chromium Picolinate</h3>
+        <p class="ing-desc">Supports insulin sensitivity and smooths blood-sugar curves through the day — taming the 4pm sugar-craving window that quietly derails most body-composition phases.</p>
+      </div>
+      <div class="ing-card reveal reveal-delay-3">
+        <div class="ing-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5Z"/></svg>
+        </div>
+        <div class="ing-dose">Action · Cellular Fat</div>
+        <h3 class="ing-name">L-Carnitine L-Tartrate</h3>
+        <p class="ing-desc">Shuttles long-chain fatty acids into the mitochondria so they can be burned for energy. The cellular bridge between stored fat and usable fuel — and the reason this works best paired with daily movement.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RESULTS TIMELINE ════════════════════════════════════════════ -->
+<section id="timeline">
+  <div class="inner">
+    <div class="tl-head reveal">
+      <p class="overline">What to Expect</p>
+      <h2 class="heading">Change you can <em>measure</em>, not just feel.</h2>
+      <p class="lede">Body composition shifts take patience. Here's the rhythm most Collatrim users report — paired with moderate movement and an honest plate.</p>
+    </div>
+
+    <div class="tl-grid">
+      <div class="tl-item reveal reveal-delay-1">
+        <p class="tl-week">Week 1–2</p>
+        <div class="tl-num">01</div>
+        <p class="tl-text">Bloating settles. Digestion feels lighter. Cravings quiet down through the afternoon.</p>
+      </div>
+      <div class="tl-item reveal reveal-delay-2">
+        <p class="tl-week">Week 3–4</p>
+        <div class="tl-num">02</div>
+        <p class="tl-text">Energy steadier post-meals. Waistline feels less tight. Skin starts to read as firmer.</p>
+      </div>
+      <div class="tl-item reveal reveal-delay-3">
+        <p class="tl-week">Week 6–8</p>
+        <div class="tl-num">03</div>
+        <p class="tl-text">Visible composition change in arms, thighs, midsection. Weight loss — if any — happens without the hollowed-out look.</p>
+      </div>
+      <div class="tl-item reveal reveal-delay-4">
+        <p class="tl-week">Week 12+</p>
+        <div class="tl-num">04</div>
+        <p class="tl-text">Leaner composition, firmer skin, settled gut. A new set point, not a temporary low.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOW TO USE ═════════════════════════════════════════════════ -->
+<section id="use">
+  <div class="inner">
+    <div class="use-text reveal">
+      <p class="overline">Your Daily Ritual</p>
+      <h2 class="heading">One shot. <em>Before you move</em>.</h2>
+      <p class="lede">Collatrim works best 30–45 minutes before your morning movement — walk, yoga, or gym. That's when L-carnitine and collagen peptides are best primed to work with your body.</p>
+      <ol class="use-steps">
+        <li class="use-step">
+          <div class="use-step-num">1</div>
+          <div class="use-step-text">
+            <h4>Shake gently</h4>
+            <p>A quick shake disperses the collagen peptides, carnitine and botanicals evenly.</p>
+          </div>
+        </li>
+        <li class="use-step">
+          <div class="use-step-num">2</div>
+          <div class="use-step-text">
+            <h4>Drink before movement</h4>
+            <p>Ideally 30–45 minutes before a walk, workout, or yoga session — on an empty stomach.</p>
+          </div>
+        </li>
+        <li class="use-step">
+          <div class="use-step-num">3</div>
+          <div class="use-step-text">
+            <h4>Walk 7,000 steps, minimum</h4>
+            <p>Movement is the multiplier. Collatrim complements activity — it doesn't replace it.</p>
+          </div>
+        </li>
+        <li class="use-step">
+          <div class="use-step-num">4</div>
+          <div class="use-step-text">
+            <h4>Eat honest, sleep deep</h4>
+            <p>Protein at every meal, 2L water daily, 7+ hours sleep. That's the quiet architecture of a real change.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+    <div class="use-visual reveal reveal-delay-2">
+      <div class="use-visual-bg">
+        <img src="{{ 'collatrim-bottle.png' | asset_url }}" alt="Collatrim in your hand" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RESULTS / STATS ════════════════════════════════════════════ -->
+<section id="results">
+  <div class="inner">
+    <div class="res-head reveal">
+      <p class="overline">The Numbers</p>
+      <h2 class="heading">A tone-up you can <em>see in the mirror</em>.</h2>
+      <p class="lede">Self-reported outcomes from 900+ Collatrim customers surveyed at the 12-week mark, paired with at least 5,000 daily steps.</p>
+    </div>
+    <div class="res-grid reveal reveal-delay-1">
+      <div class="res-card">
+        <div class="res-num"><span class="counter" data-target="83">0</span><span>%</span></div>
+        <div class="res-label">Reported firmer skin tone<br />on arms &amp; midsection</div>
+      </div>
+      <div class="res-card">
+        <div class="res-num"><span class="counter" data-target="76">0</span><span>%</span></div>
+        <div class="res-label">Felt fewer sweet<br />cravings after 3 weeks</div>
+      </div>
+      <div class="res-card">
+        <div class="res-num"><span class="counter" data-target="71">0</span><span>%</span></div>
+        <div class="res-label">Noticed steadier<br />afternoon energy</div>
+      </div>
+      <div class="res-card">
+        <div class="res-num"><span class="counter" data-target="89">0</span><span>%</span></div>
+        <div class="res-label">Would recommend<br />Collatrim to a friend</div>
+      </div>
+    </div>
+    <p class="res-foot">Based on self-reported outcomes. Results depend on diet, movement and consistency. Individual results may vary.</p>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS ════════════════════════════════════════════════ -->
+<section id="reviews">
+  <div class="inner">
+    <div class="rev-head reveal">
+      <p class="overline">Real Results</p>
+      <h2 class="heading">What the <em>scale and the mirror</em> both started saying.</h2>
+    </div>
+    <div class="rev-grid">
+      <div class="rev-card reveal reveal-delay-1">
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-quote">"I've tried every fat-burner under the sun. Collatrim is the first one that didn't make me jittery — and the first where my skin actually kept up with the weight coming off. My arms look firmer than they have in years."</p>
+        <div class="rev-author">
+          <div class="rev-avatar">A</div>
+          <div>
+            <div class="rev-name">Anita Menon</div>
+            <div class="rev-role">Bengaluru · 4 months on Collatrim</div>
+          </div>
+        </div>
+      </div>
+      <div class="rev-card reveal reveal-delay-2">
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-quote">"My 4pm biscuit habit is gone. Not through willpower — just gone. Paired with a daily walk, I've dropped 4 kilos in three months and honestly feel tighter, not thinner-looking."</p>
+        <div class="rev-author">
+          <div class="rev-avatar">S</div>
+          <div>
+            <div class="rev-name">Shruti Desai</div>
+            <div class="rev-role">Pune · 3 months on Collatrim</div>
+          </div>
+        </div>
+      </div>
+      <div class="rev-card reveal reveal-delay-3">
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-quote">"Post-pregnancy I'd completely lost my tone. Collatrim helped me come back to my body — not to a number, but to a feeling. My midsection firmed up much faster than I expected."</p>
+        <div class="rev-author">
+          <div class="rev-avatar">M</div>
+          <div>
+            <div class="rev-name">Meera Iyer</div>
+            <div class="rev-role">Delhi · 5 months on Collatrim</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ════════════════════════════════════════════════════════ -->
+<section id="faq">
+  <div class="inner">
+    <div class="faq-head reveal">
+      <p class="overline">Good Questions</p>
+      <h2 class="heading">You asked, <em>we answered</em>.</h2>
+    </div>
+    <div class="faq-list reveal reveal-delay-1">
+      <details class="faq-item">
+        <summary>Is Collatrim a weight-loss supplement?</summary>
+        <div class="faq-answer">Collatrim is a body-composition supplement, not a crash product. It supports lean tissue, skin firmness, and healthy metabolism alongside consistent movement and a sensible diet. It won't replace the work — it just makes the work pay off more visibly.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Will it make me jittery like fat-burners?</summary>
+        <div class="faq-answer">No. Collatrim is caffeine-free and uses gently-dosed botanicals. The thermogenic effect is mild and metabolic, not stimulant-driven — so no jitters, no crash, no racing heart.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Can I take Collatrim with Collabloom?</summary>
+        <div class="faq-answer">Yes — many of our customers do. Collabloom focuses on skin, hair and nails, while Collatrim adds metabolic and body-composition support. Space them out by an hour to avoid overlapping collagen doses in a single window.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Is Collatrim safe during pregnancy or breastfeeding?</summary>
+        <div class="faq-answer">We don't recommend Collatrim during pregnancy or breastfeeding — Garcinia Cambogia and green coffee extract haven't been adequately studied in that window. Collabloom is a gentler alternative; check with your doctor either way.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Does Collatrim contain any allergens?</summary>
+        <div class="faq-answer">Contains marine collagen (fish). Free from dairy, gluten, soy and nuts. Not vegan — contains fish-derived collagen.</div>
+      </details>
+      <details class="faq-item">
+        <summary>What's your return policy?</summary>
+        <div class="faq-answer">Body-composition shifts take patience. With daily use and consistent movement, most customers report tone and bloating changes from week three, with deeper composition shifts from week six.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ══════════════════════════════════════════════════ -->
+<section id="cta">
+  <div class="cta-inner">
+    {%- if dc_coming_soon -%}
+      <p class="overline reveal">Coming soon</p>
+      <h2 class="heading reveal reveal-delay-1">Be first in line for <em>Collatrim</em>.</h2>
+      <p class="lede reveal reveal-delay-2">Drop your email — early-access pricing and a launch heads-up.</p>
+      <div class="cta-actions reveal reveal-delay-3">
+        {% form 'customer', id: 'collatrim-cta-notify-form', class: 'dc-soon-form dc-soon-form--cta' %}
+          {% if form.posted_successfully? %}
+            <p class="dc-soon-success">Thanks — you're on the list.</p>
+          {% endif %}
+          <input type="hidden" name="contact[tags]" value="notify, collatrim">
+          <input type="email" name="contact[email]" placeholder="you@email.com" required aria-label="Email" class="dc-soon-input">
+          <button type="submit" class="btn-primary" id="collatrim-cta-notify-btn">Notify me</button>
+        {% endform %}
+        <a href="{{ routes.root_url }}#products" id="collatrim-see-range-btn" class="btn-outline">See full range</a>
+      </div>
+      <p class="cta-guarantee reveal reveal-delay-4">Launching this season · pre-launch pricing for the list</p>
+    {%- else -%}
+      <p class="overline reveal">Start today</p>
+      <h2 class="heading reveal reveal-delay-1">Leaner. Firmer. <em>Composed</em>.</h2>
+      <p class="lede reveal reveal-delay-2">Join 10,000+ customers who paired Collatrim with a daily walk and came back to a body they recognise. Most report bloating relief in week one, body-composition shifts from week three.</p>
+      <div class="cta-actions reveal reveal-delay-3">
+        {%- if dc_available -%}
+          {% form 'product', dc_product, id: 'collatrim-buy-form', class: 'btn-inline-form' %}
+            <input type="hidden" name="id" value="{{ dc_variant_id }}">
+            <div class="dc-qty" role="group" aria-label="Quantity">
+              <button type="button" class="dc-qty__btn" data-qty="minus" aria-label="Decrease quantity">&minus;</button>
+              <input class="dc-qty__input" type="number" name="quantity" value="1" min="1" max="12" aria-label="Quantity">
+              <button type="button" class="dc-qty__btn" data-qty="plus" aria-label="Increase quantity">+</button>
+            </div>
+            <button type="submit" id="collatrim-buy-btn" class="btn-primary">Add to cart — {{ dc_price }}</button>
+          {% endform %}
+        {%- else -%}
+          <a href="/products/{{ dc_handle }}" id="collatrim-buy-btn" class="btn-primary">Add to cart — {{ dc_price }}</a>
+        {%- endif -%}
+        <a href="{{ routes.root_url }}#products" id="collatrim-see-range-btn" class="btn-outline">See full range</a>
+      </div>
+      <p class="cta-guarantee reveal reveal-delay-4">Free shipping over ₹1,500 · ships within <span>48 hours</span></p>
+    {%- endif -%}
+  </div>
+</section>
+
+</main>
+
+<!-- ═══ FOOTER ═════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><span class="footer-brand__main">Dr<span> Collagen</span></span><span class="footer-brand__sub">Formulated by Doctors</span></div>
+    <div class="footer-links">
+      <a href="{{ routes.root_url }}#products" id="collatrim-footer-link-products">All Products</a>
+      <a href="{{ routes.root_url }}#science" id="collatrim-footer-link-science">Science</a>
+      <a href="{{ routes.root_url }}#about" id="collatrim-footer-link-about">About</a>
+      <a href="{{ routes.root_url }}" id="collatrim-footer-link-home">Home</a>
+    </div>
+    <div class="footer-legal">© {{ 'now' | date: '%Y' }} Dr Collagen · Made in Japan, for India · These statements have not been evaluated for medicinal claims. This product is a dietary supplement and is not intended to diagnose, treat, cure, or prevent any disease.</div>
+  </div>
+</footer>
+
+<script>
+// ═══ NAV SCROLL STATE ═══════════════════════════════════════════════
+(function() {
+  const nav = document.getElementById('navbar');
+  function update() { nav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+
+// ═══ SCROLL REVEAL (WITH MOTION SPRING PHYSICS) ═════════════════════
+(function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+    return;
+  }
+  const { inView, animate } = Motion;
+  inView(".reveal", ({ target }) => {
+    let delay = 0;
+    for (let i = 1; i <= 6; i++) {
+      if (target.classList.contains(`reveal-delay-${i}`)) {
+        delay = i * 0.12;
+        break;
+      }
+    }
+    animate(target, 
+      { opacity: [0, 1], y: [40, 0] }, 
+      { delay, duration: 0.85, easing: [0.16, 1, 0.3, 1] }
+    );
+  });
+})();
+
+// ═══ COUNTER ANIMATION ══════════════════════════════════════════════
+(function() {
+  const counters = document.querySelectorAll('.counter');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseInt(el.dataset.target || '0', 10);
+      const duration = 1500;
+      const start = performance.now();
+      function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(eased * target).toLocaleString();
+        if (t < 1) requestAnimationFrame(step);
+        else el.textContent = target.toLocaleString();
+      }
+      requestAnimationFrame(step);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => io.observe(c));
+})();
+
+// ═══ CUSTOM CURSOR (WITH MOTION SPRING PHYSICS) ═════════════════════
+(function(){
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot || !ring) return;
+  if (window.matchMedia('(hover: none)').matches || window.innerWidth < 900) return;
+  
+  const { animate } = Motion;
+  let mx = -100, my = -100;
+  
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+    dot.style.transform = `translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`;
+    
+    animate(ring, {
+      transform: [`translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`]
+    }, {
+      type: "spring",
+      stiffness: 300,
+      damping: 25,
+      mass: 0.5
+    });
+  });
+  
+  document.querySelectorAll('a, button, .ing-card, .rev-card, .use-step, .faq-item summary, .pillar-card, .product-card')
+    .forEach(el=>{
+      el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+      el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+    });
+})();
+
+// ═══ FAQ ACCORDION SPRING ANIMATION ═════════════════════════════════
+(function() {
+  const { animate } = Motion;
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const summary = item.querySelector('summary');
+    const answer = item.querySelector('.faq-answer');
+    if (!summary || !answer) return;
+    
+    answer.style.overflow = 'hidden';
+    
+    summary.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isOpen = item.hasAttribute('open');
+      
+      if (!isOpen) {
+        item.setAttribute('open', '');
+        const height = answer.scrollHeight;
+        
+        animate(answer, 
+          { height: [0, height], opacity: [0, 1], paddingBottom: ["0px", "22px"] }, 
+          { type: "spring", stiffness: 300, damping: 26 }
+        );
+      } else {
+        const height = answer.scrollHeight;
+        animate(answer, 
+          { height: [height, 0], opacity: [1, 0], paddingBottom: ["22px", "0px"] }, 
+          { type: "spring", stiffness: 300, damping: 26 }
+        ).then(() => {
+          item.removeAttribute('open');
+          answer.style.height = '';
+          answer.style.opacity = '';
+          answer.style.paddingBottom = '';
+        });
+      }
+    });
+  });
+})();
+
+
+// ═══ AMBIENT PARTICLES ══════════════════════════════════════════════
+(function(){
+  const canvas = document.getElementById('particles-canvas');
+  if (!canvas) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, parts = [];
+  function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+  resize(); window.addEventListener('resize', resize, { passive: true });
+  const rand=(a,b)=>Math.random()*(b-a)+a;
+  // Per-product olive / warm-gold palette
+  const hues = [
+    'rgba(143,168,82,ALPHA)',
+    'rgba(210,200,130,ALPHA)',
+    'rgba(120,145,60,ALPHA)'
+  ];
+  const count = window.innerWidth < 900 ? 24 : 44;
+  for (let i=0;i<count;i++){
+    parts.push({
+      x:rand(0,W), y:rand(0,H),
+      r:rand(.3,1.6),
+      vx:rand(-.12,.12), vy:rand(-.22,-.04),
+      alpha:rand(.05,.3),
+      hue:hues[Math.floor(Math.random()*hues.length)]
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for (const p of parts){
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.hue.replace('ALPHA',p.alpha.toFixed(2));
+      ctx.fill();
+      p.x+=p.vx; p.y+=p.vy;
+      if (p.y<-4)    p.y = H+4;
+      if (p.x<-4)    p.x = W+4;
+      if (p.x>W+4)   p.x = -4;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ═══ LETTER-SPLIT (hero title) ══════════════════════════════════════
+(function(){
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('[data-split]').forEach(el => {
+    Array.from(el.childNodes).forEach(node => {
+      if (node.nodeType !== 3) return;
+      const frag = document.createDocumentFragment();
+      node.textContent.split(/(\s+)/).forEach(seg => {
+        if (!seg) return;
+        if (/^\s+$/.test(seg)) { frag.appendChild(document.createTextNode(seg)); return; }
+        const w = document.createElement('span'); w.className='split-word';
+        for (const ch of seg){
+          const c = document.createElement('span'); c.className='split-char';
+          c.style.animationDelay = (Math.random()*.35 + .2).toFixed(2) + 's';
+          c.textContent = ch; w.appendChild(c);
+        }
+        frag.appendChild(w);
+      });
+      node.parentNode.replaceChild(frag, node);
+    });
+  });
+})();
+
+// ═══ 3D TILT on ingredient cards ════════════════════════════════════
+(function(){
+  if (window.matchMedia('(hover: none)').matches ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const MAX = 6;
+  document.querySelectorAll('.ing-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - .5;
+      const y = (e.clientY - r.top)  / r.height - .5;
+      card.style.transform =
+        `perspective(900px) rotateX(${(-y*MAX).toFixed(2)}deg) rotateY(${(x*MAX).toFixed(2)}deg) translateZ(0)`;
+      card.classList.add('tilt-active');
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+      card.classList.remove('tilt-active');
+    });
+  });
+})();
+
+// ═══ MAGNETIC CTA ═══════════════════════════════════════════════════
+(function(){
+  if (window.matchMedia('(hover: none)').matches ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const S = 10;
+  document.querySelectorAll('.btn-primary').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - (r.left + r.width/2))  / r.width  * S;
+      const y = (e.clientY - (r.top  + r.height/2)) / r.height * S;
+      btn.style.transform = `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  });
+})();
+
+// ═══ MOBILE HAMBURGER DRAWER ════════════════════════════════════════
+(function() {
+  const btn = document.getElementById('nav-hamburger');
+  const drawer = document.getElementById('mobile-drawer');
+  if (!btn || !drawer) return;
+  function setOpen(open) {
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    drawer.classList.toggle('open', open);
+    drawer.setAttribute('aria-hidden', String(!open));
+    document.body.classList.toggle('drawer-open', open);
+  }
+  btn.addEventListener('click', () => setOpen(!drawer.classList.contains('open')));
+  drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && drawer.classList.contains('open')) { setOpen(false); btn.focus(); }
+  });
+})();
+
+</script>

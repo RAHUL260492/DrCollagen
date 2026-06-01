@@ -1,0 +1,47 @@
+<section class="dc-account-page">
+  <p class="dc-account-back"><a class="dc-account-eyebrow" href="{{ routes.account_url }}">&larr; Back to account</a></p>
+  <h1 class="dc-account-page__title">Your addresses</h1>
+
+  {% paginate customer.addresses by 5 %}
+    {% for address in customer.addresses %}
+      <div class="dc-account-tile">
+        {% if address == customer.default_address %}
+          <p class="dc-account-flag">Default</p>
+        {% endif %}
+        <address class="dc-account-address">{{ address | format_address }}</address>
+      </div>
+    {% endfor %}
+    {{ paginate | default_pagination }}
+  {% endpaginate %}
+
+  <h2 class="dc-account-section-title">Add new address</h2>
+  {% form 'customer_address', customer.new_address %}
+    {{ form.errors | default_errors }}
+
+    <label class="dc-account-label" for="addr-first">First name</label>
+    <input class="dc-account-input" type="text" id="addr-first" name="address[first_name]" autocomplete="given-name">
+
+    <label class="dc-account-label" for="addr-last">Last name</label>
+    <input class="dc-account-input" type="text" id="addr-last" name="address[last_name]" autocomplete="family-name">
+
+    <label class="dc-account-label" for="addr-company">Company <span class="dc-account-optional">(optional)</span></label>
+    <input class="dc-account-input" type="text" id="addr-company" name="address[company]" autocomplete="organization">
+
+    <label class="dc-account-label" for="addr-line1">Address line 1</label>
+    <input class="dc-account-input" type="text" id="addr-line1" name="address[address1]" autocomplete="address-line1">
+
+    <label class="dc-account-label" for="addr-line2">Address line 2 <span class="dc-account-optional">(optional)</span></label>
+    <input class="dc-account-input" type="text" id="addr-line2" name="address[address2]" autocomplete="address-line2">
+
+    <label class="dc-account-label" for="addr-city">City</label>
+    <input class="dc-account-input" type="text" id="addr-city" name="address[city]" autocomplete="address-level2">
+
+    <label class="dc-account-label" for="addr-zip">PIN / Postal code</label>
+    <input class="dc-account-input" type="text" id="addr-zip" name="address[zip]" autocomplete="postal-code">
+
+    <label class="dc-account-label" for="addr-country">Country</label>
+    <input class="dc-account-input" type="text" id="addr-country" name="address[country]" autocomplete="country-name">
+
+    <button class="dc-btn dc-btn--primary" type="submit">Save address</button>
+  {% endform %}
+</section>

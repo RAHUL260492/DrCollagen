@@ -1,0 +1,114 @@
+{% comment %}
+  Default page template. Auto-routes the 4 Dr Collagen product pages by
+  handle — so merchants only need to create a Page in Shopify admin with
+  the exact handle (collabloom / skelecoll / collatrim / metastable) and
+  the full product landing page renders automatically, no template
+  assignment needed. Any other page falls back to the editorial layout.
+{% endcomment %}
+
+{% case page.handle %}
+  {% when 'collabloom' %}
+    {% render 'product-collabloom' %}
+  {% when 'skelecoll' %}
+    {% render 'product-skelecoll' %}
+  {% when 'collatrim' %}
+    {% render 'product-collatrim' %}
+  {% when 'metastable' %}
+    {% render 'product-metastable' %}
+  {% else %}
+    <style>
+      .page-editorial {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: var(--space-6) clamp(20px, 4vw, 48px) var(--space-7);
+        font-family: var(--dc-body);
+        color: var(--dc-ink);
+      }
+      .page-eyebrow {
+        font-size: var(--fs-xs);
+        letter-spacing: var(--ls-eyebrow);
+        text-transform: uppercase;
+        color: var(--dc-accent);
+        font-weight: 500;
+        text-align: center;
+        margin-bottom: var(--space-2);
+      }
+      .page-editorial h1 {
+        font-family: var(--dc-heading);
+        font-size: clamp(var(--fs-2xl), 5vw, var(--fs-3xl));
+        font-weight: 400;
+        text-align: center;
+        margin: 0 0 var(--space-4);
+        color: var(--dc-ink);
+        line-height: var(--lh-tight);
+        letter-spacing: var(--ls-tight);
+      }
+      .page-editorial .rte {
+        font-size: var(--fs-md);
+        line-height: var(--lh-body);
+        color: var(--dc-muted);
+        font-weight: 400;
+      }
+      /* Quieter drop-cap — ink, not gold; gentler scale. */
+      .page-editorial .rte > *:first-child::first-letter {
+        font-family: var(--dc-heading);
+        font-size: 4.2em;
+        float: left;
+        line-height: 0.92;
+        margin: 6px 12px -2px 0;
+        color: var(--dc-ink);
+        font-weight: 400;
+      }
+      .page-editorial .rte p {
+        margin: 0 0 1.4em;
+      }
+      .page-editorial .rte h2 {
+        font-family: var(--dc-heading);
+        font-size: clamp(24px, 3vw, 34px);
+        font-weight: 400;
+        color: var(--dc-ink);
+        margin: 56px 0 18px;
+        letter-spacing: -0.012em;
+      }
+      .page-editorial .rte h3 {
+        font-family: var(--dc-heading);
+        font-size: 22px;
+        font-weight: 500;
+        color: var(--dc-ink);
+        margin: 36px 0 14px;
+      }
+      .page-editorial .rte img {
+        border-radius: var(--dc-radius-md);
+        margin: 36px 0;
+        box-shadow: var(--dc-shadow-sm);
+      }
+      .page-editorial .rte blockquote {
+        font-family: var(--dc-heading);
+        font-size: clamp(22px, 2.6vw, 28px);
+        font-style: italic;
+        font-weight: 400;
+        line-height: 1.4;
+        margin: 40px -20px;
+        padding: 24px 32px;
+        border-left: 2px solid var(--dc-accent);
+        color: var(--dc-ink);
+        background: var(--dc-bg-soft);
+        border-radius: 0 var(--dc-radius-md) var(--dc-radius-md) 0;
+      }
+      .page-editorial .rte a {
+        color: var(--dc-accent);
+        text-decoration: none;
+        border-bottom: 1px solid currentColor;
+        transition: color 220ms;
+      }
+      .page-editorial .rte a:hover { color: var(--dc-accent-bright); }
+    </style>
+
+    <article class="page-editorial">
+      <p class="page-eyebrow dc-reveal-up">Dr Collagen Journal</p>
+      <h1 class="dc-reveal-up dc-delay-1">{{ page.title }}</h1>
+      <div class="rte dc-reveal-up dc-delay-2">
+        {{ page.content }}
+      </div>
+    </article>
+{% endcase %}

@@ -1,0 +1,286 @@
+{%- comment -%}
+  Luxury footer. Three-column layout with newsletter, navigation, and
+  brand copy. Reveals on scroll, gold accent line on top, parallax glow.
+{%- endcomment -%}
+
+<style>
+  /* Quiet dark plate. One hairline gold rule on top, no radial glows. */
+  .dc-footer {
+    position: relative;
+    background: #1a1225;
+    color: rgba(255, 255, 255, 0.72);
+    padding: var(--space-6) 0 var(--space-3);
+    font-family: var(--dc-body);
+    border-top: 1px solid rgba(184, 144, 58, 0.32);
+  }
+
+  .dc-footer-inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 4vw, 48px);
+  }
+  .dc-footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 56px;
+    margin-bottom: 72px;
+  }
+  @media (max-width: 880px) {
+    .dc-footer-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+  }
+  @media (max-width: 520px) {
+    .dc-footer-grid { grid-template-columns: 1fr; }
+  }
+
+  .dc-footer h4 {
+    font-family: var(--dc-heading);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 0 0 22px;
+    opacity: 0.88;
+  }
+  .dc-footer-brand .dc-logo {
+    font-family: var(--dc-heading);
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: #fff;
+    margin-bottom: 18px;
+    display: inline-block;
+    text-decoration: none;
+  }
+  .dc-footer-brand .dc-logo span { color: var(--dc-accent-bright); }
+  .dc-footer-brand p {
+    font-size: 14px;
+    line-height: 1.75;
+    color: rgba(200, 184, 216, 0.78);
+    font-weight: 300;
+    margin: 0 0 22px;
+    max-width: 360px;
+  }
+  .dc-footer-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .dc-footer-links a {
+    color: rgba(200, 184, 216, 0.78);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 280ms var(--dc-ease-soft), letter-spacing 280ms var(--dc-ease-spring);
+    position: relative;
+    display: inline-block;
+  }
+  .dc-footer-links a:hover {
+    color: var(--dc-accent-bright);
+    letter-spacing: 0.04em;
+  }
+
+  /* Newsletter */
+  .dc-newsletter {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    max-width: 380px;
+  }
+  .dc-newsletter input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    padding: 14px 18px;
+    border-radius: var(--dc-radius-pill);
+    font-family: var(--dc-body);
+    font-size: 14px;
+    transition: border-color 280ms, background 280ms;
+  }
+  .dc-newsletter input::placeholder { color: rgba(200, 184, 216, 0.4); }
+  .dc-newsletter input:focus {
+    outline: none;
+    border-color: var(--dc-accent-bright);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  /* Flat gold button, no gradient, no shadow on hover. */
+  .dc-newsletter button {
+    background: var(--dc-accent);
+    color: #fff;
+    border: none;
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    letter-spacing: var(--ls-button);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-soft);
+  }
+  .dc-newsletter button:hover {
+    background: #a37f2f;
+  }
+
+  /* Social icons */
+  .dc-social {
+    display: flex;
+    gap: 14px;
+    margin-top: 20px;
+  }
+  .dc-social a {
+    width: 38px; height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(200, 184, 216, 0.85);
+    transition: background 280ms var(--dc-ease-soft), color 280ms, transform 280ms var(--dc-ease-spring);
+  }
+  .dc-social a:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+  }
+
+  /* Bottom strip */
+  .dc-footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 12px;
+    color: rgba(200, 184, 216, 0.55);
+    letter-spacing: 0.08em;
+  }
+  .dc-footer-bottom .dc-legal {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .dc-footer-bottom a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 280ms;
+  }
+  .dc-footer-bottom a:hover { color: var(--dc-accent-bright); }
+</style>
+
+<footer class="dc-footer" role="contentinfo">
+  <div class="dc-footer-inner">
+    <div class="dc-footer-grid">
+
+      <div class="dc-footer-brand dc-reveal-up">
+        <a href="{{ routes.root_url }}" class="dc-logo">Dr<span> Collagen</span></a>
+        <p>{{ section.settings.brand_blurb }}</p>
+        <div class="dc-social" aria-label="Social links">
+          {%- if section.settings.instagram_url != blank -%}
+          <a href="{{ section.settings.instagram_url }}" aria-label="Instagram" rel="noopener" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          {%- endif -%}
+          {%- if section.settings.facebook_url != blank -%}
+          <a href="{{ section.settings.facebook_url }}" aria-label="Facebook" rel="noopener" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          {%- endif -%}
+          {%- if section.settings.youtube_url != blank -%}
+          <a href="{{ section.settings.youtube_url }}" aria-label="YouTube" rel="noopener" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+          </a>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="dc-reveal-up dc-delay-1">
+        <h4>Shop</h4>
+        <ul class="dc-footer-links">
+          <li><a href="/collections/all">All Products</a></li>
+          <li><a href="/pages/collabloom">Collabloom</a></li>
+          <li><a href="/pages/skelecoll">Skelecoll</a></li>
+          <li><a href="/pages/collatrim">Collatrim</a></li>
+          <li><a href="/pages/metastable">Metastable</a></li>
+        </ul>
+      </div>
+
+      <div class="dc-reveal-up dc-delay-2">
+        <h4>Company</h4>
+        <ul class="dc-footer-links">
+          <li><a href="/pages/about">Our Story</a></li>
+          <li><a href="/pages/science">The Science</a></li>
+          <li><a href="/pages/contact">Contact</a></li>
+          <li><a href="/blogs/journal">Journal</a></li>
+        </ul>
+      </div>
+
+      <div class="dc-reveal-up dc-delay-3">
+        <h4>Newsletter</h4>
+        <p style="font-size:13px;line-height:1.7;color:rgba(200,184,216,0.7);margin:0 0 4px;">One email a fortnight. New products, ingredient deep-dives, customer protocols. Unsubscribe any time.</p>
+        <form class="dc-newsletter" action="/contact#newsletter" method="post" novalidate>
+          <input type="hidden" name="form_type" value="customer">
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <label for="dc-news-email" class="visually-hidden">Email address</label>
+          <input id="dc-news-email" type="email" name="contact[email]" placeholder="you@example.com" required>
+          <button type="submit">Join</button>
+        </form>
+      </div>
+
+    </div>
+
+    <div class="dc-footer-bottom">
+      <span>{{ section.settings.copyright }}</span>
+      <nav class="dc-legal" aria-label="Legal">
+        <a href="/policies/privacy-policy">Privacy</a>
+        <a href="/policies/terms-of-service">Terms</a>
+        <a href="/policies/refund-policy">Refunds</a>
+        <a href="/policies/shipping-policy">Shipping</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "text",
+      "id": "copyright",
+      "label": "Copyright line",
+      "default": "© Dr Collagen. All rights reserved."
+    },
+    {
+      "type": "textarea",
+      "id": "brand_blurb",
+      "label": "Brand blurb",
+      "default": "Japanese marine collagen, micro-hydrolysed and stacked with the co-factors collagen synthesis needs. Four formulas, four outcomes — skin, joints, body composition, gut and energy."
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "url",
+      "id": "youtube_url",
+      "label": "YouTube URL"
+    }
+  ],
+  "presets": [
+    { "name": "Footer" }
+  ]
+}
+{% endschema %}

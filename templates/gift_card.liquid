@@ -1,0 +1,35 @@
+{% comment %}Gift card template{% endcomment %}
+<!DOCTYPE html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gift Card — {{ shop.name }}</title>
+  <style>
+    body { margin:0; font-family:'DM Sans',sans-serif; background:#faf6f0; color:#1a1a1a; }
+    .wrap { max-width:520px; margin:80px auto; padding:48px 32px; background:#fff; border-radius:24px; box-shadow:0 30px 80px rgba(0,0,0,.08); text-align:center; }
+    h1 { font-family:'Playfair Display',serif; font-size:36px; font-weight:400; margin:0 0 8px; }
+    .amt { font-family:'Playfair Display',serif; font-size:64px; font-weight:300; color:#b8903a; margin:24px 0; }
+    .code { font-family:'Courier New',monospace; font-size:18px; letter-spacing:.2em; background:#faf6f0; padding:16px 24px; border-radius:10px; margin:20px 0; user-select:all; }
+    .note { color:#52493f; font-size:13px; line-height:1.7; font-weight:300; margin-top:20px; }
+    .btn { display:inline-block; background:#1a1225; color:#fff; padding:14px 32px; border-radius:40px; text-decoration:none; font-size:12px; letter-spacing:.2em; text-transform:uppercase; margin-top:24px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#8a7a5a;margin:0 0 10px;">Gift Card</p>
+    <h1>{{ shop.name }}</h1>
+    <p class="amt">{{ gift_card.initial_value | money }}</p>
+    {% if gift_card.enabled == false or gift_card.expired %}
+      <p class="note">This gift card has expired.</p>
+    {% else %}
+      <p style="font-size:14px;color:#52493f;margin:0;">Redeem at checkout using this code:</p>
+      <p class="code">{{ gift_card.code | format_code }}</p>
+      {% if gift_card.balance != gift_card.initial_value %}
+        <p class="note">Remaining balance: <strong>{{ gift_card.balance | money }}</strong></p>
+      {% endif %}
+      <a href="{{ shop.url }}" class="btn">Shop the range</a>
+    {% endif %}
+  </div>
+</body>
+</html>

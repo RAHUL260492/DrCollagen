@@ -1,0 +1,11 @@
+{% comment %}
+  Additional meta tags helper — include with:
+  {% render 'meta-tags' %}
+{% endcomment %}
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@drcollagen">
+{% if page_description %}
+  <meta name="twitter:description" content="{{ page_description | escape }}">
+{% endif %}
+<meta name="twitter:title" content="{{ page_title | escape }}">
