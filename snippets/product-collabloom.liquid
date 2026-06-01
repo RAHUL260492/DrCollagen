@@ -236,6 +236,41 @@
       color: var(--accent-deep);
     }
 
+    /* ─── Pack / variant selector ─── */
+    .dc-pack-select {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin: 16px 0 22px; max-width: 480px;
+    }
+    .dc-pack {
+      flex: 1 1 140px; min-width: 140px; text-align: left;
+      border: 1.5px solid rgba(176, 85, 120, .30);
+      background: #fff; border-radius: 14px;
+      padding: 12px 14px; cursor: pointer; position: relative;
+      display: flex; flex-direction: column; gap: 3px;
+      transition: border-color .2s var(--dc-ease-soft, ease),
+                  background .2s var(--dc-ease-soft, ease),
+                  box-shadow .2s var(--dc-ease-soft, ease);
+    }
+    .dc-pack:hover { border-color: var(--accent); }
+    .dc-pack.is-active {
+      border-color: var(--accent-deep);
+      background: rgba(176, 85, 120, .06);
+      box-shadow: inset 0 0 0 1px var(--accent-deep);
+    }
+    .dc-pack:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 2px; }
+    .dc-pack[disabled] { opacity: .45; cursor: not-allowed; }
+    .dc-pack__name  { font-weight: 600; font-size: 14px; color: var(--ink); }
+    .dc-pack__price { font-size: 13px; color: var(--muted); }
+    .dc-pack__save  { font-size: 11px; font-weight: 600; color: var(--accent-deep); }
+    .dc-pack--rec { border-color: var(--accent-deep); }
+    .dc-pack__rec {
+      position: absolute; top: -10px; right: 10px;
+      background: var(--accent-deep); color: #fff;
+      font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
+      font-weight: 700; padding: 3px 8px; border-radius: 999px;
+      white-space: nowrap;
+    }
+
     .hero-visual {
       position: relative; z-index: 2;
       display: flex; align-items: center; justify-content: center;
@@ -342,15 +377,13 @@
         0 38px 100px -32px rgba(224, 122, 158, 0.32),
         0 18px 48px -20px rgba(254, 220, 232, 0.6);
     }
-    /* Images fill the card edge-to-edge with object-fit:cover. The card
-       aspect ratio shifts with the viewport, and the source photos have
-       slightly different proportions, so `contain` would leave pale filler
-       bars (top/bottom or sides) that differ per image. `cover` crops a few
-       percent at the edges instead, keeping every slide gapless and uniform. */
+    /* Images run edge-to-edge with object-fit:contain. Since the card
+       background now matches the image corners, there's no visible
+       transition between the two. */
     .cb-slide img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       object-position: center;
       display: block;
       padding: 0;
@@ -841,35 +874,39 @@
       box-shadow: 0 16px 40px rgba(176,85,120,.12);
     }
     .rev-stars {
-      color: var(--accent-deep);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    /* Reliable fractional-star rendering: a filled layer is clipped to
+       --rating (% width) over a faint empty track of the same five stars.
+       100% = 5 stars, 90% = 4.5, 80% = 4 — no decimals leak into the row. */
+    .rev-stars-track {
+      --rating: 100%;
+      position: relative;
+      display: inline-block;
       font-size: 14px;
       letter-spacing: 2px;
-      margin-bottom: 14px;
-      display: inline-block;
+      line-height: 1;
+      white-space: nowrap;
     }
-    /* 4.5-star rendering — the ★★★★★ glyphs are clipped to a gradient that
-       runs solid through the first 90% of the row (= 4 full stars + half of
-       the 5th), then fades, so the 5th star reads as ½-filled. The numeric
-       label is kept OUTSIDE the clipped glyphs span so it renders in its own
-       muted colour rather than being swallowed by the gradient. */
-    .rev-stars--45 .rev-stars__glyphs {
-      display: inline-block;
-      background: linear-gradient(to right,
-        var(--accent-deep) 0%,
-        var(--accent-deep) 90%,
-        rgba(176, 85, 120, 0.32) 90%,
-        rgba(176, 85, 120, 0.32) 100%);
-      -webkit-background-clip: text;
-              background-clip: text;
-      -webkit-text-fill-color: transparent;
-              color: transparent;
+    .rev-stars-track::before {
+      content: "★★★★★";
+      color: rgba(176, 85, 120, 0.24);
+    }
+    .rev-stars-track::after {
+      content: "★★★★★";
+      color: var(--accent-deep);
+      position: absolute;
+      inset: 0;
+      width: var(--rating);
+      overflow: hidden;
     }
     .rev-rating-num {
-      margin-left: 8px;
       font-size: 12px;
       letter-spacing: .05em;
       color: var(--muted);
-      vertical-align: 2px;
     }
 
     @media (max-width: 720px) {
@@ -1286,16 +1323,41 @@
       <li>100mg Hyaluronic Acid + 30mg Oral Ceramides — deep hydration</li>
     </ul>
     <div class="hero-price-row">
-      <span class="hero-price">{{ dc_price }}</span>
-      {%- if dc_was -%}
-        <span class="hero-price-was">{{ dc_was }}</span>
-        <span class="hero-price-save">Save {{ dc_save_pct }}%</span>
-      {%- endif -%}
+      <span class="hero-price js-cb-price">{{ dc_price }}</span>
+      <span class="hero-price-was js-cb-was"{% unless dc_was %} style="display:none"{% endunless %}>{{ dc_was }}</span>
+      <span class="hero-price-save js-cb-save"{% unless dc_was %} style="display:none"{% endunless %}>{% if dc_was %}Save {{ dc_save_pct }}%{% endif %}</span>
     </div>
+    {%- if dc_product and dc_product.variants.size > 1 -%}
+      <div class="dc-pack-select" role="radiogroup" aria-label="Choose your pack">
+        {%- for v in dc_product.variants -%}
+          {%- assign is_rec = false -%}
+          {%- if v.title contains 'Pack of 3' -%}{%- assign is_rec = true -%}{%- endif -%}
+          {%- assign v_active = false -%}
+          {%- if v.id == dc_variant_id -%}{%- assign v_active = true -%}{%- endif -%}
+          <button type="button"
+                  class="dc-pack{% if is_rec %} dc-pack--rec{% endif %}{% if v_active %} is-active{% endif %}"
+                  role="radio" aria-checked="{% if v_active %}true{% else %}false{% endif %}"
+                  data-variant-id="{{ v.id }}"
+                  data-price="{{ v.price | money }}"
+                  {%- if v.compare_at_price > v.price %}
+                  data-was="{{ v.compare_at_price | money }}"
+                  data-save="{{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}"
+                  {%- endif %}
+                  {% unless v.available %}disabled aria-disabled="true"{% endunless %}>
+            {%- if is_rec %}<span class="dc-pack__rec">Recommended</span>{% endif -%}
+            <span class="dc-pack__name">{{ v.title }}</span>
+            <span class="dc-pack__price">{{ v.price | money }}{% unless v.available %} · Sold out{% endunless %}</span>
+            {%- if v.compare_at_price > v.price -%}
+              <span class="dc-pack__save">Save {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}%</span>
+            {%- endif -%}
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
     <div class="hero-actions">
       {%- if dc_available -%}
         {% form 'product', dc_product, id: 'collabloom-hero-add-form', class: 'btn-inline-form' %}
-          <input type="hidden" name="id" value="{{ dc_variant_id }}">
+          <input type="hidden" name="id" value="{{ dc_variant_id }}" class="js-cb-variant-id">
           <div class="dc-qty" role="group" aria-label="Quantity">
             <button type="button" class="dc-qty__btn" data-qty="minus" aria-label="Decrease quantity">&minus;</button>
             <input class="dc-qty__input" type="number" name="quantity" value="1" min="1" max="12" aria-label="Quantity">
@@ -1440,6 +1502,63 @@
     // Initial paint: wait one frame so flex layout settles
     requestAnimationFrame(function () { setTimeout(position, 50); });
     start();
+  })();
+
+  /* Pack / variant selector — keeps every buy box in sync:
+     updates the hidden variant id on all forms, the hero price,
+     the strike-through "was" price + save badge, and the CTA button label. */
+  (function () {
+    var groups = Array.prototype.slice.call(document.querySelectorAll('.dc-pack-select'));
+    if (!groups.length) return;
+
+    function setText(sel, txt) {
+      document.querySelectorAll(sel).forEach(function (el) { el.textContent = txt; });
+    }
+    function showHide(sel, show, txt) {
+      document.querySelectorAll(sel).forEach(function (el) {
+        el.style.display = show ? '' : 'none';
+        if (show && txt != null) el.textContent = txt;
+      });
+    }
+
+    function select(id, price, was, save) {
+      // sync the active state across ALL pack groups for the same variant
+      groups.forEach(function (group) {
+        group.querySelectorAll('.dc-pack').forEach(function (b) {
+          var on = b.getAttribute('data-variant-id') === id;
+          b.classList.toggle('is-active', on);
+          b.setAttribute('aria-checked', on ? 'true' : 'false');
+        });
+      });
+      document.querySelectorAll('.js-cb-variant-id').forEach(function (i) { i.value = id; });
+      setText('.js-cb-price', price);
+      setText('.js-cb-buy-label', price);
+      showHide('.js-cb-was', !!was, was || '');
+      showHide('.js-cb-save', !!was, was ? ('Save ' + save + '%') : '');
+    }
+
+    groups.forEach(function (group) {
+      group.addEventListener('click', function (e) {
+        var btn = e.target.closest('.dc-pack');
+        if (!btn || btn.disabled) return;
+        select(
+          btn.getAttribute('data-variant-id'),
+          btn.getAttribute('data-price') || '',
+          btn.getAttribute('data-was') || '',
+          btn.getAttribute('data-save') || ''
+        );
+      });
+      // keyboard support for the radio group
+      group.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        var packs = Array.prototype.slice.call(group.querySelectorAll('.dc-pack:not([disabled])'));
+        var cur = group.querySelector('.dc-pack.is-active');
+        var i = packs.indexOf(cur);
+        if (i < 0) return;
+        var next = e.key === 'ArrowRight' ? packs[(i + 1) % packs.length] : packs[(i - 1 + packs.length) % packs.length];
+        if (next) { next.click(); next.focus(); e.preventDefault(); }
+      });
+    });
   })();
 </script>
 
@@ -1687,7 +1806,7 @@
         {%- comment -%} Set {{ n }} of 2 — duplicated for seamless loop {%- endcomment -%}
 
         <div class="rev-card">
-          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
           <p class="rev-quote">"After 6 weeks of Collabloom, people started asking if I'd had a facial. My skin has never looked this dewy and plump — I'm genuinely obsessed."</p>
           <div class="rev-author">
             <div class="rev-avatar">P</div>
@@ -1699,7 +1818,7 @@
         </div>
 
         <div class="rev-card">
-          <div class="rev-stars rev-stars--45" aria-label="Rated 4.5 out of 5 stars"><span class="rev-stars__glyphs">★★★★★</span><span class="rev-rating-num" aria-hidden="true">4.5</span></div>
+          <div class="rev-stars" role="img" aria-label="Rated 4.5 out of 5 stars"><span class="rev-stars-track" style="--rating:90%"></span><span class="rev-rating-num" aria-hidden="true">4.5</span></div>
           <p class="rev-quote">"I noticed a real difference in my skin by week 4 — pigmentation around my cheeks has faded noticeably. Half a star off only because the bottle is small and I want more."</p>
           <div class="rev-author">
             <div class="rev-avatar">A</div>
@@ -1711,7 +1830,7 @@
         </div>
 
         <div class="rev-card">
-          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
           <p class="rev-quote">"The taste is actually delicious — not medicinal at all. I look forward to my daily Collabloom shot. My nails have grown so strong I haven't had a break in months."</p>
           <div class="rev-author">
             <div class="rev-avatar">N</div>
@@ -1723,7 +1842,7 @@
         </div>
 
         <div class="rev-card">
-          <div class="rev-stars rev-stars--45" aria-label="Rated 4.5 out of 5 stars"><span class="rev-stars__glyphs">★★★★★</span><span class="rev-rating-num" aria-hidden="true">4.5</span></div>
+          <div class="rev-stars" role="img" aria-label="Rated 4 out of 5 stars"><span class="rev-stars-track" style="--rating:80%"></span><span class="rev-rating-num" aria-hidden="true">4.0</span></div>
           <p class="rev-quote">"Took about 5 weeks for me to see results, so be patient with it. But once it started working, my dullness was gone and my hair fall reduced significantly. Worth it."</p>
           <div class="rev-author">
             <div class="rev-avatar">A</div>
@@ -1735,7 +1854,7 @@
         </div>
 
         <div class="rev-card">
-          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
           <p class="rev-quote">"I gifted Collabloom to my mother who's 55, and she's been glowing ever since. She says it's the first supplement that's actually made a visible difference."</p>
           <div class="rev-author">
             <div class="rev-avatar">K</div>
@@ -1747,7 +1866,7 @@
         </div>
 
         <div class="rev-card">
-          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
           <p class="rev-quote">"My dermatologist asked what I'd been doing differently. Told her about Collabloom and she actually approved — said the actives are properly dosed. Best shot in my routine."</p>
           <div class="rev-author">
             <div class="rev-avatar">R</div>
@@ -1759,7 +1878,7 @@
         </div>
 
         <div class="rev-card">
-          <div class="rev-stars rev-stars--45" aria-label="Rated 4.5 out of 5 stars"><span class="rev-stars__glyphs">★★★★★</span><span class="rev-rating-num" aria-hidden="true">4.5</span></div>
+          <div class="rev-stars" role="img" aria-label="Rated 4 out of 5 stars"><span class="rev-stars-track" style="--rating:80%"></span><span class="rev-rating-num" aria-hidden="true">4.0</span></div>
           <p class="rev-quote">"The Polypodium leucotomos is the reason I bought this. After 3 months my skin is noticeably less sun-damaged. Only thing — wish the cap was easier to open."</p>
           <div class="rev-author">
             <div class="rev-avatar">T</div>
@@ -1771,7 +1890,7 @@
         </div>
 
         <div class="rev-card">
-          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <div class="rev-stars" role="img" aria-label="Rated 4.5 out of 5 stars"><span class="rev-stars-track" style="--rating:90%"></span><span class="rev-rating-num" aria-hidden="true">4.5</span></div>
           <p class="rev-quote">"I've tried collagen powders, capsules, every form — this is the first one that I've actually been consistent with because it's quick and tasty. Three months in, skin is firmer."</p>
           <div class="rev-author">
             <div class="rev-avatar">S</div>
@@ -1783,7 +1902,7 @@
         </div>
 
         <div class="rev-card">
-          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
+          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
           <p class="rev-quote">"My hyperpigmentation around the chin had been bothering me for years. Two months on Collabloom and it's visibly faded. The glutathione really does its work."</p>
           <div class="rev-author">
             <div class="rev-avatar">M</div>
@@ -1845,19 +1964,46 @@
     <p class="overline reveal">Start Today</p>
     <h2 class="heading reveal reveal-delay-1">28 days. One <em>shot</em> a day.</h2>
     <p class="lede reveal reveal-delay-2">Join 10,000+ customers who made Collabloom their daily shot. Most see results within 28 days — and the science behind each ingredient is on the formula page.</p>
+    {%- if dc_product and dc_product.variants.size > 1 -%}
+      <div class="dc-pack-select" role="radiogroup" aria-label="Choose your pack" style="margin-left:auto;margin-right:auto;justify-content:center;">
+        {%- for v in dc_product.variants -%}
+          {%- assign is_rec = false -%}
+          {%- if v.title contains 'Pack of 3' -%}{%- assign is_rec = true -%}{%- endif -%}
+          {%- assign v_active = false -%}
+          {%- if v.id == dc_variant_id -%}{%- assign v_active = true -%}{%- endif -%}
+          <button type="button"
+                  class="dc-pack{% if is_rec %} dc-pack--rec{% endif %}{% if v_active %} is-active{% endif %}"
+                  role="radio" aria-checked="{% if v_active %}true{% else %}false{% endif %}"
+                  data-variant-id="{{ v.id }}"
+                  data-price="{{ v.price | money }}"
+                  {%- if v.compare_at_price > v.price %}
+                  data-was="{{ v.compare_at_price | money }}"
+                  data-save="{{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}"
+                  {%- endif %}
+                  {% unless v.available %}disabled aria-disabled="true"{% endunless %}>
+            {%- if is_rec %}<span class="dc-pack__rec">Recommended</span>{% endif -%}
+            <span class="dc-pack__name">{{ v.title }}</span>
+            <span class="dc-pack__price">{{ v.price | money }}{% unless v.available %} · Sold out{% endunless %}</span>
+            {%- if v.compare_at_price > v.price -%}
+              <span class="dc-pack__save">Save {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}%</span>
+            {%- endif -%}
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
     <div class="cta-actions reveal reveal-delay-3">
       {%- if dc_available -%}
         {% form 'product', dc_product, id: 'collabloom-buy-form', class: 'btn-inline-form' %}
-          <input type="hidden" name="id" value="{{ dc_variant_id }}">
+          <input type="hidden" name="id" value="{{ dc_variant_id }}" class="js-cb-variant-id">
           <div class="dc-qty" role="group" aria-label="Quantity">
             <button type="button" class="dc-qty__btn" data-qty="minus" aria-label="Decrease quantity">&minus;</button>
             <input class="dc-qty__input" type="number" name="quantity" value="1" min="1" max="12" aria-label="Quantity">
             <button type="button" class="dc-qty__btn" data-qty="plus" aria-label="Increase quantity">+</button>
           </div>
-          <button type="submit" id="collabloom-buy-btn" class="btn-primary">Add to cart — {{ dc_price }}</button>
+          <button type="submit" id="collabloom-buy-btn" class="btn-primary">Add to cart — <span class="js-cb-buy-label">{{ dc_price }}</span></button>
         {% endform %}
       {%- else -%}
-        <a href="/products/{{ dc_handle }}" id="collabloom-buy-btn" class="btn-primary">Add to cart — {{ dc_price }}</a>
+        <a href="/products/{{ dc_handle }}" id="collabloom-buy-btn" class="btn-primary">Add to cart — <span class="js-cb-buy-label">{{ dc_price }}</span></a>
       {%- endif -%}
       <a href="{{ routes.root_url }}#products" id="collabloom-see-range-btn" class="btn-outline">See full range</a>
     </div>
