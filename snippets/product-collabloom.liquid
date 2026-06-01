@@ -342,13 +342,15 @@
         0 38px 100px -32px rgba(224, 122, 158, 0.32),
         0 18px 48px -20px rgba(254, 220, 232, 0.6);
     }
-    /* Images run edge-to-edge with object-fit:contain. Since the card
-       background now matches the image corners, there's no visible
-       transition between the two. */
+    /* Images fill the card edge-to-edge with object-fit:cover. The card
+       aspect ratio shifts with the viewport, and the source photos have
+       slightly different proportions, so `contain` would leave pale filler
+       bars (top/bottom or sides) that differ per image. `cover` crops a few
+       percent at the edges instead, keeping every slide gapless and uniform. */
     .cb-slide img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       object-position: center;
       display: block;
       padding: 0;
