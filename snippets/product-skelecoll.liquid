@@ -137,6 +137,16 @@
       font-weight: 300; line-height: 1.02;
       margin-bottom: 20px; letter-spacing: -.01em;
     }
+    /* Trademark mark: tiny, upright, pinned to the top-right of the name */
+    .hero-title .hero-tm {
+      font-size: 0.24em;
+      font-style: normal;
+      font-weight: 400;
+      vertical-align: super;
+      line-height: 1;
+      margin-left: 0.06em;
+      letter-spacing: 0;
+    }
     .hero-tagline {
       font-size: clamp(17px, 1.6vw, 21px);
       font-weight: 300; color: var(--warm-dim);
@@ -1020,7 +1030,7 @@
   <div class="hero-text">
     <p class="hero-breadcrumb"><a href="{{ routes.root_url }}#products">Our Range</a> · Bones · Joints · Muscles</p>
     <p class="hero-doc-badge"><span aria-hidden="true">⚕</span> Formulated by Doctors</p>
-    <h1 class="hero-title" data-split>Skelecoll<em>™</em></h1>
+    <h1 class="hero-title" data-split>Skelecoll<sup class="hero-tm">™</sup></h1>
     <p class="hero-tagline">Move strong, heal stronger daily. A 30ml Cola-flavour shot with <em>10,000mg Japanese hydrolysed marine collagen</em> — support for recovery, mobility and strength.</p>
     <ul class="hero-bullets">
       <li>10,000mg Japanese hydrolysed marine collagen · 10g protein</li>
