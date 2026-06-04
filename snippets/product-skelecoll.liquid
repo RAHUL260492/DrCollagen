@@ -204,6 +204,35 @@
 
     .hero-price-row { display: flex; align-items: baseline; gap: 18px; margin-bottom: 12px; }
     .hero-price { font-family: var(--heading); font-size: 30px; font-weight: 400; color: var(--ink); }
+
+    /* ─── Pack / variant selector (ported from Collabloom, brown theme) ─── */
+    .dc-pack-select { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 22px; max-width: 480px; }
+    .dc-pack {
+      flex: 1 1 140px; min-width: 140px; text-align: left;
+      border: 1.5px solid rgba(176, 132, 92, .35);
+      background: #fff; border-radius: 14px;
+      padding: 12px 14px; cursor: pointer; position: relative;
+      display: flex; flex-direction: column; gap: 3px;
+      transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+    .dc-pack:hover { border-color: var(--accent); }
+    .dc-pack.is-active {
+      border-color: var(--accent-deep);
+      background: rgba(176, 132, 92, .08);
+      box-shadow: inset 0 0 0 1px var(--accent-deep);
+    }
+    .dc-pack:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 2px; }
+    .dc-pack[disabled] { opacity: .45; cursor: not-allowed; }
+    .dc-pack__name  { font-weight: 600; font-size: 14px; color: var(--ink); }
+    .dc-pack__price { font-size: 13px; color: var(--muted); }
+    .dc-pack__save  { font-size: 11px; font-weight: 600; color: var(--accent-deep); }
+    .dc-pack--rec { border-color: var(--accent-deep); }
+    .dc-pack__rec {
+      position: absolute; top: -10px; right: 10px;
+      background: var(--accent-deep); color: #fff;
+      font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
+      font-weight: 700; padding: 3px 8px; border-radius: 999px; white-space: nowrap;
+    }
     .hero-price-was { font-size: 16px; font-weight: 300; color: var(--muted); text-decoration: line-through; }
     .hero-price-save {
       font-size: 10px; font-weight: 600; letter-spacing: .15em;
@@ -1112,16 +1141,41 @@
       <li>250mg Calcium + 600IU Vitamin D3 + 50mg Magnesium — bone strength</li>
     </ul>
     <div class="hero-price-row">
-      <span class="hero-price">{{ dc_price }}</span>
-      {%- if dc_was -%}
-        <span class="hero-price-was">{{ dc_was }}</span>
-        <span class="hero-price-save">Save {{ dc_save_pct }}%</span>
-      {%- endif -%}
+      <span class="hero-price js-cb-price">{{ dc_price }}</span>
+      <span class="hero-price-was js-cb-was"{% unless dc_was %} style="display:none"{% endunless %}>{{ dc_was }}</span>
+      <span class="hero-price-save js-cb-save"{% unless dc_was %} style="display:none"{% endunless %}>{% if dc_was %}Save {{ dc_save_pct }}%{% endif %}</span>
     </div>
+    {%- if dc_product and dc_product.variants.size > 1 -%}
+      <div class="dc-pack-select" role="radiogroup" aria-label="Choose your pack">
+        {%- for v in dc_product.variants -%}
+          {%- assign is_rec = false -%}
+          {%- if v.title contains 'Pack of 3' -%}{%- assign is_rec = true -%}{%- endif -%}
+          {%- assign v_active = false -%}
+          {%- if v.id == dc_variant_id -%}{%- assign v_active = true -%}{%- endif -%}
+          <button type="button"
+                  class="dc-pack{% if is_rec %} dc-pack--rec{% endif %}{% if v_active %} is-active{% endif %}"
+                  role="radio" aria-checked="{% if v_active %}true{% else %}false{% endif %}"
+                  data-variant-id="{{ v.id }}"
+                  data-price="{{ v.price | money }}"
+                  {%- if v.compare_at_price > v.price %}
+                  data-was="{{ v.compare_at_price | money }}"
+                  data-save="{{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}"
+                  {%- endif %}
+                  {% unless v.available %}disabled aria-disabled="true"{% endunless %}>
+            {%- if is_rec %}<span class="dc-pack__rec">Recommended</span>{% endif -%}
+            <span class="dc-pack__name">{{ v.title }}</span>
+            <span class="dc-pack__price">{{ v.price | money }}{% unless v.available %} · Sold out{% endunless %}</span>
+            {%- if v.compare_at_price > v.price -%}
+              <span class="dc-pack__save">Save {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}%</span>
+            {%- endif -%}
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
     <div class="hero-actions">
       {%- if dc_available -%}
         {% form 'product', dc_product, id: 'skelecoll-hero-add-form', class: 'btn-inline-form' %}
-          <input type="hidden" name="id" value="{{ dc_variant_id }}">
+          <input type="hidden" name="id" value="{{ dc_variant_id }}" class="js-cb-variant-id">
           <div class="dc-qty" role="group" aria-label="Quantity">
             <button type="button" class="dc-qty__btn" data-qty="minus" aria-label="Decrease quantity">&minus;</button>
             <input class="dc-qty__input" type="number" name="quantity" value="1" min="1" max="12" aria-label="Quantity">
@@ -1244,6 +1298,52 @@
     });
     requestAnimationFrame(function () { setTimeout(position, 50); });
     start();
+  })();
+
+  /* Pack / variant selector — keeps every buy box in sync: updates the hidden
+     variant id on all forms, the hero price, the strike-through "was" price +
+     save badge, and any CTA button label. */
+  (function () {
+    var groups = Array.prototype.slice.call(document.querySelectorAll('.dc-pack-select'));
+    if (!groups.length) return;
+    function setText(sel, txt) { document.querySelectorAll(sel).forEach(function (el) { el.textContent = txt; }); }
+    function showHide(sel, show, txt) {
+      document.querySelectorAll(sel).forEach(function (el) {
+        el.style.display = show ? '' : 'none';
+        if (show && txt != null) el.textContent = txt;
+      });
+    }
+    function select(id, price, was, save) {
+      groups.forEach(function (group) {
+        group.querySelectorAll('.dc-pack').forEach(function (b) {
+          var on = b.getAttribute('data-variant-id') === id;
+          b.classList.toggle('is-active', on);
+          b.setAttribute('aria-checked', on ? 'true' : 'false');
+        });
+      });
+      document.querySelectorAll('.js-cb-variant-id').forEach(function (i) { i.value = id; });
+      setText('.js-cb-price', price);
+      setText('.js-cb-buy-label', price);
+      showHide('.js-cb-was', !!was, was || '');
+      showHide('.js-cb-save', !!was, was ? ('Save ' + save + '%') : '');
+    }
+    groups.forEach(function (group) {
+      group.addEventListener('click', function (e) {
+        var btn = e.target.closest('.dc-pack');
+        if (!btn || btn.disabled) return;
+        select(btn.getAttribute('data-variant-id'), btn.getAttribute('data-price') || '',
+               btn.getAttribute('data-was') || '', btn.getAttribute('data-save') || '');
+      });
+      group.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        var packs = Array.prototype.slice.call(group.querySelectorAll('.dc-pack:not([disabled])'));
+        var cur = group.querySelector('.dc-pack.is-active');
+        var i = packs.indexOf(cur);
+        if (i < 0) return;
+        var next = e.key === 'ArrowRight' ? packs[(i + 1) % packs.length] : packs[(i - 1 + packs.length) % packs.length];
+        if (next) { next.click(); next.focus(); e.preventDefault(); }
+      });
+    });
   })();
 </script>
 
