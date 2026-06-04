@@ -1010,6 +1010,9 @@
       color: var(--warm-dim);
     }
     .cta-guarantee span { color: var(--accent-deep); font-weight: 600; }
+    /* Trust + guarantee lines: full-width & centered (override the 65ch p cap
+       so they sit centered under the buy box, not left-shifted). */
+    .cta-inner .hero-trust, .cta-inner .cta-guarantee { max-width: none; text-align: center; margin-left: auto; margin-right: auto; }
 
     /* ─── FOOTER ────────────────────────────────────────────────── */
     footer {
@@ -2102,7 +2105,6 @@
       {%- else -%}
         <a href="/products/{{ dc_handle }}" id="collabloom-buy-btn" class="btn-primary">Add to cart — <span class="js-cb-buy-label">{{ dc_price }}</span></a>
       {%- endif -%}
-      <a href="#ingredients" id="collabloom-view-ingredients-btn" class="btn-outline">View ingredients</a>
     </div>
     <p class="hero-trust reveal reveal-delay-3" style="text-align:center;">Doctor-formulated · Micro-hydrolysed marine collagen · Daily 30ml shot</p>
     <p class="cta-guarantee reveal reveal-delay-4">Free shipping over ₹1,500 · ships within <span>48 hours</span></p>
