@@ -1247,7 +1247,7 @@
     if (!track || slides.length < 2) return;
 
     var REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var AUTO_MS = 8000;
+    var AUTO_MS = 5000;   /* gentle auto-scroll — every 5s */
     var idx = 0;
     var timer = null;
 
