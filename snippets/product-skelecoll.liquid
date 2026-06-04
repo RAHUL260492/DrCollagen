@@ -639,6 +639,13 @@
       .hero-title { font-size: clamp(42px, 11vw, 64px); }
       .hero-actions { flex-direction: column; align-items: stretch; }
       .hero-actions .btn-primary, .hero-actions .btn-outline { text-align: center; }
+      /* Final-CTA buy area: qty + Add to cart on one full-width row, then a
+         full-width View ingredients button — consistent alignment on mobile. */
+      .cta-actions { flex-direction: column; align-items: stretch; }
+      .cta-actions .btn-inline-form { display: flex; width: 100%; flex-wrap: nowrap; gap: 10px; }
+      .cta-actions .btn-inline-form .dc-qty { flex: 0 0 auto; }
+      .cta-actions .btn-inline-form .btn-primary { flex: 1 1 auto; min-width: 0; text-align: center; padding-left: 14px; padding-right: 14px; }
+      .cta-actions > .btn-primary, .cta-actions > .btn-outline { width: 100%; text-align: center; }
       .ing-grid { grid-template-columns: 1fr; }
       .footer-inner { flex-direction: column; text-align: center; }
       #film-grain { display: none; }
