@@ -1479,6 +1479,13 @@
       body { cursor: auto; }
       button, a { cursor: pointer; }
 
+      /* "2024 · Est. India" badge: on mobile, flow it below the grid (centered)
+         instead of floating over the Japanese-source cell. */
+      .about-float-badge {
+        position: static; margin: 14px auto 0; display: table;
+        text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,.06);
+      }
+
       /* Light sections */
       .products-grid { grid-template-columns: 1fr; }
       .science-pillars { grid-template-columns: 1fr; }
@@ -1926,10 +1933,17 @@
     .m-decision { background: #fbf6e8; }
     .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 24px; }
     .m-card {
-      display: flex; flex-direction: column; text-decoration: none;
+      display: flex; flex-direction: column; text-decoration: none; position: relative;
       background: #fff; border: 1px solid rgba(184,144,58,.18);
       border-radius: 16px; padding: 16px 14px 18px; transition: box-shadow .25s ease, border-color .25s ease;
     }
+    .m-card-soon {
+      position: absolute; top: 8px; right: 8px; z-index: 2;
+      background: rgba(26,18,37,.9); color: #fff;
+      font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      padding: 4px 9px; border-radius: 999px;
+    }
+    .m-card--soon .m-card-img img { opacity: .82; }
     .m-card:active { border-color: rgba(184,144,58,.4); box-shadow: 0 10px 24px rgba(184,144,58,.14); }
     .m-card-img {
       height: 96px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
@@ -2288,11 +2302,13 @@
         <div class="m-card-img"><img src="{{ 'skelecoll-bottle.png' | asset_url }}" alt="Skelecoll" loading="lazy"></div>
         <p class="m-card-goal">Bones &amp; Joints</p><p class="m-card-name">Skelecoll</p>
       </a>
-      <a class="m-card" href="/pages/collatrim" id="m-card-collatrim">
+      <a class="m-card m-card--soon" href="/pages/collatrim" id="m-card-collatrim">
+        <span class="m-card-soon">Coming Soon</span>
         <div class="m-card-img"><img src="{{ 'collatrim-bottle.png' | asset_url }}" alt="Collatrim" loading="lazy"></div>
         <p class="m-card-goal">Body Tone</p><p class="m-card-name">Collatrim</p>
       </a>
-      <a class="m-card" href="/pages/metastable" id="m-card-metastable">
+      <a class="m-card m-card--soon" href="/pages/metastable" id="m-card-metastable">
+        <span class="m-card-soon">Coming Soon</span>
         <div class="m-card-img"><img src="{{ 'metastable-bottle.png' | asset_url }}" alt="Metastable" loading="lazy"></div>
         <p class="m-card-goal">Gut, Energy &amp; Immunity</p><p class="m-card-name">Metastable</p>
       </a>
@@ -2414,7 +2430,7 @@
       </a>
 
       <!-- COLLATRIM -->
-      <a href="#newsletter" id="product-card-collatrim" class="product-card collatrim is-coming-soon reveal reveal-delay-3">
+      <a href="#products" id="product-card-collatrim" class="product-card collatrim is-coming-soon reveal reveal-delay-3">
         <div class="product-image-wrap">
           <!-- Shopify: replace src with {{ 'collatrim.png' | asset_url }} -->
           <img src="{{ 'collatrim-bottle.png' | asset_url }}" alt="Collatrim bottle — collagen with metabolism support for body composition and skin tone" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
@@ -2436,13 +2452,13 @@
             <span class="benefit-chip">Skin Firmness</span>
           </div>
           <div class="product-cta">
-            <span class="cta-label cta-label--waitlist">Join Waitlist <span class="arrow">→</span></span>
+            <span class="cta-label cta-label--waitlist">Coming Soon <span class="arrow">→</span></span>
           </div>
         </div>
       </a>
 
       <!-- METASTABLE -->
-      <a href="#newsletter" id="product-card-metastable" class="product-card metastable is-coming-soon reveal reveal-delay-4">
+      <a href="#products" id="product-card-metastable" class="product-card metastable is-coming-soon reveal reveal-delay-4">
         <div class="product-image-wrap">
           <!-- Shopify: replace src with {{ 'metastable.png' | asset_url }} -->
           <img src="{{ 'metastable-bottle.png' | asset_url }}" alt="Metastable bottle — collagen with adaptogens and probiotics for energy, gut and immunity" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
@@ -2465,7 +2481,7 @@
             <span class="benefit-chip">Immunity</span>
           </div>
           <div class="product-cta">
-            <span class="cta-label cta-label--waitlist">Join Waitlist <span class="arrow">→</span></span>
+            <span class="cta-label cta-label--waitlist">Coming Soon <span class="arrow">→</span></span>
           </div>
         </div>
       </a>
@@ -2792,8 +2808,8 @@
         </ul>
         <p class="footer-subhead">Coming soon</p>
         <ul>
-          <li><a href="#newsletter" id="footer-link-products-collatrim">Collatrim™ <span class="footer-tag footer-tag--soon">Body Tone</span></a></li>
-          <li><a href="#newsletter" id="footer-link-products-metastable">Metastable™ <span class="footer-tag footer-tag--soon">Gut + Energy</span></a></li>
+          <li><a href="#products" id="footer-link-products-collatrim">Collatrim™ <span class="footer-tag footer-tag--soon">Body Tone</span></a></li>
+          <li><a href="#products" id="footer-link-products-metastable">Metastable™ <span class="footer-tag footer-tag--soon">Gut + Energy</span></a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -2817,23 +2833,6 @@
       </div>
     </div>
 
-    <!-- Newsletter / waitlist -->
-    <div class="footer-newsletter" id="newsletter">
-      <div class="footer-news-copy">
-        <h4>Join the Dr Collagen list</h4>
-        <p>Get product launches, formula updates and collagen education. No spam.</p>
-      </div>
-      {% form 'customer', id: 'footer-newsletter-form', class: 'footer-news-form' %}
-        <input type="hidden" name="contact[tags]" value="newsletter, homepage-footer">
-        {% if form.posted_successfully? %}
-          <p class="footer-news-success">Thank you — you're on the list.</p>
-        {% else %}
-          <label class="visually-hidden" for="footer-news-email">Email address</label>
-          <input type="email" id="footer-news-email" name="contact[email]" placeholder="Your email address" aria-label="Email address" required>
-          <button type="submit" class="btn-primary" id="footer-news-submit">Join</button>
-        {% endif %}
-      {% endform %}
-    </div>
     <div class="footer-bottom">
       <!-- LEGAL: this line was rewritten to an India-appropriate disclaimer. Have counsel confirm before launch. -->
       <p class="footer-legal">© {{ 'now' | date: '%Y' }} Dr Collagen. All rights reserved. These statements have not been evaluated for medicinal claims. This product is a dietary supplement and is not intended to diagnose, treat, cure, or prevent any disease.</p>
