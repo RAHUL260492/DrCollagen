@@ -123,6 +123,9 @@ a { color: inherit; text-decoration: none; }
 /* Constrain prose line length for readability */
 p { max-width: 65ch; }
 .dc-prose-narrow { max-width: 58ch; }
+/* Eyebrow/overline labels are <p> but must span their (centered) header so the
+   centered text actually centers — exempt them from the 65ch prose cap. */
+.overline, .section-overline { max-width: none; }
 
 /* ─── ACCESSIBILITY ─────────────────────────────────────────────── */
 .skip-to-content {
