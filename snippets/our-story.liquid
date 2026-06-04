@@ -218,7 +218,7 @@
           {%- if settings.founder_1_image != blank -%}
             <img src="{{ settings.founder_1_image | image_url: width: 280 }}" alt="Dr Nachiket Pansey">
           {%- else -%}
-            <div class="story-founder-portrait-placeholder">NP</div>
+            <img src="{{ 'founder-nachiket.webp' | asset_url }}" alt="Dr Nachiket Pansey" loading="lazy">
           {%- endif -%}
         </div>
         <h2 class="story-founder-name">Dr Nachiket Pansey</h2>
@@ -230,7 +230,7 @@
           {%- if settings.founder_2_image != blank -%}
             <img src="{{ settings.founder_2_image | image_url: width: 280 }}" alt="Dr Raashi Mehta">
           {%- else -%}
-            <div class="story-founder-portrait-placeholder">RM</div>
+            <img src="{{ 'founder-raashi.webp' | asset_url }}" alt="Dr Raashi Mehta" loading="lazy">
           {%- endif -%}
         </div>
         <h2 class="story-founder-name">Dr Raashi Mehta</h2>
