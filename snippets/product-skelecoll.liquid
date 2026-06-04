@@ -583,7 +583,9 @@
     @media (max-width: 900px) {
       nav { padding: 18px 24px; } nav.scrolled { padding: 12px 24px; }
       section { padding: 80px 24px; }
-      #hero { grid-template-columns: 1fr; gap: 40px; padding: 120px 24px 60px; }
+      /* Mobile: content-height hero (was forcing 100svh + centering, which left
+         a large blank gap above the content). Start content near the top. */
+      #hero { min-height: 0; align-items: start; grid-template-columns: 1fr; gap: 32px; padding: 92px 24px 48px; }
       .hero-text { order: 2; } .hero-visual { order: 1; } .hero-badge-float { display: none; }
       #promise .inner, #use .inner { grid-template-columns: 1fr; gap: 40px; }
       .ing-grid { grid-template-columns: 1fr 1fr; }
@@ -984,10 +986,74 @@
       .skl-thumb button { width: 38px; height: 48px; }
     }
 
+    /* ─── CRO additions: hero trust line, honest proof/trust, sticky CTA ─── */
+    .hero-trust {
+      margin: 18px 0 0; font-size: 12.5px; line-height: 1.5;
+      color: var(--accent-deep, #7d5a3e); font-weight: 500; letter-spacing: .01em;
+    }
+    .promise-bestfor {
+      margin-top: 20px; padding: 12px 18px; border-radius: 12px;
+      background: rgba(176,132,92,.1); border: 1px solid rgba(176,132,92,.2);
+      font-size: 14px; line-height: 1.5; color: var(--ink, #2a1d12);
+    }
+    .promise-bestfor strong { color: var(--accent-deep, #7d5a3e); }
+    .res-proof {
+      font-family: var(--heading, 'Playfair Display', Georgia, serif);
+      font-size: 22px; font-weight: 500; color: var(--accent-deep, #7d5a3e);
+      line-height: 1.1; margin-bottom: 8px;
+    }
+    .trust-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+      max-width: 980px; margin: 48px auto 0;
+    }
+    .trust-card {
+      background: #fff; border: 1px solid rgba(176,132,92,.2);
+      border-radius: 18px; padding: 26px 24px; text-align: left; position: relative;
+    }
+    .trust-card::before {
+      content: ''; position: absolute; left: 24px; top: 24px;
+      width: 26px; height: 2px; border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent, #b0845c), var(--accent-deep, #7d5a3e));
+    }
+    .trust-card h3 {
+      font-family: var(--heading, 'Playfair Display', Georgia, serif);
+      font-size: 18px; font-weight: 500; color: var(--ink, #2a1d12);
+      margin: 18px 0 8px; letter-spacing: -.01em;
+    }
+    .trust-card p { font-size: 13.5px; line-height: 1.6; color: var(--muted, #6e6352); margin: 0; }
+    .rev-note {
+      text-align: center; font-size: 12.5px; color: var(--muted, #6e6352);
+      margin: 32px auto 0; max-width: 520px; font-style: italic;
+    }
+
+    /* Sticky mobile buy bar */
+    .skl-sticky {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 460;
+      display: none; align-items: center; justify-content: space-between; gap: 14px;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      background: rgba(243,229,210,.94); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(125,90,62,.2);
+      transform: translateY(110%); transition: transform .35s cubic-bezier(.2,.8,.2,1);
+    }
+    .skl-sticky.is-visible { transform: translateY(0); }
+    .skl-sticky__info { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+    .skl-sticky__name { font-family: var(--heading, 'Playfair Display', Georgia, serif); font-size: 16px; color: var(--ink, #2a1d12); }
+    .skl-sticky__price { font-size: 13px; color: var(--accent-deep, #7d5a3e); font-weight: 600; }
+    .skl-sticky__btn {
+      flex-shrink: 0; min-height: 48px; display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 26px; border-radius: 40px; text-decoration: none;
+      background: var(--ink, #2a1d12); color: #fff; font-size: 13px; font-weight: 600; letter-spacing: .06em;
+    }
+    @media (max-width: 760px) {
+      .trust-grid { grid-template-columns: 1fr; gap: 12px; }
+      .trust-card { padding: 20px 20px; }
+      .skl-sticky { display: flex; }
+    }
+
   </style>
 
-<!-- ═══ SKIP TO CONTENT ═════════════════════════════════════════════ -->
-<a href="#main" class="skip-link">Skip to content</a>
+<!-- Skip-to-content link is provided globally by layout/theme.liquid (visually
+     hidden until keyboard focus); the duplicate here was removed. -->
 
 <div id="film-grain"></div>
 
@@ -1031,7 +1097,7 @@
     <p class="hero-breadcrumb"><a href="{{ routes.root_url }}#products">Our Range</a> · Bones · Joints · Muscles</p>
     <p class="hero-doc-badge"><span aria-hidden="true">⚕</span> Formulated by Doctors</p>
     <h1 class="hero-title" data-split>Skelecoll<sup class="hero-tm">™</sup></h1>
-    <p class="hero-tagline">Move strong, heal stronger daily. A 30ml Cola-flavour shot with <em>10,000mg Japanese hydrolysed marine collagen</em> — support for recovery, mobility and strength.</p>
+    <p class="hero-tagline">Micro-hydrolysed marine collagen with targeted co-factors — a 30ml Cola-flavour shot with <em>10,000mg Japanese hydrolysed marine collagen</em> to support joints, bones, mobility and everyday structural strength.</p>
     <ul class="hero-bullets">
       <li>10,000mg Japanese hydrolysed marine collagen · 10g protein</li>
       <li>1,000mg L-Carnitine + 500mg Cissus Quadrangularis — muscle &amp; endurance</li>
@@ -1061,6 +1127,7 @@
       {%- endif -%}
       <a href="#ingredients" id="skelecoll-hero-the-formula-btn" class="btn-outline">The formula</a>
     </div>
+    <p class="hero-trust">Doctor-formulated · Daily 30ml shot · Micro-hydrolysed marine collagen</p>
   </div>
   <div class="hero-visual">
     <div class="skl-slider-wrap">
@@ -1078,7 +1145,7 @@
         </div>
         <button type="button" class="skl-arrow skl-arrow--next" data-skl-next aria-label="Next image">&#8250;</button>
       </div>
-      <div class="hero-badge-float">★ 4.7 · <strong>1,800+ reviews</strong><br />New Formula · Bones &amp; Joints</div>
+      <div class="hero-badge-float"><strong>Doctor-formulated</strong><br />Daily 30ml marine collagen shot</div>
 
       <ol class="skl-thumbs" role="tablist" aria-label="Choose image">
         {%- for src in skl_slides -%}
@@ -1183,9 +1250,10 @@
     </div>
     <div class="promise-text reveal reveal-delay-2">
       <p class="overline">Why Skelecoll</p>
-      <h2 class="heading">Move strong. Heal <em>stronger</em>. Daily.</h2>
-      <p>Skelecoll supports joint flexibility and mobility, strengthens bones and connective tissues, helps reduce joint discomfort and stiffness, and supports post-workout recovery and endurance — all in one 30ml Cola-flavour shot.</p>
-      <p>The formula delivers 10,000mg of Japanese hydrolysed marine collagen with Glucosamine for cartilage structure and joint integrity, Hyaluronic Acid for joint lubrication, Calcium + D3 + Magnesium for bone strength, Cissus Quadrangularis for muscle endurance, and a full antioxidant stack (RoseHip, CoQ10, Vitamin C, Lycopene) that combats oxidative stress and supports collagen production. 13 actives, zero sugar, 40 kcal.</p>
+      <h2 class="heading">Move strong. Recover <em>stronger</em>.</h2>
+      <p>Skelecoll combines micro-hydrolysed marine collagen with bone and joint-focused co-factors to support joint flexibility and mobility, bones and connective tissue, and post-workout recovery — all in one 30ml Cola-flavour shot, designed for daily use.</p>
+      <p>The formula pairs 10,000mg of Japanese hydrolysed marine collagen with Glucosamine and Hyaluronic Acid for joint structure and lubrication, Calcium + D3 + Magnesium for bone support, Cissus Quadrangularis for muscle endurance, and an antioxidant stack (RoseHip, CoQ10, Vitamin C, Lycopene) that supports collagen production. 13 actives, zero sugar, 40 kcal.</p>
+      <p class="promise-bestfor"><strong>Best for:</strong> joint support, mobility, bones, recovery and active daily movement.</p>
     </div>
   </div>
 </section>
@@ -1194,7 +1262,7 @@
   <div class="inner">
     <div class="ing-head reveal">
       <p class="overline">The Formula</p>
-      <h2 class="heading">Six actions. One <em>30ml shot</em>.</h2>
+      <h2 class="heading">Six actions. One <em>daily shot</em>.</h2>
       <p class="lede">13 ingredients, grouped by what they do. Every dose below is what's printed on the box — nothing rounded, nothing hidden.</p>
     </div>
 
@@ -1281,30 +1349,30 @@
   <div class="inner">
     <div class="tl-head reveal">
       <p class="overline">What to Expect</p>
-      <h2 class="heading">Less ache, more range — <em>week by week</em>.</h2>
-      <p class="lede">Joint tissue rebuilds slowly. Here's the timeline most Skelecoll users report.</p>
+      <h2 class="heading">Support you can build, <em>week by week</em>.</h2>
+      <p class="lede">Consistency matters. Use Skelecoll daily as part of your movement and recovery routine — collagen is designed to work gradually, with consistent use.</p>
     </div>
 
     <div class="tl-grid">
       <div class="tl-item reveal reveal-delay-1">
-        <p class="tl-week">Week 1–2</p>
+        <p class="tl-week">Week 1</p>
         <div class="tl-num">01</div>
-        <p class="tl-text">Morning stiffness eases. You notice getting out of bed feels a little easier. Subtle but there.</p>
+        <p class="tl-text"><strong>Build the habit.</strong> Start your daily collagen routine — one simple 30ml shot.</p>
       </div>
       <div class="tl-item reveal reveal-delay-2">
-        <p class="tl-week">Week 3–4</p>
+        <p class="tl-week">Week 2</p>
         <div class="tl-num">02</div>
-        <p class="tl-text">Knees and shoulders feel looser. Low-impact workouts feel smoother. Less grinding.</p>
+        <p class="tl-text"><strong>Support daily movement.</strong> Keep your joints and mobility routine consistent.</p>
       </div>
       <div class="tl-item reveal reveal-delay-3">
-        <p class="tl-week">Week 6–8</p>
+        <p class="tl-week">Week 3</p>
         <div class="tl-num">03</div>
-        <p class="tl-text">Range of motion visibly improves. Stairs are no longer an event. You take the long way on purpose.</p>
+        <p class="tl-text"><strong>Support from within.</strong> Collagen and co-factors continue supporting bones, joints and structural strength.</p>
       </div>
       <div class="tl-item reveal reveal-delay-4">
-        <p class="tl-week">Week 12+</p>
+        <p class="tl-week">Week 4</p>
         <div class="tl-num">04</div>
-        <p class="tl-text">Joint comfort is the new normal. Bone density support compounds quietly over the long term.</p>
+        <p class="tl-text"><strong>Routine momentum.</strong> With consistent use, your mobility-support routine becomes part of your day.</p>
       </div>
     </div>
   </div>
@@ -1358,160 +1426,48 @@
 <section id="results">
   <div class="inner">
     <div class="res-head reveal">
-      <p class="overline">The Numbers</p>
-      <h2 class="heading">Relief you can <em>measure</em>, not just hope for.</h2>
-      <p class="lede">Self-reported outcomes from 900+ Skelecoll customers surveyed at the 12-week mark.</p>
+      <p class="overline">The Formula</p>
+      <h2 class="heading">Designed for daily <em>movement support</em>.</h2>
+      <p class="lede">Skelecoll is built around consistent daily use — micro-hydrolysed marine collagen and co-factors selected for bones, joints and mobility support.</p>
     </div>
     <div class="res-grid reveal reveal-delay-1">
       <div class="res-card">
-        <div class="res-num"><span class="counter" data-target="93">0</span><span>%</span></div>
-        <div class="res-label">Reported reduced<br />joint discomfort</div>
+        <div class="res-proof">Micro-hydrolysed</div>
+        <div class="res-label">Marine collagen, sized for easy daily absorption</div>
       </div>
       <div class="res-card">
-        <div class="res-num"><span class="counter" data-target="88">0</span><span>%</span></div>
-        <div class="res-label">Noticed improved<br />range of motion</div>
+        <div class="res-proof">Bones &amp; joints</div>
+        <div class="res-label">A co-factor blend selected for mobility and structural support</div>
       </div>
       <div class="res-card">
-        <div class="res-num"><span class="counter" data-target="86">0</span><span>%</span></div>
-        <div class="res-label">Felt less<br />morning stiffness</div>
+        <div class="res-proof">One 30ml shot</div>
+        <div class="res-label">A simple daily ritual — no mixing, no measuring</div>
       </div>
       <div class="res-card">
-        <div class="res-num"><span class="counter" data-target="96">0</span><span>%</span></div>
-        <div class="res-label">Would recommend<br />Skelecoll to friends</div>
+        <div class="res-proof">28-day routine</div>
+        <div class="res-label">Designed for consistent use over four weeks and beyond</div>
       </div>
     </div>
-    <p class="res-foot">Based on self-reported outcomes. Individual results may vary.</p>
   </div>
 </section>
 
+<!-- ═══ WHY SKELECOLL — honest formulation trust (replaces fake reviews) ═══ -->
 <section id="reviews">
   <div class="inner">
     <div class="rev-head reveal">
-      <p class="overline">Real Results</p>
-      <h2 class="heading">Knees, backs, and mornings — <em>restored</em>.</h2>
+      <p class="overline">Why Skelecoll</p>
+      <h2 class="heading">Built on formulation principles, <em>not empty promises</em>.</h2>
+      <p class="lede">Skelecoll is designed around a simple daily ritual — micro-hydrolysed marine collagen and bones-and-joints co-factors selected for targeted support.</p>
     </div>
-  </div>
-
-  {%- comment -%}
-    Edge-to-edge right→left marquee. Set duplicated once for seamless loop.
-    Replace these placeholder testimonials with real, permissioned reviews
-    before launch — fabricated reviews violate India's Consumer Protection
-    (Direct Selling) Rules 2021 and CCPA misleading-endorsement rules.
-  {%- endcomment -%}
-  <div class="rev-marquee" role="region" aria-label="Customer reviews carousel" tabindex="0">
-    <div class="rev-marquee-track">
-      {%- for n in (1..2) -%}
-
-        <div class="rev-card">
-          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
-          <p class="rev-quote">"I was sceptical about collagen shots, but Skelecoll genuinely reduced my knee pain within a month. My physio couldn't believe the improvement on follow-up."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">R</div>
-            <div>
-              <div class="rev-name">Rajesh Mehta</div>
-              <div class="rev-role">Delhi · 4 months on Skelecoll</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars rev-stars--45" aria-label="Rated 4.5 out of 5 stars">★★★★★<span class="rev-rating-num" aria-hidden="true">4.5</span></div>
-          <p class="rev-quote">"Took a solid 6 weeks before I felt the real difference — but now my morning stiffness is gone and I can go for an hour-long walk without my knees complaining. Worth the patience."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">A</div>
-            <div>
-              <div class="rev-name">Arun Khanna</div>
-              <div class="rev-role">Pune · 3 months on Skelecoll</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
-          <p class="rev-quote">"At 58, stairs had become a real problem. Three months on Skelecoll and I'm back to playing weekend cricket. The Glucosamine + Cissus combo is the real thing."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">V</div>
-            <div>
-              <div class="rev-name">Vikram Iyer</div>
-              <div class="rev-role">Bangalore · 5 months on Skelecoll</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars rev-stars--45" aria-label="Rated 4.5 out of 5 stars">★★★★★<span class="rev-rating-num" aria-hidden="true">4.5</span></div>
-          <p class="rev-quote">"The cola flavour is genuinely good — I look forward to it. My deadlift soreness recovery has noticeably improved. Half a star off only because I wish the bottle had a measure marking."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">K</div>
-            <div>
-              <div class="rev-name">Karthik Nair</div>
-              <div class="rev-role">Chennai · 2 months on Skelecoll</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
-          <p class="rev-quote">"My mother is 68 and Skelecoll has been life-changing for her. She's started morning walks again — something she hadn't done in years. The 10g dose makes a real difference."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">D</div>
-            <div>
-              <div class="rev-name">Deepa Shah</div>
-              <div class="rev-role">Ahmedabad · 6 months on Skelecoll</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
-          <p class="rev-quote">"As a marathon runner, my IT band and knees were always sore. Skelecoll has been a quiet game-changer — recovery is faster, training feels lighter. L-Carnitine bump is real."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">S</div>
-            <div>
-              <div class="rev-name">Suresh Pillai</div>
-              <div class="rev-role">Mumbai · 4 months on Skelecoll</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars rev-stars--45" aria-label="Rated 4.5 out of 5 stars">★★★★★<span class="rev-rating-num" aria-hidden="true">4.5</span></div>
-          <p class="rev-quote">"Picked this up for my dad who has osteoarthritis. Two months in he's noticeably more mobile and his pain has reduced. Half a star because we wish you'd offer larger pack sizes."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">N</div>
-            <div>
-              <div class="rev-name">Neha Reddy</div>
-              <div class="rev-role">Hyderabad · 3 months on Skelecoll</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
-          <p class="rev-quote">"I've tried glucosamine pills for years with no real result. The shot format is the difference — absorption is way better. My orthopedic surgeon was actually impressed."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">P</div>
-            <div>
-              <div class="rev-name">Pradeep Verma</div>
-              <div class="rev-role">Kolkata · 5 months on Skelecoll</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" aria-label="Rated 5 out of 5 stars">★★★★★</div>
-          <p class="rev-quote">"Post-workout soreness used to last 3 days. Now it's down to 1. Joint clicks I've had for years are gone. Hands-down the best supplement I've added to my routine this year."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">M</div>
-            <div>
-              <div class="rev-name">Mahesh Joshi</div>
-              <div class="rev-role">Jaipur · 4 months on Skelecoll</div>
-            </div>
-          </div>
-        </div>
-
-      {%- endfor -%}
+    <div class="trust-grid reveal reveal-delay-1">
+      <div class="trust-card"><h3>Doctor-formulated</h3><p>Developed by medical practitioners against published data.</p></div>
+      <div class="trust-card"><h3>Marine collagen base</h3><p>Micro-hydrolysed Japanese marine collagen, sized for absorption.</p></div>
+      <div class="trust-card"><h3>Bones &amp; joints co-factors</h3><p>A targeted blend selected for mobility and structural support.</p></div>
+      <div class="trust-card"><h3>Designed for daily use</h3><p>Built as a 28-day ritual, not a one-time fix.</p></div>
+      <div class="trust-card"><h3>One 30ml shot</h3><p>A single daily serving — simple and consistent.</p></div>
+      <div class="trust-card"><h3>No mixing required</h3><p>Ready to drink. No powders, no measuring.</p></div>
     </div>
+    <p class="rev-note">Real customer reviews will be added once we have verified feedback to share.</p>
   </div>
 </section>
 
@@ -1557,8 +1513,8 @@
 <section id="cta">
   <div class="cta-inner">
     <p class="overline reveal">Start today</p>
-    <h2 class="heading reveal reveal-delay-1">Move freely again. <em>Start Now</em>.</h2>
-    <p class="lede reveal reveal-delay-2">Join 10,000+ customers who've rediscovered effortless movement. Cartilage remodels slowly — give Skelecoll 60 to 90 days of daily use, and the difference shows up where you used to feel the work.</p>
+    <h2 class="heading reveal reveal-delay-1">Move better, <em>one shot a day</em>.</h2>
+    <p class="lede reveal reveal-delay-2">Start your daily bones and joints support routine with Skelecoll — micro-hydrolysed marine collagen with targeted co-factors, designed for daily use.</p>
     <div class="cta-actions reveal reveal-delay-3">
       {%- if dc_available -%}
         {% form 'product', dc_product, id: 'skelecoll-buy-form', class: 'btn-inline-form' %}
@@ -1573,11 +1529,43 @@
       {%- else -%}
         <a href="/products/{{ dc_handle }}" id="skelecoll-buy-btn" class="btn-primary">Add to cart — {{ dc_price }}</a>
       {%- endif -%}
-      <a href="{{ routes.root_url }}#products" id="skelecoll-see-range-btn" class="btn-outline">See full range</a>
+      <a href="#ingredients" id="skelecoll-view-ingredients-btn" class="btn-outline">View ingredients</a>
     </div>
+    <p class="hero-trust reveal reveal-delay-3" style="text-align:center;">Doctor-formulated · Micro-hydrolysed marine collagen · Daily 30ml shot</p>
     <p class="cta-guarantee reveal reveal-delay-4">Free shipping over ₹1,500 · ships within <span>48 hours</span></p>
   </div>
 </section>
+
+<!-- Sticky mobile buy bar (appears after the hero buy block) -->
+<div class="skl-sticky" id="skl-sticky" aria-hidden="true">
+  <div class="skl-sticky__info">
+    <span class="skl-sticky__name">Skelecoll</span>
+    <span class="skl-sticky__price">{{ dc_price }}</span>
+  </div>
+  <a href="#cta" class="skl-sticky__btn" id="skl-sticky-buy">Add to Cart</a>
+</div>
+
+<script>
+(function () {
+  var bar = document.getElementById('skl-sticky');
+  var hero = document.getElementById('hero');
+  if (!bar || !hero) return;
+  var ticking = false;
+  function check() {
+    var past = (window.scrollY || 0) > (hero.offsetTop + hero.offsetHeight - 80);
+    bar.classList.toggle('is-visible', past);
+    bar.setAttribute('aria-hidden', past ? 'false' : 'true');
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(check); } }, { passive: true });
+  check();
+  var btn = document.getElementById('skl-sticky-buy');
+  if (btn) btn.addEventListener('click', function (e) {
+    var form = document.getElementById('skelecoll-buy-form');
+    if (form && form.requestSubmit) { e.preventDefault(); form.requestSubmit(); }
+  });
+})();
+</script>
 
 </main>
 
