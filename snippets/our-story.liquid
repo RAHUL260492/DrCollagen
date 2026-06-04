@@ -1,0 +1,285 @@
+<style>
+  /* ─── Our Story page — full founder narrative ──────────────────── */
+  .story-page {
+    background: linear-gradient(180deg, #fdfaf3 0%, #ffffff 60%);
+    padding: 120px 24px 80px;
+    color: var(--dc-ink, #1a1225);
+  }
+  .story-inner {
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .story-eyebrow {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    color: var(--dc-accent-deep, #b8903a);
+    text-align: center;
+    margin: 0 0 24px;
+  }
+  .story-h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -.018em;
+    color: var(--dc-ink, #1a1225);
+    text-align: center;
+    margin: 0 0 28px;
+  }
+  .story-h1 em {
+    font-style: italic;
+    background: linear-gradient(135deg, #d9a93a 0%, #c99a2a 50%, #9c7818 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .story-deck {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.5;
+    font-style: italic;
+    color: var(--dc-muted, #6b6472);
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 60px;
+    padding: 0 12px;
+  }
+
+  /* Founder portrait band */
+  .story-founders {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 0 0 80px;
+  }
+  .story-founder {
+    text-align: center;
+  }
+  .story-founder-portrait {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 18px;
+    background: linear-gradient(135deg, #fdfaf3 0%, #faf3e0 100%);
+    border: 1px solid rgba(184, 144, 58, 0.25);
+    position: relative;
+  }
+  .story-founder-portrait img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .story-founder-portrait-placeholder {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 52px;
+    color: var(--dc-accent, #b8903a);
+    opacity: 0.45;
+  }
+  .story-founder-name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--dc-ink, #1a1225);
+    margin: 0 0 4px;
+    letter-spacing: -.005em;
+  }
+  .story-founder-role {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--dc-accent-deep, #b8903a);
+    margin: 0;
+  }
+
+  /* Timeline rail */
+  .story-timeline {
+    position: relative;
+    padding: 20px 0 0;
+  }
+  .story-timeline::before {
+    content: '';
+    position: absolute;
+    left: 36px; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg,
+      transparent 0%,
+      rgba(184, 144, 58, 0.32) 12%,
+      rgba(184, 144, 58, 0.32) 88%,
+      transparent 100%);
+  }
+  .story-chapter {
+    position: relative;
+    padding: 0 0 56px 100px;
+  }
+  .story-chapter:last-child { padding-bottom: 0; }
+  .story-year {
+    position: absolute;
+    left: 0; top: 4px;
+    width: 76px; text-align: right;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--dc-accent, #b8903a);
+    letter-spacing: -.01em;
+  }
+  .story-chapter::before {
+    content: '';
+    position: absolute;
+    left: 30px; top: 14px;
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f0d784 0%, #e8b72e 50%, #b8903a 100%);
+    border: 3px solid #fdfaf3;
+    box-shadow: 0 0 0 1px rgba(184, 144, 58, 0.32);
+  }
+  .story-chapter-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.25;
+    color: var(--dc-ink, #1a1225);
+    margin: 0 0 16px;
+    letter-spacing: -.01em;
+  }
+  .story-chapter-body {
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--dc-muted, #6b6472);
+    margin: 0;
+  }
+  .story-chapter-body + .story-chapter-body { margin-top: 14px; }
+
+  /* Closing pull-quote */
+  .story-closing {
+    margin: 88px auto 0;
+    padding: 56px 32px;
+    max-width: 760px;
+    background: linear-gradient(135deg, #fdfaf3 0%, #faf3e0 100%);
+    border-radius: 18px;
+    text-align: center;
+    border: 1px solid rgba(184, 144, 58, 0.2);
+  }
+  .story-closing-mark {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 80px;
+    line-height: 0.6;
+    color: var(--dc-accent, #b8903a);
+    opacity: 0.4;
+    margin: 0;
+    user-select: none;
+  }
+  .story-closing-quote {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(20px, 2.4vw, 26px);
+    font-weight: 400;
+    line-height: 1.5;
+    font-style: italic;
+    color: var(--dc-ink, #1a1225);
+    margin: 12px 0 24px;
+  }
+  .story-closing-quote em {
+    font-style: italic;
+    color: var(--dc-accent-deep, #b8903a);
+  }
+  .story-closing-cta {
+    margin-top: 14px;
+  }
+
+  @media (max-width: 720px) {
+    .story-page { padding: 80px 20px 60px; }
+    .story-founders { grid-template-columns: 1fr; gap: 32px; margin-bottom: 56px; }
+    .story-timeline::before { left: 16px; }
+    .story-chapter { padding-left: 64px; padding-bottom: 44px; }
+    .story-year { position: static; width: auto; text-align: left; font-size: 22px; margin-bottom: 6px; }
+    .story-chapter::before { left: 10px; top: 6px; }
+    .story-chapter-title { font-size: 20px; }
+    .story-chapter-body { font-size: 15px; }
+    .story-closing { padding: 40px 24px; }
+  }
+</style>
+
+<article class="story-page">
+  <div class="story-inner">
+
+    <p class="story-eyebrow">Our story</p>
+    <h1 class="story-h1">From operating room discovery to a <em>revolution in a bottle</em>.</h1>
+    <p class="story-deck">How a fourteen-year search for a better way to take collagen became a daily ritual anyone could keep.</p>
+
+    <div class="story-founders">
+      <div class="story-founder">
+        <div class="story-founder-portrait">
+          {%- if settings.founder_1_image != blank -%}
+            <img src="{{ settings.founder_1_image | image_url: width: 280 }}" alt="Dr Nachiket Pansey">
+          {%- else -%}
+            <div class="story-founder-portrait-placeholder">NP</div>
+          {%- endif -%}
+        </div>
+        <h2 class="story-founder-name">Dr Nachiket Pansey</h2>
+        <p class="story-founder-role">Co-founder · Orthopedic Surgeon</p>
+      </div>
+
+      <div class="story-founder">
+        <div class="story-founder-portrait">
+          {%- if settings.founder_2_image != blank -%}
+            <img src="{{ settings.founder_2_image | image_url: width: 280 }}" alt="Dr Raashi Mehta">
+          {%- else -%}
+            <div class="story-founder-portrait-placeholder">RM</div>
+          {%- endif -%}
+        </div>
+        <h2 class="story-founder-name">Dr Raashi Mehta</h2>
+        <p class="story-founder-role">Co-founder · Dermatologist</p>
+      </div>
+    </div>
+
+    <div class="story-timeline">
+
+      <section class="story-chapter">
+        <span class="story-year">2010</span>
+        <h3 class="story-chapter-title">A surgeon's first encounter with collagen.</h3>
+        <p class="story-chapter-body">As a young orthopedic surgeon, I saw firsthand how collagen could help heal wounds — diabetic foot ulcers, chronic non-healing injuries. Back then, oral collagen wasn't even a thought. I worked with it at the operating table, on the dressing tray, in the recovery room.</p>
+      </section>
+
+      <section class="story-chapter">
+        <span class="story-year">2015</span>
+        <h3 class="story-chapter-title">Oral collagen arrives — and shows its limits.</h3>
+        <p class="story-chapter-body">When oral collagen tablets emerged, I eagerly brought them into my practice. I used them for knee osteoarthritis, tendon issues, ligament recovery. But these tablets were large, expensive, and patients struggled with consistency. I saw them lose momentum — it was hard swallowing pills twice a day.</p>
+      </section>
+
+      <section class="story-chapter">
+        <span class="story-year">2017</span>
+        <h3 class="story-chapter-title">A simpler format — and a years-long search for the right stack.</h3>
+        <p class="story-chapter-body">I stumbled upon liquid collagen shots. One daily shot, simpler, and the results were striking. But I didn't stop at collagen alone. I spent years researching: what if I added clinically proven ingredients — rosehip for inflammation, curcumin for recovery? I carefully layered in these actives, perfecting a formula over years.</p>
+      </section>
+
+      <section class="story-chapter">
+        <span class="story-year">2024</span>
+        <h3 class="story-chapter-title">Something unique — and a co-founder with a complementary mission.</h3>
+        <p class="story-chapter-body">By 2024 I had something unique. One potent shot a day — no pill burden, just results. Older patients who once struggled to swallow now found ease. Athletes recovering from surgery embraced it. The compliance, the comfort — it all came together.</p>
+        <p class="story-chapter-body">With Dr Raashi Mehta, a dermatologist equally passionate about collagen, we expanded. We created Skelecoll for joints, Collabloom for skin. What started as a surgical tool became a brand built on trust, blending science and daily life.</p>
+      </section>
+
+      <section class="story-chapter">
+        <span class="story-year">Today</span>
+        <h3 class="story-chapter-title">Dr Collagen is for everyone.</h3>
+        <p class="story-chapter-body">From busy professionals to seniors who want to stay active. One daily shot, with carefully balanced micronutrients. Less strain, better absorption, no bloat — just an active life, backed by years of clinical care.</p>
+      </section>
+
+    </div>
+
+    <div class="story-closing">
+      <p class="story-closing-mark">"</p>
+      <p class="story-closing-quote">That's our journey — from operating room discovery to a <em>revolution in a bottle</em>.</p>
+      <div class="story-closing-cta">
+        <a href="{{ routes.root_url }}#products" class="btn-primary" id="story-explore-range-btn">Explore the range</a>
+      </div>
+    </div>
+
+  </div>
+</article>
