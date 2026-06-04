@@ -1274,6 +1274,68 @@
     }
     .hero-doc-badge span { font-size: 14px; line-height: 1; }
 
+    /* ─── CRO additions: hero trust line, honest proof/trust, sticky CTA ─── */
+    .hero-trust {
+      margin: 18px 0 0; font-size: 12.5px; line-height: 1.5;
+      color: var(--accent-deep, #b05578); font-weight: 500; letter-spacing: .01em;
+    }
+    /* Results section — honest proof labels (replaced the % counters) */
+    .res-proof {
+      font-family: var(--heading, 'Playfair Display', Georgia, serif);
+      font-size: 22px; font-weight: 500; color: var(--accent-deep, #b05578);
+      line-height: 1.1; margin-bottom: 8px;
+    }
+    /* Formulation-principles trust grid (replaced fake reviews) */
+    .trust-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+      max-width: 980px; margin: 48px auto 0;
+    }
+    .trust-card {
+      background: #fff; border: 1px solid rgba(224,122,158,.18);
+      border-radius: 18px; padding: 26px 24px; text-align: left;
+      position: relative;
+    }
+    .trust-card::before {
+      content: ''; position: absolute; left: 24px; top: 24px;
+      width: 26px; height: 2px; border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent, #e07a9e), var(--accent-deep, #b05578));
+    }
+    .trust-card h3 {
+      font-family: var(--heading, 'Playfair Display', Georgia, serif);
+      font-size: 18px; font-weight: 500; color: var(--ink, #2a1225);
+      margin: 18px 0 8px; letter-spacing: -.01em;
+    }
+    .trust-card p { font-size: 13.5px; line-height: 1.6; color: var(--muted, #7a6872); margin: 0; }
+    .rev-note {
+      text-align: center; font-size: 12.5px; color: var(--muted, #7a6872);
+      margin: 32px auto 0; max-width: 520px; font-style: italic;
+    }
+
+    /* Sticky mobile buy bar */
+    .cb-sticky {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 460;
+      display: none; align-items: center; justify-content: space-between; gap: 14px;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      background: rgba(253,228,236,.94); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(176,85,120,.18);
+      transform: translateY(110%); transition: transform .35s cubic-bezier(.2,.8,.2,1);
+    }
+    .cb-sticky.is-visible { transform: translateY(0); }
+    .cb-sticky__info { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+    .cb-sticky__name { font-family: var(--heading, 'Playfair Display', Georgia, serif); font-size: 16px; color: var(--ink, #2a1225); }
+    .cb-sticky__price { font-size: 13px; color: var(--accent-deep, #b05578); font-weight: 600; }
+    .cb-sticky__btn {
+      flex-shrink: 0; min-height: 48px; display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 26px; border-radius: 40px; text-decoration: none;
+      background: var(--ink, #2a1225); color: #fff; font-size: 13px; font-weight: 600; letter-spacing: .06em;
+    }
+
+    @media (max-width: 760px) {
+      .trust-grid { grid-template-columns: 1fr; gap: 12px; }
+      .trust-card { padding: 20px 20px; }
+      .cb-sticky { display: flex; }
+    }
+
   </style>
 
 <!-- ═══ SKIP TO CONTENT ═════════════════════════════════════════════ -->
@@ -1380,6 +1442,7 @@
       {%- endif -%}
       <a href="#ingredients" id="collabloom-hero-the-formula-btn" class="btn-outline">The formula</a>
     </div>
+    <p class="hero-trust">Doctor-formulated · Daily 30ml shot · Micro-hydrolysed marine collagen</p>
   </div>
   <div class="hero-visual">
     <div class="cb-slider-wrap">
@@ -1397,7 +1460,7 @@
         </div>
         <button type="button" class="cb-arrow cb-arrow--next" data-cb-next aria-label="Next image">&#8250;</button>
       </div>
-      <div class="hero-badge-float">★ 4.8 · <strong>3,200+ reviews</strong><br />Best Seller · Skin &amp; Hair</div>
+      <div class="hero-badge-float"><strong>Doctor-formulated</strong><br />Daily 30ml marine collagen shot</div>
 
       <ol class="cb-thumbs" role="tablist" aria-label="Choose image">
         {%- for src in cb_slides -%}
@@ -1767,164 +1830,48 @@
 <section id="results">
   <div class="inner">
     <div class="res-head reveal">
-      <p class="overline">The Numbers</p>
-      <h2 class="heading">Results worth the wait, <em>quicker than you'd expect</em>.</h2>
-      <p class="lede">Self-reported outcomes from 1,200+ Collabloom customers surveyed at the 8-week mark.</p>
+      <p class="overline">The Formula</p>
+      <h2 class="heading">Built for consistent <em>daily use</em>.</h2>
+      <p class="lede">Collabloom is designed as a daily collagen ritual, not a one-time fix — micro-hydrolysed marine collagen and co-factors selected for skin-focused support.</p>
     </div>
     <div class="res-grid reveal reveal-delay-1">
       <div class="res-card">
-        <div class="res-num"><span class="counter" data-target="92">0</span><span>%</span></div>
-        <div class="res-label">Reported smoother skin<br />within 4 weeks</div>
+        <div class="res-proof">Micro-hydrolysed</div>
+        <div class="res-label">Marine collagen, sized for easy daily absorption</div>
       </div>
       <div class="res-card">
-        <div class="res-num"><span class="counter" data-target="87">0</span><span>%</span></div>
-        <div class="res-label">Saw stronger<br />nail growth</div>
+        <div class="res-proof">Skin-focused</div>
+        <div class="res-label">A co-factor blend selected for skin, hair &amp; nails</div>
       </div>
       <div class="res-card">
-        <div class="res-num"><span class="counter" data-target="78">0</span><span>%</span></div>
-        <div class="res-label">Noticed reduced<br />hair breakage</div>
+        <div class="res-proof">One 30ml shot</div>
+        <div class="res-label">A simple daily ritual — no mixing, no measuring</div>
       </div>
       <div class="res-card">
-        <div class="res-num"><span class="counter" data-target="94">0</span><span>%</span></div>
-        <div class="res-label">Would recommend<br />Collabloom to friends</div>
+        <div class="res-proof">28-day routine</div>
+        <div class="res-label">Designed for consistent use over four weeks and beyond</div>
       </div>
     </div>
-    <p class="res-foot">Based on self-reported outcomes. Individual results may vary.</p>
   </div>
 </section>
 
-<!-- ═══ TESTIMONIALS — edge-to-edge right→left marquee ════════════════ -->
+<!-- ═══ WHY COLLABLOOM — honest formulation trust (replaces fake reviews) ═══ -->
 <section id="reviews">
   <div class="inner">
     <div class="rev-head reveal">
-      <p class="overline">Real Results</p>
-      <h2 class="heading">What the mirror, <em>and the compliments</em>, are saying.</h2>
+      <p class="overline">Why Collabloom</p>
+      <h2 class="heading">Built on formulation principles, <em>not empty promises</em>.</h2>
+      <p class="lede">Collabloom is designed around a simple daily ritual — micro-hydrolysed marine collagen and skin-focused co-factors selected for targeted support.</p>
     </div>
-  </div>
-
-  {%- comment -%}
-    Reviews marquee — IMPORTANT: replace these placeholder reviews with
-    real, permissioned customer testimonials before launch. Inventing
-    reviews violates India's Consumer Protection (Direct Selling)
-    Rules 2021 and the CCPA misleading-endorsements guidelines.
-    The track contains two identical sets so the loop is seamless.
-  {%- endcomment -%}
-  <div class="rev-marquee" role="region" aria-label="Customer reviews carousel" tabindex="0">
-    <div class="rev-marquee-track">
-
-      {%- for n in (1..2) -%}
-        {%- comment -%} Set {{ n }} of 2 — duplicated for seamless loop {%- endcomment -%}
-
-        <div class="rev-card">
-          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
-          <p class="rev-quote">"After 6 weeks of Collabloom, people started asking if I'd had a facial. My skin has never looked this dewy and plump — I'm genuinely obsessed."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">P</div>
-            <div>
-              <div class="rev-name">Priya Sharma</div>
-              <div class="rev-role">Mumbai · 3 months on Collabloom</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" role="img" aria-label="Rated 4.5 out of 5 stars"><span class="rev-stars-track" style="--rating:90%"></span><span class="rev-rating-num" aria-hidden="true">4.5</span></div>
-          <p class="rev-quote">"I noticed a real difference in my skin by week 4 — pigmentation around my cheeks has faded noticeably. Half a star off only because the bottle is small and I want more."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">A</div>
-            <div>
-              <div class="rev-name">Anjali Singh</div>
-              <div class="rev-role">Bangalore · 2 months on Collabloom</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
-          <p class="rev-quote">"The taste is actually delicious — not medicinal at all. I look forward to my daily Collabloom shot. My nails have grown so strong I haven't had a break in months."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">N</div>
-            <div>
-              <div class="rev-name">Nisha Gupta</div>
-              <div class="rev-role">Chennai · 4 months on Collabloom</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" role="img" aria-label="Rated 4 out of 5 stars"><span class="rev-stars-track" style="--rating:80%"></span><span class="rev-rating-num" aria-hidden="true">4.0</span></div>
-          <p class="rev-quote">"Took about 5 weeks for me to see results, so be patient with it. But once it started working, my dullness was gone and my hair fall reduced significantly. Worth it."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">A</div>
-            <div>
-              <div class="rev-name">Aditi Verma</div>
-              <div class="rev-role">Delhi · 4 months on Collabloom</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
-          <p class="rev-quote">"I gifted Collabloom to my mother who's 55, and she's been glowing ever since. She says it's the first supplement that's actually made a visible difference."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">K</div>
-            <div>
-              <div class="rev-name">Kavya Rao</div>
-              <div class="rev-role">Hyderabad · 6 months on Collabloom</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
-          <p class="rev-quote">"My dermatologist asked what I'd been doing differently. Told her about Collabloom and she actually approved — said the actives are properly dosed. Best shot in my routine."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">R</div>
-            <div>
-              <div class="rev-name">Ritu Mehra</div>
-              <div class="rev-role">Pune · 5 months on Collabloom</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" role="img" aria-label="Rated 4 out of 5 stars"><span class="rev-stars-track" style="--rating:80%"></span><span class="rev-rating-num" aria-hidden="true">4.0</span></div>
-          <p class="rev-quote">"The Polypodium leucotomos is the reason I bought this. After 3 months my skin is noticeably less sun-damaged. Only thing — wish the cap was easier to open."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">T</div>
-            <div>
-              <div class="rev-name">Tanya Patel</div>
-              <div class="rev-role">Ahmedabad · 6 months on Collabloom</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" role="img" aria-label="Rated 4.5 out of 5 stars"><span class="rev-stars-track" style="--rating:90%"></span><span class="rev-rating-num" aria-hidden="true">4.5</span></div>
-          <p class="rev-quote">"I've tried collagen powders, capsules, every form — this is the first one that I've actually been consistent with because it's quick and tasty. Three months in, skin is firmer."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">S</div>
-            <div>
-              <div class="rev-name">Sneha Khanna</div>
-              <div class="rev-role">Kolkata · 3 months on Collabloom</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rev-card">
-          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
-          <p class="rev-quote">"My hyperpigmentation around the chin had been bothering me for years. Two months on Collabloom and it's visibly faded. The glutathione really does its work."</p>
-          <div class="rev-author">
-            <div class="rev-avatar">M</div>
-            <div>
-              <div class="rev-name">Megha Iyer</div>
-              <div class="rev-role">Chennai · 2 months on Collabloom</div>
-            </div>
-          </div>
-        </div>
-
-      {%- endfor -%}
+    <div class="trust-grid reveal reveal-delay-1">
+      <div class="trust-card"><h3>Doctor-formulated</h3><p>Developed by medical practitioners against published data.</p></div>
+      <div class="trust-card"><h3>Marine collagen base</h3><p>Micro-hydrolysed Japanese marine collagen, sized for absorption.</p></div>
+      <div class="trust-card"><h3>Skin-focused co-factors</h3><p>A targeted blend selected for skin, hair and nails.</p></div>
+      <div class="trust-card"><h3>Designed for daily use</h3><p>Built as a 28-day ritual, not a one-time fix.</p></div>
+      <div class="trust-card"><h3>One 30ml shot</h3><p>A single daily serving — simple and consistent.</p></div>
+      <div class="trust-card"><h3>No mixing required</h3><p>Ready to drink. No powders, no measuring.</p></div>
     </div>
+    <p class="rev-note">Real customer reviews will be added once we have verified feedback to share.</p>
   </div>
 </section>
 
@@ -1973,7 +1920,7 @@
   <div class="cta-inner">
     <p class="overline reveal">Start Today</p>
     <h2 class="heading reveal reveal-delay-1">28 days. One <em>shot</em> a day.</h2>
-    <p class="lede reveal reveal-delay-2">Join 10,000+ customers who made Collabloom their daily shot. Most see results within 28 days — and the science behind each ingredient is on the formula page.</p>
+    <p class="lede reveal reveal-delay-2">Start your skin glow routine with Collabloom — micro-hydrolysed marine collagen with skin-focused co-factors, designed for daily use.</p>
     {%- if dc_product and dc_product.variants.size > 1 -%}
       <div class="dc-pack-select" role="radiogroup" aria-label="Choose your pack" style="margin-left:auto;margin-right:auto;justify-content:center;">
         {%- for v in dc_product.variants -%}
@@ -2015,11 +1962,47 @@
       {%- else -%}
         <a href="/products/{{ dc_handle }}" id="collabloom-buy-btn" class="btn-primary">Add to cart — <span class="js-cb-buy-label">{{ dc_price }}</span></a>
       {%- endif -%}
-      <a href="{{ routes.root_url }}#products" id="collabloom-see-range-btn" class="btn-outline">See full range</a>
+      <a href="#ingredients" id="collabloom-view-ingredients-btn" class="btn-outline">View ingredients</a>
     </div>
+    <p class="hero-trust reveal reveal-delay-3" style="text-align:center;">Doctor-formulated · Micro-hydrolysed marine collagen · Daily 30ml shot</p>
     <p class="cta-guarantee reveal reveal-delay-4">Free shipping over ₹1,500 · ships within <span>48 hours</span></p>
   </div>
 </section>
+
+<!-- Sticky mobile buy bar (appears after the hero buy block) -->
+<div class="cb-sticky" id="cb-sticky" aria-hidden="true">
+  <div class="cb-sticky__info">
+    <span class="cb-sticky__name">Collabloom</span>
+    <span class="cb-sticky__price js-cb-price">{{ dc_price }}</span>
+  </div>
+  <a href="#cta" class="cb-sticky__btn" id="cb-sticky-buy">Add to Cart</a>
+</div>
+
+<script>
+(function () {
+  var bar = document.getElementById('cb-sticky');
+  var hero = document.getElementById('hero');
+  if (!bar || !hero) return;
+  var ticking = false;
+  function check() {
+    var past = (window.scrollY || 0) > (hero.offsetTop + hero.offsetHeight - 80);
+    bar.classList.toggle('is-visible', past);
+    bar.setAttribute('aria-hidden', past ? 'false' : 'true');
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(check); }
+  }, { passive: true });
+  check();
+  // Tap = add the currently selected variant to cart (same as the buy buttons).
+  var btn = document.getElementById('cb-sticky-buy');
+  if (btn) btn.addEventListener('click', function (e) {
+    var form = document.getElementById('collabloom-buy-form');
+    if (form && form.requestSubmit) { e.preventDefault(); form.requestSubmit(); }
+    // else: falls back to the href="#cta" buy block
+  });
+})();
+</script>
 
 </main>
 
