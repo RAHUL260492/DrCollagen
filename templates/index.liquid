@@ -1628,7 +1628,7 @@
       line-height: 1.2;
       letter-spacing: -.018em;
       margin: 8px 0 14px;
-      color: var(--ink, #1a1225);
+      color: #1a1225;
     }
     .doc-strip-heading em {
       font-style: italic;
@@ -1810,6 +1810,163 @@
       .founder-name { font-size: 24px; }
     }
 
+    /* ─── Hero trust row (desktop state 1) ─────────────────────────── */
+    .st-trust {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+      margin: 22px 0 0; font-size: 12px; letter-spacing: .03em;
+      color: var(--accent-deep, #b8903a); font-weight: 500;
+    }
+    .st-trust-dot { opacity: .5; }
+
+    /* ════════════════════════════════════════════════════════════════
+       MOBILE STORY MODULE
+       A static, stacked replacement for the pinned-canvas scroll hero on
+       phones — visuals at full strength and immediate, strong CTAs, no
+       blank scroll. Desktop keeps the canvas scroll; this module is hidden
+       there. (See the breakpoint rules at the bottom of this block.)
+       ════════════════════════════════════════════════════════════════ */
+    .m-module { display: none; }            /* shown only ≤768px */
+    .m-section { padding: 56px 22px; }
+    .m-eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: .26em;
+      text-transform: uppercase; color: var(--accent-deep, #b8903a);
+      margin: 0 0 14px;
+    }
+    .m-h {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 500; line-height: 1.1; letter-spacing: -.015em;
+      color: #1a1225; margin: 0 0 14px;
+      font-size: clamp(30px, 8.6vw, 40px);
+    }
+    .m-h em { font-style: italic; color: var(--accent-deep, #b8903a); }
+    .m-sub {
+      font-size: 15px; line-height: 1.65; color: var(--muted, #6b6472);
+      margin: 0 0 22px; max-width: 30em;
+    }
+    /* Tap-safe premium buttons (≥52px tall) */
+    .m-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 52px; padding: 15px 26px; border-radius: 40px;
+      font-size: 12px; font-weight: 600; letter-spacing: .14em;
+      text-transform: uppercase; text-decoration: none; width: 100%;
+      box-sizing: border-box; transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .m-btn--primary {
+      background: linear-gradient(135deg, #e8b72e 0%, #c99a2a 100%);
+      color: #2a1d12; box-shadow: 0 10px 26px rgba(184,144,58,.28);
+    }
+    .m-btn--primary:active { transform: translateY(1px); }
+    .m-btn--ghost {
+      background: transparent; color: #1a1225;
+      border: 1.5px solid rgba(184,144,58,.5);
+    }
+    .m-actions { display: flex; flex-direction: column; gap: 12px; }
+
+    /* Hero */
+    .m-hero {
+      padding: calc(env(safe-area-inset-top) + 92px) 22px 44px;
+      background: linear-gradient(180deg, #fbf6e8 0%, #fffefa 100%);
+      text-align: left;
+    }
+    .m-hero .m-h { font-size: clamp(36px, 12vw, 52px); }
+    .m-hero-visual {
+      margin: 4px 0 24px; border-radius: 16px; overflow: hidden;
+      background: linear-gradient(135deg, #fdfaf3, #faf3e0);
+      border: 1px solid rgba(184,144,58,.16);
+    }
+    .m-hero-visual img { width: 100%; height: auto; display: block; }
+    .m-trust {
+      display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center;
+      margin: 18px 0 0; font-size: 11.5px; font-weight: 500;
+      color: var(--accent-deep, #b8903a);
+    }
+    .m-trust .dot { opacity: .45; }
+    /* Two key stats above the fold */
+    .m-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px;
+    }
+    .m-stat {
+      background: #fff; border: 1px solid rgba(184,144,58,.16);
+      border-radius: 14px; padding: 14px 16px;
+    }
+    .m-stat-num {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 26px; font-weight: 500; color: #1a1225; line-height: 1;
+    }
+    .m-stat-num span { color: var(--accent-deep, #b8903a); }
+    .m-stat-label {
+      font-size: 11px; line-height: 1.4; color: var(--muted, #6b6472); margin-top: 6px;
+    }
+
+    /* Science + Range visual blocks */
+    .m-figure {
+      width: 100%; border-radius: 16px; overflow: hidden; margin: 0 0 22px;
+      border: 1px solid rgba(184,144,58,.16);
+      background: linear-gradient(135deg, #fdfaf3, #faf3e0);
+    }
+    .m-figure img { width: 100%; display: block; }
+    .m-figure--science img { aspect-ratio: 4 / 3; object-fit: cover; object-position: 62% center; }
+    .m-science { background: #fffefa; }
+    .m-range { background: linear-gradient(180deg, #fffefa 0%, #fbf6e8 100%); }
+
+    /* Decision cards (state 4) */
+    .m-decision { background: #fbf6e8; }
+    .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 24px; }
+    .m-card {
+      display: flex; flex-direction: column; text-decoration: none;
+      background: #fff; border: 1px solid rgba(184,144,58,.18);
+      border-radius: 16px; padding: 16px 14px 18px; transition: box-shadow .25s ease, border-color .25s ease;
+    }
+    .m-card:active { border-color: rgba(184,144,58,.4); box-shadow: 0 10px 24px rgba(184,144,58,.14); }
+    .m-card-img {
+      height: 96px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
+    }
+    .m-card-img img { height: 100%; width: auto; object-fit: contain; }
+    .m-card-goal { font-size: 13px; font-weight: 700; color: #1a1225; margin: 0 0 2px; }
+    .m-card-name {
+      font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--accent-deep, #b8903a); margin: 0;
+    }
+
+    /* Sticky bottom CTA (mobile) — subtle, premium */
+    .m-sticky-cta {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 420;
+      display: none; padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      background: rgba(251,246,232,.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(184,144,58,.22);
+      transform: translateY(110%); transition: transform .35s cubic-bezier(.2,.8,.2,1);
+    }
+    .m-sticky-cta.is-visible { transform: translateY(0); }
+    .m-sticky-cta .m-btn { margin: 0; }
+
+    /* ─── Header polish ─────────────────────────────────────────────── */
+    /* Desktop CTA — filled gold for stronger contrast, still premium */
+    .nav-cta {
+      background: var(--accent, #e8b72e); color: #2a1d12 !important;
+      border-color: var(--accent, #e8b72e);
+      box-shadow: 0 4px 14px rgba(184,144,58,.22);
+    }
+    .nav-cta:hover { background: var(--accent-deep, #b8903a); border-color: var(--accent-deep, #b8903a); color: #fff !important; }
+    nav.in-dark-section .nav-cta { color: #2a1d12 !important; }
+    /* Mobile shop icon (next to hamburger) */
+    .nav-shop-icon { display: none; }
+
+    /* ════ Breakpoint switch: mobile module on, canvas scroll off ════ */
+    @media (max-width: 768px) {
+      #scroll-hero, #chapter-markers { display: none !important; }
+      .m-module { display: block; }
+      .m-sticky-cta { display: block; }
+      .nav-shop-icon {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 40px; height: 40px; margin-left: auto; margin-right: 6px;
+        color: #1a1225; text-decoration: none;
+      }
+      .nav-shop-icon svg { width: 22px; height: 22px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .m-sticky-cta { transition: none; }
+    }
+
   </style>
 
 <!-- ═══ SKIP TO CONTENT (keyboard users) ═════════════════════════════ -->
@@ -1865,6 +2022,9 @@
     {% if settings.show_testimonials %}<li><a href="#testimonials" id="nav-link-testimonials">Reviews</a></li>{% endif %}
   </ul>
   <a href="#products" id="nav-cta-shop" class="nav-cta">Shop the range</a>
+  <a href="#products" class="nav-shop-icon" id="nav-shop-icon" aria-label="Shop">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+  </a>
   <button id="nav-hamburger" class="nav-hamburger"
           aria-label="Open menu" aria-controls="mobile-drawer" aria-expanded="false">
     <span></span><span></span><span></span>
@@ -1922,17 +2082,20 @@
   <div class="scroll-text" id="st-1" data-show-at="0" data-hide-at="0.26">
     <p class="st-overline">Dr Collagen · Marine Collagen</p>
     <h1 class="st-title" data-split>Fuel&nbsp;what's<br><em>within</em></h1>
-    <p class="st-sub">Recovery, mobility, structural strength —<br>built on micro-hydrolysed marine collagen.</p>
+    <p class="st-sub">Doctor-formulated micro-hydrolysed marine collagen — designed to support recovery, mobility, skin elasticity, and structural strength.</p>
     <div class="st-actions">
-      <a href="#products" id="hero-shop-range-btn" class="btn-primary">Shop the Range</a>
-      <a href="#science" id="hero-the-science-btn" class="btn-outline">The Science</a>
+      <a href="#products" id="hero-shop-range-btn" class="btn-primary">Shop Marine Collagen</a>
+      <a href="#science" id="hero-the-science-btn" class="btn-outline">See How It Works</a>
     </div>
+
+    <!-- Trust row -->
+    <p class="st-trust"><span>Doctor-formulated</span><span class="st-trust-dot">·</span><span>Trusted by 10,000+ customers</span><span class="st-trust-dot">·</span><span>Results from 28 days</span></p>
 
     <!-- Stat glass bar -->
     <div class="st-stat-bar">
       <div class="st-stat"><span class="st-stat-num"><span class="st-num counter" data-target="10000">0</span><span class="st-unit">+</span></span><span class="st-label">Customers</span></div>
-      <div class="st-stat"><span class="st-stat-num"><span class="st-num">10</span><span class="st-unit">g</span></span><span class="st-label">Up to · per shot</span></div>
-      <div class="st-stat"><span class="st-stat-num"><span class="st-num">2,000</span><span class="st-unit">Da</span></span><span class="st-label">Micro-hydrolysed</span></div>
+      <div class="st-stat"><span class="st-stat-num"><span class="st-num">10</span><span class="st-unit">g</span></span><span class="st-label">Up to · collagen per serving</span></div>
+      <div class="st-stat"><span class="st-stat-num"><span class="st-num">2,000</span><span class="st-unit">Da</span></span><span class="st-label">Micro-hydrolysed for absorption</span></div>
       <div class="st-stat"><span class="st-stat-num"><span class="st-num">28</span><span class="st-unit">+</span></span><span class="st-label">Days to results</span></div>
     </div>
   </div>
@@ -1940,23 +2103,100 @@
   <!-- Act 2: Quote hook — stays on screen across the full Frame 2 dwell -->
   <div class="scroll-text" id="st-2" data-show-at="0.30" data-hide-at="0.58">
     <p class="st-overline">The Foundation</p>
-    <div class="st-quote-mark">"</div>
-    <blockquote class="st-quote">Skin, joints, ligaments, tendons —<br>they all run on <em>collagen</em>.</blockquote>
-    <div class="st-divider"></div>
-    <p class="st-attr">— Dr Collagen</p>
+    <h2 class="st-h2">Your body runs<br>on <em>collagen</em>.</h2>
+    <p class="st-sub" style="max-width:440px;">From skin to joints, collagen helps support the structure your body depends on every day — and it depletes as you age.</p>
+    <div class="st-actions" style="margin-top:28px;">
+      <a href="#science" id="hero-see-science-btn" class="btn-outline">See the Science</a>
+    </div>
   </div>
 
   <!-- Act 3: Product preamble — stays on screen until the hero releases -->
   <div class="scroll-text" id="st-3" data-show-at="0.60" data-hide-at="0.99">
     <p class="st-overline">The Range</p>
-    <h2 class="st-h2">Four formulas.<br>One <em>protein</em>.</h2>
-    <p class="st-sub" style="max-width:420px;">Same micro-hydrolysed marine collagen base. Different co-factors, dosed for the result you're after.</p>
+    <h2 class="st-h2">Four formulas.<br>One <em>collagen base</em>.</h2>
+    <p class="st-sub" style="max-width:440px;">Choose targeted support for skin glow, bones &amp; joints, body tone, or gut, energy &amp; immunity.</p>
     <div class="st-actions" style="margin-top:28px;">
       <a href="#products" id="hero-explore-all-products-btn" class="btn-primary">Explore All Products</a>
     </div>
   </div>
 
 </section>
+
+<!-- ═══ MOBILE STORY MODULE (≤768px — static replacement for canvas scroll) ═══ -->
+<div class="m-module" aria-label="Dr Collagen overview">
+
+  <!-- State 1 — Hero -->
+  <section class="m-hero">
+    <p class="m-eyebrow">Dr Collagen · Marine Collagen</p>
+    <h1 class="m-h">Fuel what's <em>within</em></h1>
+    <p class="m-sub">Doctor-formulated micro-hydrolysed marine collagen — designed to support recovery, mobility, skin elasticity, and structural strength.</p>
+    <div class="m-hero-visual">
+      <img src="{{ 'hero-frame-0003.webp' | asset_url }}" alt="The Dr Collagen marine collagen range — four daily shots" width="800" height="343" loading="eager">
+    </div>
+    <div class="m-actions">
+      <a href="#products" class="m-btn m-btn--primary" id="m-hero-shop">Shop Marine Collagen</a>
+      <a href="#science" class="m-btn m-btn--ghost" id="m-hero-science">See How It Works</a>
+    </div>
+    <p class="m-trust"><span>Doctor-formulated</span><span class="dot">·</span><span>10,000+ customers</span><span class="dot">·</span><span>Results from 28 days</span></p>
+    <div class="m-stats">
+      <div class="m-stat"><div class="m-stat-num">10,000<span>+</span></div><div class="m-stat-label">Customers</div></div>
+      <div class="m-stat"><div class="m-stat-num">10<span>g</span></div><div class="m-stat-label">Up to · collagen per serving</div></div>
+    </div>
+  </section>
+
+  <!-- State 2 — Science / Foundation -->
+  <section class="m-section m-science">
+    <div class="m-figure m-figure--science">
+      <img src="{{ 'hero-frame-0002.webp' | asset_url }}" alt="The human body is structured by collagen" width="800" height="600" loading="lazy">
+    </div>
+    <p class="m-eyebrow">The Foundation</p>
+    <h2 class="m-h">Your body runs on <em>collagen</em>.</h2>
+    <p class="m-sub">From skin to joints, collagen helps support the structure your body depends on every day — and it depletes as you age.</p>
+    <div class="m-actions"><a href="#science" class="m-btn m-btn--ghost" id="m-science-cta">See the Science</a></div>
+  </section>
+
+  <!-- State 3 — Product Range -->
+  <section class="m-section m-range">
+    <div class="m-figure">
+      <img src="{{ 'hero-frame-0003.webp' | asset_url }}" alt="Four Dr Collagen formulas on one marine collagen base" width="800" height="343" loading="lazy">
+    </div>
+    <p class="m-eyebrow">The Range</p>
+    <h2 class="m-h">Four formulas.<br>One <em>collagen base</em>.</h2>
+    <p class="m-sub">Choose targeted support for skin glow, bones &amp; joints, body tone, or gut, energy &amp; immunity.</p>
+    <div class="m-actions"><a href="#products" class="m-btn m-btn--primary" id="m-range-cta">Explore All Products</a></div>
+  </section>
+
+  <!-- State 4 — Decision support -->
+  <section class="m-section m-decision">
+    <p class="m-eyebrow">Find your formula</p>
+    <h2 class="m-h">Targeted by goal.</h2>
+    <div class="m-grid">
+      <a class="m-card" href="/pages/collabloom" id="m-card-collabloom">
+        <div class="m-card-img"><img src="{{ 'collabloom-bottle.png' | asset_url }}" alt="Collabloom" loading="lazy"></div>
+        <p class="m-card-goal">Skin Glow</p><p class="m-card-name">Collabloom</p>
+      </a>
+      <a class="m-card" href="/pages/skelecoll" id="m-card-skelecoll">
+        <div class="m-card-img"><img src="{{ 'skelecoll-bottle.png' | asset_url }}" alt="Skelecoll" loading="lazy"></div>
+        <p class="m-card-goal">Bones &amp; Joints</p><p class="m-card-name">Skelecoll</p>
+      </a>
+      <a class="m-card" href="/pages/collatrim" id="m-card-collatrim">
+        <div class="m-card-img"><img src="{{ 'collatrim-bottle.png' | asset_url }}" alt="Collatrim" loading="lazy"></div>
+        <p class="m-card-goal">Body Tone</p><p class="m-card-name">Collatrim</p>
+      </a>
+      <a class="m-card" href="/pages/metastable" id="m-card-metastable">
+        <div class="m-card-img"><img src="{{ 'metastable-bottle.png' | asset_url }}" alt="Metastable" loading="lazy"></div>
+        <p class="m-card-goal">Gut, Energy &amp; Immunity</p><p class="m-card-name">Metastable</p>
+      </a>
+    </div>
+    <div class="m-actions"><a href="#products" class="m-btn m-btn--primary" id="m-decision-cta">Shop the Range</a></div>
+  </section>
+
+</div>
+
+<!-- Sticky mobile CTA (slides in after first screen) -->
+<div class="m-sticky-cta" id="m-sticky-cta">
+  <a href="#products" class="m-btn m-btn--primary" id="m-sticky-shop">Shop Collagen</a>
+</div>
 
 <!-- ═══ MARQUEE ══════════════════════════════════════════════════════ -->
 <div class="marquee-section">
@@ -2189,20 +2429,20 @@
     </div>
     <div class="stats-grid reveal reveal-delay-1">
       <div class="stat-card">
+        <div class="stat-big"><span class="counter" data-target="10000">0</span><span style="color:var(--accent)">+</span></div>
+        <div class="stat-label">customers<br>and counting</div>
+      </div>
+      <div class="stat-card">
         <div class="stat-big"><span class="counter" data-target="10">0</span><span style="color:var(--accent)">g</span></div>
-        <div class="stat-label">up to 10g active marine<br>collagen per daily shot</div>
+        <div class="stat-label">up to 10g collagen<br>per serving</div>
       </div>
       <div class="stat-card">
         <div class="stat-big"><span class="counter" data-target="2000">0</span><span style="color:var(--accent)">Da</span></div>
-        <div class="stat-label">micro-hydrolysed<br>peptide size — under 2,000</div>
+        <div class="stat-label">micro-hydrolysed<br>for absorption</div>
       </div>
       <div class="stat-card">
-        <div class="stat-big"><span class="counter" data-target="17">0</span></div>
-        <div class="stat-label">actives in every<br>Collabloom shot</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-big"><span class="counter" data-target="10000">0</span><span style="color:var(--accent)">+</span></div>
-        <div class="stat-label">customers across India,<br>and counting</div>
+        <div class="stat-big"><span class="counter" data-target="28">0</span><span style="color:var(--accent)">+</span></div>
+        <div class="stat-label">results from<br>28 days</div>
       </div>
     </div>
   </div>
@@ -2753,6 +2993,22 @@
   (function(){var navTick=false;window.addEventListener('scroll',function(){if(navTick)return;navTick=true;requestAnimationFrame(function(){update();navTick=false;});},{passive:true});})();
   window.addEventListener('resize', update);
   update();
+})();
+
+// ═══ STICKY MOBILE CTA — reveal after the first screen ──────────────
+(function () {
+  var bar = document.getElementById('m-sticky-cta');
+  if (!bar) return;
+  var ticking = false;
+  function check() {
+    var show = window.scrollY > window.innerHeight * 0.8;
+    bar.classList.toggle('is-visible', show);
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(check); }
+  }, { passive: true });
+  check();
 })();
 
 // ═══ LETTER SPLIT — handled inside frame animation init ─────────────

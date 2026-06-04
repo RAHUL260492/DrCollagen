@@ -604,7 +604,11 @@ em.dc-shine {
 }
 
 @media (max-width: 720px) {
-  .dc-back-to-top { right: 16px; bottom: 16px; }
+  /* Smaller, quieter, and lifted clear of the sticky product CTA bar so it
+     never competes with the primary mobile conversion action. */
+  .dc-back-to-top { right: 14px; bottom: 84px; width: 36px; height: 36px; }
+  .dc-back-to-top.is-visible { opacity: 0.6; }
+  .dc-back-to-top svg { width: 16px; height: 16px; }
 }
 
 /* ─── QUANTITY STEPPER ──────────────────────────────────────────────
