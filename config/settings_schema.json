@@ -50,6 +50,24 @@
         "label": "Show homepage testimonials section",
         "default": false,
         "info": "Disabled by default. Only enable once you have real, permissioned customer reviews — fabricated reviews violate consumer protection rules."
+      },
+      {
+        "type": "header",
+        "content": "Founders"
+      },
+      {
+        "type": "paragraph",
+        "content": "Upload founder portraits used on the homepage Founders section and the Our Story page. 800 x 1000 px portrait, .jpg/.png recommended. Until images are uploaded, initials are shown."
+      },
+      {
+        "type": "image_picker",
+        "id": "founder_1_image",
+        "label": "Founder 1 portrait — Dr Nachiket Pansey"
+      },
+      {
+        "type": "image_picker",
+        "id": "founder_2_image",
+        "label": "Founder 2 portrait — Dr Raashi Mehta"
       }
     ]
   },
