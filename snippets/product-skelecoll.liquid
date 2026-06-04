@@ -240,7 +240,7 @@
       background: var(--accent-soft); color: var(--accent-deep);
     }
 
-    .hero-visual { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; }
+    .hero-visual { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; max-width: 100%; min-width: 0; overflow: hidden; }
     .hero-bottle-wrap { position: relative; animation: float 6s ease-in-out infinite; }
     @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
     .hero-bottle-wrap img {
