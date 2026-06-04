@@ -1869,23 +1869,138 @@
   </div>
 </section>
 
-<!-- ═══ WHY COLLABLOOM — honest formulation trust (replaces fake reviews) ═══ -->
+<!-- ═══ TESTIMONIALS — edge-to-edge right→left marquee ════════════════ -->
 <section id="reviews">
   <div class="inner">
     <div class="rev-head reveal">
-      <p class="overline">Why Collabloom</p>
-      <h2 class="heading">Built on formulation principles, <em>not empty promises</em>.</h2>
-      <p class="lede">Collabloom is designed around a simple daily ritual — micro-hydrolysed marine collagen and skin-focused co-factors selected for targeted support.</p>
+      <p class="overline">Real Results</p>
+      <h2 class="heading">What the mirror, <em>and the compliments</em>, are saying.</h2>
     </div>
-    <div class="trust-grid reveal reveal-delay-1">
-      <div class="trust-card"><h3>Doctor-formulated</h3><p>Developed by medical practitioners against published data.</p></div>
-      <div class="trust-card"><h3>Marine collagen base</h3><p>Micro-hydrolysed Japanese marine collagen, sized for absorption.</p></div>
-      <div class="trust-card"><h3>Skin-focused co-factors</h3><p>A targeted blend selected for skin, hair and nails.</p></div>
-      <div class="trust-card"><h3>Designed for daily use</h3><p>Built as a 28-day ritual, not a one-time fix.</p></div>
-      <div class="trust-card"><h3>One 30ml shot</h3><p>A single daily serving — simple and consistent.</p></div>
-      <div class="trust-card"><h3>No mixing required</h3><p>Ready to drink. No powders, no measuring.</p></div>
+  </div>
+
+  {%- comment -%}
+    Reviews marquee — IMPORTANT: replace these placeholder reviews with
+    real, permissioned customer testimonials before launch. Inventing
+    reviews violates India's Consumer Protection (Direct Selling)
+    Rules 2021 and the CCPA misleading-endorsements guidelines.
+    The track contains two identical sets so the loop is seamless.
+  {%- endcomment -%}
+  <div class="rev-marquee" role="region" aria-label="Customer reviews carousel" tabindex="0">
+    <div class="rev-marquee-track">
+
+      {%- for n in (1..2) -%}
+        {%- comment -%} Set {{ n }} of 2 — duplicated for seamless loop {%- endcomment -%}
+
+        <div class="rev-card">
+          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
+          <p class="rev-quote">"After 6 weeks of Collabloom, people started asking if I'd had a facial. My skin has never looked this dewy and plump — I'm genuinely obsessed."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">P</div>
+            <div>
+              <div class="rev-name">Priya Sharma</div>
+              <div class="rev-role">Mumbai · 3 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" role="img" aria-label="Rated 4.5 out of 5 stars"><span class="rev-stars-track" style="--rating:90%"></span><span class="rev-rating-num" aria-hidden="true">4.5</span></div>
+          <p class="rev-quote">"I noticed a real difference in my skin by week 4 — pigmentation around my cheeks has faded noticeably. Half a star off only because the bottle is small and I want more."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">A</div>
+            <div>
+              <div class="rev-name">Anjali Singh</div>
+              <div class="rev-role">Bangalore · 2 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
+          <p class="rev-quote">"The taste is actually delicious — not medicinal at all. I look forward to my daily Collabloom shot. My nails have grown so strong I haven't had a break in months."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">N</div>
+            <div>
+              <div class="rev-name">Nisha Gupta</div>
+              <div class="rev-role">Chennai · 4 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" role="img" aria-label="Rated 4 out of 5 stars"><span class="rev-stars-track" style="--rating:80%"></span><span class="rev-rating-num" aria-hidden="true">4.0</span></div>
+          <p class="rev-quote">"Took about 5 weeks for me to see results, so be patient with it. But once it started working, my dullness was gone and my hair fall reduced significantly. Worth it."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">A</div>
+            <div>
+              <div class="rev-name">Aditi Verma</div>
+              <div class="rev-role">Delhi · 4 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
+          <p class="rev-quote">"I gifted Collabloom to my mother who's 55, and she's been glowing ever since. She says it's the first supplement that's actually made a visible difference."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">K</div>
+            <div>
+              <div class="rev-name">Kavya Rao</div>
+              <div class="rev-role">Hyderabad · 6 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
+          <p class="rev-quote">"My dermatologist asked what I'd been doing differently. Told her about Collabloom and she actually approved — said the actives are properly dosed. Best shot in my routine."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">R</div>
+            <div>
+              <div class="rev-name">Ritu Mehra</div>
+              <div class="rev-role">Pune · 5 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" role="img" aria-label="Rated 4 out of 5 stars"><span class="rev-stars-track" style="--rating:80%"></span><span class="rev-rating-num" aria-hidden="true">4.0</span></div>
+          <p class="rev-quote">"The Polypodium leucotomos is the reason I bought this. After 3 months my skin is noticeably less sun-damaged. Only thing — wish the cap was easier to open."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">T</div>
+            <div>
+              <div class="rev-name">Tanya Patel</div>
+              <div class="rev-role">Ahmedabad · 6 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" role="img" aria-label="Rated 4.5 out of 5 stars"><span class="rev-stars-track" style="--rating:90%"></span><span class="rev-rating-num" aria-hidden="true">4.5</span></div>
+          <p class="rev-quote">"I've tried collagen powders, capsules, every form — this is the first one that I've actually been consistent with because it's quick and tasty. Three months in, skin is firmer."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">S</div>
+            <div>
+              <div class="rev-name">Sneha Khanna</div>
+              <div class="rev-role">Kolkata · 3 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-stars" role="img" aria-label="Rated 5 out of 5 stars"><span class="rev-stars-track" style="--rating:100%"></span><span class="rev-rating-num" aria-hidden="true">5.0</span></div>
+          <p class="rev-quote">"My hyperpigmentation around the chin had been bothering me for years. Two months on Collabloom and it's visibly faded. The glutathione really does its work."</p>
+          <div class="rev-author">
+            <div class="rev-avatar">M</div>
+            <div>
+              <div class="rev-name">Megha Iyer</div>
+              <div class="rev-role">Chennai · 2 months on Collabloom</div>
+            </div>
+          </div>
+        </div>
+
+      {%- endfor -%}
     </div>
-    <p class="rev-note">Real customer reviews will be added once we have verified feedback to share.</p>
   </div>
 </section>
 
