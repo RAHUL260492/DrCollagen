@@ -613,6 +613,23 @@
     .footer-links { display: flex; gap: 24px; }
     .footer-links a { font-size: 12px; color: rgba(255,255,255,.6); letter-spacing: .08em; transition: color .3s; }
     .footer-links a:hover { color: var(--accent); }
+    /* ─── Footer columns (important links) ─────────────────────────── */
+    .footer-top { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; max-width: 1160px; margin: 0 auto 36px; text-align: left; }
+    .footer-brand-col .footer-brand { display: inline-flex; align-items: center; gap: 10px; }
+    .footer-mark { height: 36px; width: auto; display: block; }
+    .footer-brand-col p { font-size: 13px; line-height: 1.7; color: rgba(255,255,255,.45); margin: 16px 0 0; max-width: 32em; }
+    .footer-col h4 { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.4); margin: 0 0 14px; font-weight: 600; }
+    .footer-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col a { font-size: 13px; color: rgba(255,255,255,.6); transition: color .3s; }
+    .footer-col a:hover { color: var(--accent); }
+    .soon { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-left: 5px; }
+    .footer-bottom-row { max-width: 1160px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.1); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .footer-cert { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.35); white-space: nowrap; }
+    @media (max-width: 720px) {
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 26px; }
+      .footer-brand-col { grid-column: 1 / -1; }
+      .footer-bottom-row { flex-direction: column; align-items: flex-start; }
+    }
 
     @media (max-width: 900px) {
       nav { padding: 18px 24px; } nav.scrolled { padding: 12px 24px; }
@@ -1313,8 +1330,9 @@
 
   /* Pack / variant selector — keeps every buy box in sync: updates the hidden
      variant id on all forms, the hero price, the strike-through "was" price +
-     save badge, and any CTA button label. */
-  (function () {
+     save badge, and any CTA button label. Deferred to DOMContentLoaded so it
+     wires BOTH the hero selector and the final-CTA selector (parsed later). */
+  document.addEventListener('DOMContentLoaded', function () {
     var groups = Array.prototype.slice.call(document.querySelectorAll('.dc-pack-select'));
     if (!groups.length) return;
     function setText(sel, txt) { document.querySelectorAll(sel).forEach(function (el) { el.textContent = txt; }); }
@@ -1355,7 +1373,7 @@
         if (next) { next.click(); next.focus(); e.preventDefault(); }
       });
     });
-  })();
+  });
 </script>
 
 <section id="promise">
@@ -1744,16 +1762,43 @@
     <p class="overline reveal">Start today</p>
     <h2 class="heading reveal reveal-delay-1">Move better, <em>one shot a day</em>.</h2>
     <p class="lede reveal reveal-delay-2">Start your daily bones and joints support routine with Skelecoll — micro-hydrolysed marine collagen with targeted co-factors, designed for daily use.</p>
+    {%- if dc_product and dc_product.variants.size > 1 -%}
+      <div class="dc-pack-select reveal reveal-delay-2" role="radiogroup" aria-label="Choose your pack" style="margin-left:auto;margin-right:auto;justify-content:center;">
+        {%- for v in dc_product.variants -%}
+          {%- assign is_rec = false -%}
+          {%- if v.title contains 'Pack of 3' -%}{%- assign is_rec = true -%}{%- endif -%}
+          {%- assign v_active = false -%}
+          {%- if v.id == dc_variant_id -%}{%- assign v_active = true -%}{%- endif -%}
+          <button type="button"
+                  class="dc-pack{% if is_rec %} dc-pack--rec{% endif %}{% if v_active %} is-active{% endif %}"
+                  role="radio" aria-checked="{% if v_active %}true{% else %}false{% endif %}"
+                  data-variant-id="{{ v.id }}"
+                  data-price="{{ v.price | money }}"
+                  {%- if v.compare_at_price > v.price %}
+                  data-was="{{ v.compare_at_price | money }}"
+                  data-save="{{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}"
+                  {%- endif %}
+                  {% unless v.available %}disabled aria-disabled="true"{% endunless %}>
+            {%- if is_rec %}<span class="dc-pack__rec">Recommended</span>{% endif -%}
+            <span class="dc-pack__name">{{ v.title }}</span>
+            <span class="dc-pack__price">{{ v.price | money }}{% unless v.available %} · Sold out{% endunless %}</span>
+            {%- if v.compare_at_price > v.price -%}
+              <span class="dc-pack__save">Save {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}%</span>
+            {%- endif -%}
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
     <div class="cta-actions reveal reveal-delay-3">
       {%- if dc_available -%}
         {% form 'product', dc_product, id: 'skelecoll-buy-form', class: 'btn-inline-form' %}
-          <input type="hidden" name="id" value="{{ dc_variant_id }}">
+          <input type="hidden" name="id" value="{{ dc_variant_id }}" class="js-cb-variant-id">
           <div class="dc-qty" role="group" aria-label="Quantity">
             <button type="button" class="dc-qty__btn" data-qty="minus" aria-label="Decrease quantity">&minus;</button>
             <input class="dc-qty__input" type="number" name="quantity" value="1" min="1" max="12" aria-label="Quantity">
             <button type="button" class="dc-qty__btn" data-qty="plus" aria-label="Increase quantity">+</button>
           </div>
-          <button type="submit" id="skelecoll-buy-btn" class="btn-primary">Add to cart — {{ dc_price }}</button>
+          <button type="submit" id="skelecoll-buy-btn" class="btn-primary">Add to cart — <span class="js-cb-buy-label">{{ dc_price }}</span></button>
         {% endform %}
       {%- else -%}
         <a href="/products/{{ dc_handle }}" id="skelecoll-buy-btn" class="btn-primary">Add to cart — {{ dc_price }}</a>
@@ -1798,15 +1843,43 @@
 </main>
 
 <footer>
-  <div class="footer-inner">
-    <div class="footer-brand"><span class="footer-brand__main">Dr<span> Collagen</span></span><span class="footer-brand__sub">Formulated by Doctors</span></div>
-    <div class="footer-links">
-      <a href="{{ routes.root_url }}#products" id="skelecoll-footer-link-products">All Products</a>
-      <a href="{{ routes.root_url }}#science" id="skelecoll-footer-link-science">Science</a>
-      <a href="{{ routes.root_url }}#about" id="skelecoll-footer-link-about">About</a>
-      <a href="{{ routes.root_url }}" id="skelecoll-footer-link-home">Home</a>
+  <div class="footer-top">
+    <div class="footer-brand-col">
+      <div class="footer-brand"><img class="footer-mark" src="{{ 'logo-mark-cream.png' | asset_url }}" alt="" width="26" height="45"><span class="footer-brand__main">Dr<span> Collagen</span></span></div>
+      <p>Japanese marine collagen, micro-hydrolysed and dosed like medicine — doctor-formulated for skin, joints and everyday strength.</p>
     </div>
-    <div class="footer-legal">© {{ 'now' | date: '%Y' }} Dr Collagen · Made in Japan, for India · These statements have not been evaluated for medicinal claims. This product is a dietary supplement and is not intended to diagnose, treat, cure, or prevent any disease.</div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="{{ routes.root_url }}pages/collabloom">Collabloom &middot; Skin Glow</a></li>
+        <li><a href="{{ routes.root_url }}pages/skelecoll">Skelecoll &middot; Bones &amp; Joints</a></li>
+        <li><a href="{{ routes.root_url }}#products">Collatrim <span class="soon">Soon</span></a></li>
+        <li><a href="{{ routes.root_url }}#products">Metastable <span class="soon">Soon</span></a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="{{ routes.root_url }}pages/our-story">Our Story</a></li>
+        <li><a href="{{ routes.root_url }}#about">About</a></li>
+        <li><a href="{{ routes.root_url }}#science">Science</a></li>
+        <li><a href="{{ routes.root_url }}">Home</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="mailto:{{ settings.support_email | default: 'support@drcollagen.in' }}">Contact</a></li>
+        <li><a href="{{ routes.root_url }}policies/shipping-policy">Shipping</a></li>
+        <li><a href="{{ routes.root_url }}policies/refund-policy">Returns</a></li>
+        <li><a href="{{ routes.root_url }}policies/privacy-policy">Privacy Policy</a></li>
+        <li><a href="{{ routes.root_url }}policies/terms-of-service">Terms</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom-row">
+    <span class="footer-legal">&copy; {{ 'now' | date: '%Y' }} Dr Collagen &middot; These statements have not been evaluated for medicinal claims. Dietary supplement; not intended to diagnose, treat, cure or prevent any disease.</span>
+    <span class="footer-cert">FSSAI &middot; GMP &middot; Lab Tested</span>
   </div>
 </footer>
 

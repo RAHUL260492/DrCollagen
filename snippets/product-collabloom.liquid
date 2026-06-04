@@ -1039,6 +1039,23 @@
       transition: color .3s;
     }
     .footer-links a:hover { color: var(--accent); }
+    /* ─── Footer columns (important links) ─────────────────────────── */
+    .footer-top { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; max-width: 1160px; margin: 0 auto 36px; text-align: left; }
+    .footer-brand-col .footer-brand { display: inline-flex; align-items: center; gap: 10px; }
+    .footer-mark { height: 36px; width: auto; display: block; }
+    .footer-brand-col p { font-size: 13px; line-height: 1.7; color: rgba(255,255,255,.45); margin: 16px 0 0; max-width: 32em; }
+    .footer-col h4 { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.4); margin: 0 0 14px; font-weight: 600; }
+    .footer-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col a { font-size: 13px; color: rgba(255,255,255,.6); transition: color .3s; }
+    .footer-col a:hover { color: var(--accent); }
+    .soon { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-left: 5px; }
+    .footer-bottom-row { max-width: 1160px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.1); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .footer-cert { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.35); white-space: nowrap; }
+    @media (max-width: 720px) {
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 26px; }
+      .footer-brand-col { grid-column: 1 / -1; }
+      .footer-bottom-row { flex-direction: column; align-items: flex-start; }
+    }
 
     /* ─── RESPONSIVE ────────────────────────────────────────────── */
     @media (max-width: 900px) {
@@ -2150,15 +2167,43 @@
 
 <!-- ═══ FOOTER ═════════════════════════════════════════════════════ -->
 <footer>
-  <div class="footer-inner">
-    <div class="footer-brand"><span class="footer-brand__main">Dr<span> Collagen</span></span><span class="footer-brand__sub">Formulated by Doctors</span></div>
-    <div class="footer-links">
-      <a href="{{ routes.root_url }}#products" id="collabloom-footer-link-products">All Products</a>
-      <a href="{{ routes.root_url }}#science" id="collabloom-footer-link-science">Science</a>
-      <a href="{{ routes.root_url }}#about" id="collabloom-footer-link-about">About</a>
-      <a href="{{ routes.root_url }}" id="collabloom-footer-link-home">Home</a>
+  <div class="footer-top">
+    <div class="footer-brand-col">
+      <div class="footer-brand"><img class="footer-mark" src="{{ 'logo-mark-cream.png' | asset_url }}" alt="" width="26" height="45"><span class="footer-brand__main">Dr<span> Collagen</span></span></div>
+      <p>Japanese marine collagen, micro-hydrolysed and dosed like medicine — doctor-formulated for skin, joints and everyday strength.</p>
     </div>
-    <div class="footer-legal">© {{ 'now' | date: '%Y' }} Dr Collagen · Made in Japan, for India · These statements have not been evaluated for medicinal claims. This product is a dietary supplement and is not intended to diagnose, treat, cure, or prevent any disease.</div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="{{ routes.root_url }}pages/collabloom">Collabloom &middot; Skin Glow</a></li>
+        <li><a href="{{ routes.root_url }}pages/skelecoll">Skelecoll &middot; Bones &amp; Joints</a></li>
+        <li><a href="{{ routes.root_url }}#products">Collatrim <span class="soon">Soon</span></a></li>
+        <li><a href="{{ routes.root_url }}#products">Metastable <span class="soon">Soon</span></a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="{{ routes.root_url }}pages/our-story">Our Story</a></li>
+        <li><a href="{{ routes.root_url }}#about">About</a></li>
+        <li><a href="{{ routes.root_url }}#science">Science</a></li>
+        <li><a href="{{ routes.root_url }}">Home</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="mailto:{{ settings.support_email | default: 'support@drcollagen.in' }}">Contact</a></li>
+        <li><a href="{{ routes.root_url }}policies/shipping-policy">Shipping</a></li>
+        <li><a href="{{ routes.root_url }}policies/refund-policy">Returns</a></li>
+        <li><a href="{{ routes.root_url }}policies/privacy-policy">Privacy Policy</a></li>
+        <li><a href="{{ routes.root_url }}policies/terms-of-service">Terms</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom-row">
+    <span class="footer-legal">&copy; {{ 'now' | date: '%Y' }} Dr Collagen &middot; These statements have not been evaluated for medicinal claims. Dietary supplement; not intended to diagnose, treat, cure or prevent any disease.</span>
+    <span class="footer-cert">FSSAI &middot; GMP &middot; Lab Tested</span>
   </div>
 </footer>
 
