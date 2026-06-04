@@ -998,7 +998,7 @@
         {% endform %}
       </div>
       <div class="hero-actions">
-        <a href="#ingredients" id="collatrim-hero-the-formula-btn" class="btn-outline">The formula</a>
+        <a href="#promise" id="collatrim-hero-the-formula-btn" class="btn-outline">The formula</a>
       </div>
     {%- else -%}
       <div class="hero-price-row">
@@ -1022,7 +1022,7 @@
         {%- else -%}
           <a href="/products/{{ dc_handle }}" id="collatrim-hero-add-to-cart-btn" class="btn-primary">Add to cart</a>
         {%- endif -%}
-        <a href="#ingredients" id="collatrim-hero-the-formula-btn" class="btn-outline">The formula</a>
+        <a href="#promise" id="collatrim-hero-the-formula-btn" class="btn-outline">The formula</a>
       </div>
     {%- endif -%}
   </div>
@@ -1057,66 +1057,7 @@
 </section>
 
 <!-- ═══ INGREDIENT DEEP DIVE ════════════════════════════════════════ -->
-<section id="ingredients">
-  <div class="inner">
-    <div class="ing-head reveal">
-      <p class="overline">The Formula</p>
-      <h2 class="heading">Six actives. One <em>body composition</em> goal.</h2>
-      <p class="lede">Every ingredient is dosed against published human trials — chosen for how it works alongside collagen, not around it. No aggressive stimulants. No proprietary blends.</p>
-    </div>
 
-    <div class="ing-grid">
-      <div class="ing-card reveal reveal-delay-1">
-        <div class="ing-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s5-5 10-5 10 5 10 5-5 5-10 5-10-5-10-5Z"/><path d="M12 7c-1.5 1.5-2.5 3-2.5 5s1 3.5 2.5 5"/><circle cx="6" cy="11" r="1"/></svg>
-        </div>
-        <div class="ing-dose">8g · Primary Active</div>
-        <h3 class="ing-name">Marine Collagen Peptides</h3>
-        <p class="ing-desc">8g of Type I peptides hydrolysed under 2,000 Daltons. Delivers the amino acid profile — glycine, proline, hydroxyproline — your body needs for skin firmness and lean tissue repair through a body-composition phase.</p>
-      </div>
-      <div class="ing-card reveal reveal-delay-2">
-        <div class="ing-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3a4 4 0 0 0-4 4v3a4 4 0 1 0 0 8h8a4 4 0 1 0 0-8V7a4 4 0 0 0-4-4z"/><path d="M9 9h6M9 13h6M9 17h6"/></svg>
-        </div>
-        <div class="ing-dose">Action · Metabolic Output</div>
-        <h3 class="ing-name">Green Coffee Bean Extract</h3>
-        <p class="ing-desc">Standardised for chlorogenic acid — the active in unroasted green coffee. Supports glucose handling after meals and gently raises fat metabolism without the wired feeling of high-dose caffeine. Different mechanism, different molecule from green tea catechins.</p>
-      </div>
-      <div class="ing-card reveal reveal-delay-3">
-        <div class="ing-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1 8a7 7 0 0 1-9 10Z"/><path d="M19 2c-2.26 4.33-5.27 7.14-8 10"/></svg>
-        </div>
-        <div class="ing-dose">Action · Appetite</div>
-        <h3 class="ing-name">Garcinia Cambogia (HCA)</h3>
-        <p class="ing-desc">Hydroxycitric acid supports the feeling of fullness and helps the body favour glycogen storage over fat synthesis after meals. The appetite-side lever in a body-composition stack.</p>
-      </div>
-      <div class="ing-card reveal reveal-delay-1">
-        <div class="ing-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 5v-2M12 21v-2M5 12h-2M21 12h-2M16.95 7.05l1.41-1.41M5.64 18.36l1.41-1.41M16.95 16.95l1.41 1.41M5.64 5.64l1.41 1.41"/></svg>
-        </div>
-        <div class="ing-dose">Action · Gut Health</div>
-        <h3 class="ing-name">Lactospore Probiotic + Moringa</h3>
-        <p class="ing-desc">Lactospore is a shelf-stable <em>Bacillus coagulans</em> spore — it survives stomach acid and germinates in the small intestine, supporting a balanced microbiome and reducing the bloating that comes with dietary changes. Moringa adds polyphenols, micronutrients and gentle digestive support. The gut side is what makes the body-composition work feel sustainable.</p>
-      </div>
-      <div class="ing-card reveal reveal-delay-2">
-        <div class="ing-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18M3 7h18M6 7l-3 6h6l-3-6ZM18 7l-3 6h6l-3-6ZM4 21h16"/></svg>
-        </div>
-        <div class="ing-dose">Action · Blood Sugar</div>
-        <h3 class="ing-name">Chromium Picolinate</h3>
-        <p class="ing-desc">Supports insulin sensitivity and smooths blood-sugar curves through the day — taming the 4pm sugar-craving window that quietly derails most body-composition phases.</p>
-      </div>
-      <div class="ing-card reveal reveal-delay-3">
-        <div class="ing-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5Z"/></svg>
-        </div>
-        <div class="ing-dose">Action · Cellular Fat</div>
-        <h3 class="ing-name">L-Carnitine L-Tartrate</h3>
-        <p class="ing-desc">Shuttles long-chain fatty acids into the mitochondria so they can be burned for energy. The cellular bridge between stored fat and usable fuel — and the reason this works best paired with daily movement.</p>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- ═══ RESULTS TIMELINE ════════════════════════════════════════════ -->
 <section id="timeline">
