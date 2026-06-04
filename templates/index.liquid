@@ -1969,6 +1969,102 @@
       .m-sticky-cta { transition: none; }
     }
 
+    /* ════════════════════════════════════════════════════════════════
+       CRO additions: Range decision helper, availability badges,
+       trust-band CTA, final-CTA shortcuts, footer restructure + news.
+       Reuses the cream/gold/serif tokens — no new palette.
+       ════════════════════════════════════════════════════════════════ */
+
+    /* Decision helper chips (above the product grid) */
+    .range-helper {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+      gap: 12px 14px; margin: 0 auto 36px; max-width: 1100px; text-align: center;
+    }
+    .range-helper-q {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic; font-size: 17px; color: #1a1225;
+    }
+    .range-chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .range-chip {
+      display: inline-flex; align-items: center; min-height: 38px; padding: 8px 18px;
+      border-radius: 40px; border: 1px solid rgba(184,144,58,.4);
+      background: rgba(255,255,255,.6); color: #5a4a2a;
+      font-size: 12.5px; font-weight: 600; letter-spacing: .04em; text-decoration: none;
+      transition: background .25s, color .25s, border-color .25s, transform .2s;
+    }
+    .range-chip:hover { background: var(--accent, #e8b72e); color: #2a1d12; border-color: var(--accent, #e8b72e); transform: translateY(-1px); }
+    /* Brief highlight when a chip targets a card */
+    .product-card.is-flash { box-shadow: 0 0 0 2px var(--accent, #e8b72e), 0 24px 60px rgba(0,0,0,.10); border-color: var(--accent, #e8b72e); }
+
+    /* "Available Now" badge — gold-filled, clearly actionable vs the dark
+       "Coming Soon" pill, so live products read as the primary path. */
+    .product-badge.product-badge--available {
+      background: var(--accent, #e8b72e); border-color: var(--accent, #e8b72e);
+      color: #2a1d12; font-weight: 700;
+    }
+    /* Quieter CTA + image treatment for coming-soon, so live cards win the eye */
+    .product-card.is-coming-soon .product-cta .cta-label { color: #8a8092 !important; }
+    .product-card.is-coming-soon .product-image-wrap img { opacity: .9; }
+    .cta-label--waitlist { font-weight: 600; }
+
+    /* Trust-band CTA under the doctor strip */
+    .doc-strip-cta { margin-top: 28px; }
+
+    /* Final CTA — live-product shortcuts under the buttons */
+    .cta-shortcuts {
+      display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; margin-top: 22px;
+    }
+    .cta-shortcut {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 13px; font-weight: 600; letter-spacing: .04em;
+      color: var(--gold, #b8903a); text-decoration: none;
+    }
+    .cta-shortcut .arrow { transition: transform .25s; }
+    .cta-shortcut:hover .arrow { transform: translateX(4px); }
+
+    /* Footer: product tags, coming-soon subhead, newsletter module */
+    .footer-tag {
+      font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--gold, #b8903a); opacity: .8; margin-left: 4px;
+    }
+    .footer-tag--soon { opacity: .55; }
+    .footer-subhead {
+      font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+      color: rgba(255,255,255,.4); margin: 18px 0 8px;
+    }
+    .footer-newsletter {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 20px 40px; margin: 48px 0 8px; padding: 32px 0;
+      border-top: 1px solid rgba(255,255,255,.1); border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .footer-news-copy h4 {
+      font-family: 'Playfair Display', Georgia, serif; font-weight: 500;
+      font-size: 22px; color: #fff; margin: 0 0 6px;
+    }
+    .footer-news-copy p { font-size: 13.5px; color: rgba(255,255,255,.6); margin: 0; max-width: 30em; }
+    .footer-news-form { display: flex; gap: 10px; flex: 1 1 320px; max-width: 460px; }
+    .footer-news-form input[type="email"] {
+      flex: 1; min-height: 48px; padding: 12px 18px; border-radius: 40px;
+      border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.06);
+      color: #fff; font-size: 14px;
+    }
+    .footer-news-form input[type="email"]::placeholder { color: rgba(255,255,255,.45); }
+    .footer-news-form button { min-height: 48px; white-space: nowrap; }
+    .footer-news-success { color: var(--accent, #e8b72e); font-size: 14px; margin: 0; }
+    .visually-hidden {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+
+    /* Mobile: chips/forms full-width-friendly, comfortable taps */
+    @media (max-width: 600px) {
+      .range-helper { flex-direction: column; gap: 14px; }
+      .range-chip { min-height: 44px; font-size: 13px; }
+      .cta-shortcuts { gap: 18px; }
+      .footer-newsletter { flex-direction: column; align-items: stretch; }
+      .footer-news-form { max-width: 100%; }
+    }
+
   </style>
 
 <!-- ═══ SKIP TO CONTENT (keyboard users) ═════════════════════════════ -->
@@ -2230,7 +2326,18 @@
     <div class="section-header reveal">
       <p class="section-overline">The Range</p>
       <h2 class="section-title">Pick the formula for <em>your goal</em></h2>
-      <p class="section-body">Same micro-hydrolysed marine collagen in every shot. The co-factor stack changes — vitamins, minerals, botanicals — so each product targets one outcome: skin, joints, body composition, or gut and energy.</p>
+      <p class="section-body">Every shot starts with micro-hydrolysed marine collagen. Each formula adds a targeted co-factor blend to support a specific outcome — skin glow, bones &amp; joints, body tone, or gut, energy &amp; immunity.</p>
+    </div>
+
+    <!-- Decision helper -->
+    <div class="range-helper reveal">
+      <span class="range-helper-q">Not sure where to start?</span>
+      <div class="range-chips">
+        <a href="#product-card-collabloom" class="range-chip">Skin Glow</a>
+        <a href="#product-card-skelecoll" class="range-chip">Bones &amp; Joints</a>
+        <a href="#product-card-collatrim" class="range-chip">Body Tone</a>
+        <a href="#product-card-metastable" class="range-chip">Gut + Energy</a>
+      </div>
     </div>
 
     <div class="products-grid">
@@ -2249,16 +2356,15 @@
             <defs><linearGradient id="bloom" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e07a9e" stop-opacity="0.22"/><stop offset="100%" stop-color="#b05578" stop-opacity="0.08"/></linearGradient></defs>
           </svg>
           <div class="product-shimmer"></div>
-          <span class="product-badge">Best Seller</span>
+          <span class="product-badge product-badge--available">Available Now</span>
         </div>
         <div class="product-info">
-          <p class="product-category">Skin · Hair · Nails</p>
+          <p class="product-category">Skin Glow</p>
           <h3 class="product-name">Collabloom™</h3>
-          <p class="product-desc">8,000mg Japanese marine collagen + 250mg Glutathione + 240mg Polypodium leucotomos (sun-damage defence) + Oral Ceramides + Hyaluronic Acid. 17 actives for glow, hydration, sun protection and strength — in one 30ml Wild Berry shot.</p>
+          <p class="product-desc">Marine collagen with targeted co-factors to support skin elasticity, radiance, hair and nails.</p>
           <div class="product-benefits">
             <span class="benefit-chip">Fine Lines</span>
             <span class="benefit-chip">Pigmentation</span>
-            <span class="benefit-chip">Sun Defence</span>
             <span class="benefit-chip">Hydration</span>
           </div>
           <div class="product-cta">
@@ -2279,17 +2385,16 @@
             <text x="30" y="72" text-anchor="middle" fill="#4a2f18" font-size="3.5" font-family="serif">SKELECOLL</text>
           </svg>
           <div class="product-shimmer"></div>
-          <span class="product-badge">New Formula</span>
+          <span class="product-badge product-badge--available">Available Now</span>
         </div>
         <div class="product-info">
-          <p class="product-category">Bones · Joints · Muscles</p>
+          <p class="product-category">Bones &amp; Joints</p>
           <h3 class="product-name">Skelecoll™</h3>
-          <p class="product-desc">10,000mg Japanese marine collagen + 1,000mg L-Carnitine + 500mg Cissus Quadrangularis + Glucosamine + Calcium + D3. 13 actives for recovery, mobility and strength — in one 30ml Cola shot.</p>
+          <p class="product-desc">Marine collagen with targeted co-factors to support joints, bones, mobility and everyday structural strength.</p>
           <div class="product-benefits">
             <span class="benefit-chip">Joint Flexibility</span>
             <span class="benefit-chip">Bone Strength</span>
-            <span class="benefit-chip">Muscle Endurance</span>
-            <span class="benefit-chip">Post-Workout Recovery</span>
+            <span class="benefit-chip">Recovery</span>
           </div>
           <div class="product-cta">
             <span class="cta-label">Shop Skelecoll <span class="arrow">→</span></span>
@@ -2298,7 +2403,7 @@
       </a>
 
       <!-- COLLATRIM -->
-      <a href="/pages/collatrim" id="product-card-collatrim" class="product-card collatrim is-coming-soon reveal reveal-delay-3">
+      <a href="#newsletter" id="product-card-collatrim" class="product-card collatrim is-coming-soon reveal reveal-delay-3">
         <div class="product-image-wrap">
           <!-- Shopify: replace src with {{ 'collatrim.png' | asset_url }} -->
           <img src="{{ 'collatrim-bottle.png' | asset_url }}" alt="Collatrim bottle — collagen with metabolism support for body composition and skin tone" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
@@ -2309,26 +2414,24 @@
             <text x="30" y="72" text-anchor="middle" fill="#3e4b1e" font-size="3.5" font-family="serif">COLLATRIM</text>
           </svg>
           <div class="product-shimmer"></div>
-          <span class="product-soon-pill">Coming soon</span>
+          <span class="product-soon-pill">Coming Soon</span>
         </div>
         <div class="product-info">
-          <p class="product-category">Body · Metabolism · Tone</p>
+          <p class="product-category">Body Tone</p>
           <h3 class="product-name">Collatrim™</h3>
-          <p class="product-desc">8g hydrolysed marine collagen with green coffee bean extract, Garcinia Cambogia, Lactospore probiotic, Moringa and Chromium. For body composition, a settled gut, and skin that stays firm through change.</p>
+          <p class="product-desc">A targeted collagen formula designed to support body composition and tone.</p>
           <div class="product-benefits">
             <span class="benefit-chip">Body Composition</span>
-            <span class="benefit-chip">Gut Health</span>
-            <span class="benefit-chip">Reduced Bloating</span>
             <span class="benefit-chip">Skin Firmness</span>
           </div>
           <div class="product-cta">
-            <span class="cta-label">Notify me when it launches <span class="arrow">→</span></span>
+            <span class="cta-label cta-label--waitlist">Join Waitlist <span class="arrow">→</span></span>
           </div>
         </div>
       </a>
 
       <!-- METASTABLE -->
-      <a href="/pages/metastable" id="product-card-metastable" class="product-card metastable is-coming-soon reveal reveal-delay-4">
+      <a href="#newsletter" id="product-card-metastable" class="product-card metastable is-coming-soon reveal reveal-delay-4">
         <div class="product-image-wrap">
           <!-- Shopify: replace src with {{ 'metastable.png' | asset_url }} -->
           <img src="{{ 'metastable-bottle.png' | asset_url }}" alt="Metastable bottle — collagen with adaptogens and probiotics for energy, gut and immunity" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
@@ -2339,20 +2442,19 @@
             <text x="30" y="70" text-anchor="middle" fill="#1a3010" font-size="3" font-family="serif">METASTABLE</text>
           </svg>
           <div class="product-shimmer"></div>
-          <span class="product-soon-pill">Coming soon</span>
+          <span class="product-soon-pill">Coming Soon</span>
         </div>
         <div class="product-info">
-          <p class="product-category">Energy · Gut · Immunity</p>
+          <p class="product-category">Gut, Energy &amp; Immunity</p>
           <h3 class="product-name">Metastable™</h3>
-          <p class="product-desc">Marine collagen with KSM-66 Ashwagandha, Rhodiola, prebiotic inulin, and a full B-complex. Built for athletes who train hard — gut lining, sustained energy, immune resilience.</p>
+          <p class="product-desc">A targeted collagen formula designed to support gut health, daily energy and immune function.</p>
           <div class="product-benefits">
-            <span class="benefit-chip">Gut Lining</span>
-            <span class="benefit-chip">Energy Balance</span>
+            <span class="benefit-chip">Gut Health</span>
+            <span class="benefit-chip">Energy</span>
             <span class="benefit-chip">Immunity</span>
-            <span class="benefit-chip">Vitality</span>
           </div>
           <div class="product-cta">
-            <span class="cta-label">Notify me when it launches <span class="arrow">→</span></span>
+            <span class="cta-label cta-label--waitlist">Join Waitlist <span class="arrow">→</span></span>
           </div>
         </div>
       </a>
@@ -2370,11 +2472,15 @@
       <h2 class="doc-strip-heading">Formulated by <em>doctors</em>. Not by marketers.</h2>
       <p class="doc-strip-lede">Every Dr Collagen shot is developed by medical practitioners against published clinical data — dosed for results, formulated for safety, manufactured at FSSAI- and GMP-certified facilities, lab-tested batch by batch.</p>
       <ul class="doc-strip-pills">
-        <li>Medical formulation</li>
-        <li>Clinically backed doses</li>
-        <li>FSSAI · GMP · Lab tested</li>
-        <li>No proprietary blends</li>
+        <li>Doctor-formulated</li>
+        <li>Micro-hydrolysed marine collagen</li>
+        <li>Up to 10g collagen per shot</li>
+        <li>Targeted co-factor blends</li>
+        <li>Designed for daily use</li>
       </ul>
+      <div class="doc-strip-cta">
+        <a href="#products" class="btn-primary" id="trust-shop-available">Shop Available Formulas</a>
+      </div>
     </div>
   </div>
 </section>
@@ -2428,6 +2534,7 @@
     <div class="stats-header reveal">
       <p class="section-overline">The numbers</p>
       <h2 class="section-title">What the data <em>shows</em></h2>
+      <p class="section-body">Simple proof points behind the formula.</p>
     </div>
     <div class="stats-grid reveal reveal-delay-1">
       <div class="stat-card">
@@ -2583,8 +2690,8 @@
   <div class="ingredients-inner">
     <div class="section-header reveal">
       <p class="section-overline">What's inside</p>
-      <h2 class="section-title">Every ingredient, <em>working</em></h2>
-      <p class="section-body">No fillers, no bulking agents, no proprietary blends. Each active below earns its place — for a reason we can defend on the label.</p>
+      <h2 class="section-title">Every ingredient has a <em>role</em>.</h2>
+      <p class="section-body">Marine collagen forms the base. Co-factors are selected to support each formula's specific goal — no fillers, no proprietary blends.</p>
     </div>
     <div class="ingredients-grid">
       <div class="ingr-card reveal reveal-delay-1">
@@ -2627,134 +2734,21 @@
   </div>
 </section>
 
-<!-- ═══ TESTIMONIALS ══════════════════════════════════════════════════
-     Gated by settings.show_testimonials. Disabled by default — the
-     six original entries used invented reviewer names, which violates
-     India's Consumer Protection (Direct Selling) Rules 2021 and the
-     CCPA misleading-endorsements guidelines. Replace the cards below
-     with real, permissioned customer reviews, then enable the toggle
-     in Online Store → Customize → Theme settings → Brand.
-     ════════════════════════════════════════════════════════════════ -->
-{% if settings.show_testimonials %}
-<section id="testimonials">
-  <div style="max-width:1200px;margin:0 auto 56px;">
-    <div class="section-header reveal">
-      <p class="section-overline">Customer reviews</p>
-      <h2 class="section-title">From people who <em>stuck with it</em></h2>
-    </div>
-  </div>
-  <div class="testimonials-track">
-    <!-- Real testimonials -->
-    <div class="testi-card">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"After 6 weeks of Collabloom, people started asking if I'd had a facial. My skin has never looked this dewy and plump — I'm genuinely obsessed."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">P</div>
-        <div><div class="testi-name">Priya Sharma</div><div class="testi-role">Mumbai · Collabloom User</div></div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"I was sceptical about collagen drinks, but Skelecoll genuinely reduced my knee pain within a month. My physio couldn't believe the improvement."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">R</div>
-        <div><div class="testi-name">Rajesh Mehta</div><div class="testi-role">Delhi · Skelecoll User</div></div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"Collatrim helped me through my weight-loss journey without the sagging skin I feared. The formula is brilliant — skin stayed firm throughout."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">A</div>
-        <div><div class="testi-name">Ananya Kapoor</div><div class="testi-role">Bangalore · Collatrim User</div></div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"Metastable has transformed my gut health. Three months in and my bloating is completely gone — my energy is through the roof and my skin is clearer too."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">S</div>
-        <div><div class="testi-name">Sneha Patel</div><div class="testi-role">Pune · Metastable User</div></div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"The taste is actually delicious — not like medicinal supplements at all. I look forward to my daily Collabloom shot. My nails have grown so strong!"</p>
-      <div class="testi-author">
-        <div class="testi-avatar">N</div>
-        <div><div class="testi-name">Nisha Gupta</div><div class="testi-role">Chennai · Collabloom User</div></div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"I gifted Collabloom to my mother who's 55, and she's been glowing ever since. She says it's the first supplement that's actually made a visible difference."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">K</div>
-        <div><div class="testi-name">Kavya Rao</div><div class="testi-role">Hyderabad · Collabloom User</div></div>
-      </div>
-    </div>
-    <!-- Duplicate set for seamless loop — hidden from assistive tech -->
-    <div class="testi-card" aria-hidden="true">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"After 6 weeks of Collabloom, people started asking if I'd had a facial. My skin has never looked this dewy and plump — I'm genuinely obsessed."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">P</div>
-        <div><div class="testi-name">Priya Sharma</div><div class="testi-role">Mumbai · Collabloom User</div></div>
-      </div>
-    </div>
-    <div class="testi-card" aria-hidden="true">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"I was sceptical about collagen drinks, but Skelecoll genuinely reduced my knee pain within a month. My physio couldn't believe the improvement."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">R</div>
-        <div><div class="testi-name">Rajesh Mehta</div><div class="testi-role">Delhi · Skelecoll User</div></div>
-      </div>
-    </div>
-    <div class="testi-card" aria-hidden="true">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"Collatrim helped me through my weight-loss journey without the sagging skin I feared. The formula is brilliant — skin stayed firm throughout."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">A</div>
-        <div><div class="testi-name">Ananya Kapoor</div><div class="testi-role">Bangalore · Collatrim User</div></div>
-      </div>
-    </div>
-    <div class="testi-card" aria-hidden="true">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"Metastable has transformed my gut health. Three months in and my bloating is completely gone — my energy is through the roof and my skin is clearer too."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">S</div>
-        <div><div class="testi-name">Sneha Patel</div><div class="testi-role">Pune · Metastable User</div></div>
-      </div>
-    </div>
-    <div class="testi-card" aria-hidden="true">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"The taste is actually delicious — not like medicinal supplements at all. I look forward to my daily Collabloom shot. My nails have grown so strong!"</p>
-      <div class="testi-author">
-        <div class="testi-avatar">N</div>
-        <div><div class="testi-name">Nisha Gupta</div><div class="testi-role">Chennai · Collabloom User</div></div>
-      </div>
-    </div>
-    <div class="testi-card" aria-hidden="true">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"I gifted Collabloom to my mother who's 55, and she's been glowing ever since. She says it's the first supplement that's actually made a visible difference."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">K</div>
-        <div><div class="testi-name">Kavya Rao</div><div class="testi-role">Hyderabad · Collabloom User</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-{% endif %}
+<!-- Testimonials section removed: it contained fabricated reviewer names. Re-add only with real, permissioned reviews. -->
 
 <!-- ═══ CTA ═══════════════════════════════════════════════════════════ -->
 <section id="cta">
   <div style="position:relative;z-index:10;">
     <p class="cta-overline reveal">Start your routine</p>
-    <h2 class="cta-title reveal reveal-delay-1">One daily shot.<br>Visible results in four <em>weeks</em>.</h2>
-    <p class="cta-sub reveal reveal-delay-2">Choose the formula that matches your goal and take it once a day. Most customers see visible results within four weeks — and the full science behind every ingredient is on each product page.</p>
+    <h2 class="cta-title reveal reveal-delay-1">One daily shot.<br>Visible results from four <em>weeks</em>.</h2>
+    <p class="cta-sub reveal reveal-delay-2">Start with the formula that matches your goal — skin glow or bones &amp; joints, both available now.</p>
     <div class="cta-actions reveal reveal-delay-3">
-      <a href="#products" id="bottom-cta-shop-btn" class="btn-primary">Shop the range</a>
-      <a href="{{ routes.all_products_collection_url }}" id="bottom-cta-visit-store-btn" class="btn-outline">Browse all products</a>
+      <a href="#products" id="bottom-cta-shop-btn" class="btn-primary">Shop Available Formulas</a>
+      <a href="#products" id="bottom-cta-compare-btn" class="btn-outline">Compare The Range</a>
+    </div>
+    <div class="cta-shortcuts reveal reveal-delay-3">
+      <a href="/pages/collabloom" id="bottom-cta-collabloom" class="cta-shortcut">Shop Collabloom <span class="arrow">→</span></a>
+      <a href="/pages/skelecoll" id="bottom-cta-skelecoll" class="cta-shortcut">Shop Skelecoll <span class="arrow">→</span></a>
     </div>
   </div>
 </section>
@@ -2784,35 +2778,54 @@
         </div>
       </div>
       <div class="footer-col">
-        <h4>Products</h4>
+        <h4>Shop</h4>
         <ul>
-          <li><a href="/pages/collabloom" id="footer-link-products-collabloom">Collabloom™</a></li>
-          <li><a href="/pages/skelecoll" id="footer-link-products-skelecoll">Skelecoll™</a></li>
-          <li><a href="/pages/collatrim" id="footer-link-products-collatrim">Collatrim™</a></li>
-          <li><a href="/pages/metastable" id="footer-link-products-metastable">Metastable™</a></li>
-          <li><a href="#products" id="footer-link-products-all">View All</a></li>
+          <li><a href="/pages/collabloom" id="footer-link-products-collabloom">Collabloom™ <span class="footer-tag">Skin Glow</span></a></li>
+          <li><a href="/pages/skelecoll" id="footer-link-products-skelecoll">Skelecoll™ <span class="footer-tag">Bones &amp; Joints</span></a></li>
+        </ul>
+        <p class="footer-subhead">Coming soon</p>
+        <ul>
+          <li><a href="#newsletter" id="footer-link-products-collatrim">Collatrim™ <span class="footer-tag footer-tag--soon">Body Tone</span></a></li>
+          <li><a href="#newsletter" id="footer-link-products-metastable">Metastable™ <span class="footer-tag footer-tag--soon">Gut + Energy</span></a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>Company</h4>
         <ul>
-          <li><a href="#" id="footer-link-company-about">About Us</a></li>
-          <li><a href="#" id="footer-link-company-science">Science &amp; Research</a></li>
-          <li><a href="#" id="footer-link-company-sustainability">Sustainability</a></li>
-          <li><a href="#" id="footer-link-company-press">Press</a></li>
-          <li><a href="#" id="footer-link-company-careers">Careers</a></li>
+          <li><a href="/pages/our-story" id="footer-link-company-story">Our Story</a></li>
+          <li><a href="#about" id="footer-link-company-about">About</a></li>
+          <li><a href="#science" id="footer-link-company-science">The Science</a></li>
+          <li><a href="#ingredients" id="footer-link-company-ingredients">Ingredients</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>Support</h4>
         <ul>
-          <li><a href="#" id="footer-link-support-contact">Contact Us</a></li>
-          <li><a href="#" id="footer-link-support-faq">FAQs</a></li>
-          <li><a href="#" id="footer-link-support-shipping">Shipping &amp; Returns</a></li>
-          <li><a href="#" id="footer-link-support-privacy">Privacy Policy</a></li>
-          <li><a href="#" id="footer-link-support-terms">Terms of Service</a></li>
+          <li><a href="mailto:{{ settings.support_email | default: 'support@drcollagen.in' }}" id="footer-link-support-contact">Contact</a></li>
+          <li><a href="/policies/shipping-policy" id="footer-link-support-shipping">Shipping</a></li>
+          <li><a href="/policies/refund-policy" id="footer-link-support-returns">Returns</a></li>
+          <li><a href="/policies/privacy-policy" id="footer-link-support-privacy">Privacy Policy</a></li>
+          <li><a href="/policies/terms-of-service" id="footer-link-support-terms">Terms</a></li>
         </ul>
       </div>
+    </div>
+
+    <!-- Newsletter / waitlist -->
+    <div class="footer-newsletter" id="newsletter">
+      <div class="footer-news-copy">
+        <h4>Join the Dr Collagen list</h4>
+        <p>Get product launches, formula updates and collagen education. No spam.</p>
+      </div>
+      {% form 'customer', id: 'footer-newsletter-form', class: 'footer-news-form' %}
+        <input type="hidden" name="contact[tags]" value="newsletter, homepage-footer">
+        {% if form.posted_successfully? %}
+          <p class="footer-news-success">Thank you — you're on the list.</p>
+        {% else %}
+          <label class="visually-hidden" for="footer-news-email">Email address</label>
+          <input type="email" id="footer-news-email" name="contact[email]" placeholder="Your email address" aria-label="Email address" required>
+          <button type="submit" class="btn-primary" id="footer-news-submit">Join</button>
+        {% endif %}
+      {% endform %}
     </div>
     <div class="footer-bottom">
       <!-- LEGAL: this line was rewritten to an India-appropriate disclaimer. Have counsel confirm before launch. -->
@@ -3011,6 +3024,19 @@
     if (!ticking) { ticking = true; requestAnimationFrame(check); }
   }, { passive: true });
   check();
+})();
+
+// ═══ RANGE DECISION CHIPS — briefly highlight the targeted card ─────
+(function () {
+  document.querySelectorAll('.range-chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var id = (chip.getAttribute('href') || '').replace('#', '');
+      var card = document.getElementById(id);
+      if (!card) return;
+      card.classList.add('is-flash');
+      setTimeout(function () { card.classList.remove('is-flash'); }, 1400);
+    });
+  });
 })();
 
 // ═══ LETTER SPLIT — handled inside frame animation init ─────────────
