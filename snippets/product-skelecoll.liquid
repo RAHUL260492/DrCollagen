@@ -750,13 +750,17 @@
 
     .btn-primary, .btn-outline { will-change: transform; }
   
-    /* Logo lockup: Dr Collagen + "Formulated by Doctors" subtitle */
+    /* Logo lockup: helix mark on the LEFT, then Dr Collagen + subtitle stacked */
     .nav-logo {
       display: inline-flex;
-      flex-direction: column;
-      align-items: flex-start;
+      flex-direction: row;
+      align-items: center;
       line-height: 1;
-      gap: 3px;
+      gap: 10px;
+    }
+    .nav-logo__text {
+      display: inline-flex; flex-direction: column;
+      align-items: flex-start; gap: 3px;
     }
     .nav-logo__main { font: inherit; }
     .nav-logo__sub {
