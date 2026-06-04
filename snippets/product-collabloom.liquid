@@ -2042,7 +2042,7 @@
 (function() {
   const nav = document.getElementById('navbar');
   function update() { nav.classList.toggle('scrolled', window.scrollY > 60); }
-  window.addEventListener('scroll', update, { passive: true });
+  (function(){var navTick=false;window.addEventListener('scroll',function(){if(navTick)return;navTick=true;requestAnimationFrame(function(){update();navTick=false;});},{passive:true});})();
   update();
 })();
 

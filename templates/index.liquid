@@ -2591,7 +2591,7 @@
       }
     }
   }
-  window.addEventListener('scroll', update, { passive: true });
+  (function(){var navTick=false;window.addEventListener('scroll',function(){if(navTick)return;navTick=true;requestAnimationFrame(function(){update();navTick=false;});},{passive:true});})();
   window.addEventListener('resize', update);
   update();
 })();
