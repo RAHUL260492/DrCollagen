@@ -1261,11 +1261,18 @@
       border-color: rgba(232,183,46,.2);
       box-shadow: 0 20px 50px rgba(0,0,0,.08);
     }
-    .ingr-num {
-      font-family: var(--heading);
-      font-size: 48px; font-weight: 300;
-      color: rgba(232,183,46,.6);
-      line-height: 1; margin-bottom: 16px;
+    .ingr-icon {
+      width: 52px; height: 52px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(232,205,135,.25);
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+    .ingr-icon svg { width: 26px; height: 26px; }
+    .ingr-card:hover .ingr-icon {
+      border-color: rgba(232,183,46,.4);
     }
     .ingr-name {
       font-size: 14px; font-weight: 500;
@@ -2180,37 +2187,37 @@
     </div>
     <div class="ingredients-grid">
       <div class="ingr-card reveal reveal-delay-1">
-        <div class="ingr-num">01</div>
+        <div class="ingr-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 12c0 0-3.3 4.6-8.3 4.6S2 12 2 12s1.2-4.6 6.2-4.6S16.5 12 16.5 12z"/><path d="M16.5 12 22 8.4v7.2L16.5 12z"/><circle cx="6.2" cy="11" r=".9" fill="currentColor" stroke="none"/></svg></div>
         <h3 class="ingr-name">Marine collagen peptides</h3>
         <div class="ingr-desc">Hydrolysed to under 2,000 Daltons from Japanese deep-sea fish. Closer to human collagen than bovine sources, and absorbed roughly 1.5× faster.</div>
         <span class="ingr-tag">Primary active</span>
       </div>
       <div class="ingr-card reveal reveal-delay-2">
-        <div class="ingr-num">02</div>
+        <div class="ingr-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.4"/><path d="M12 3v5.6M12 15.4V21M3 12h5.6M15.4 12H21M5.6 5.6l4 4M14.4 14.4l4 4M18.4 5.6l-4 4M9.6 14.4l-4 4"/></svg></div>
         <h3 class="ingr-name">Vitamin C (ascorbic acid)</h3>
         <div class="ingr-desc">Required for collagen synthesis. Without it, fibroblasts can't form the stable triple-helix structure that gives collagen its strength. Non-negotiable in every formula.</div>
         <span class="ingr-tag">Co-factor</span>
       </div>
       <div class="ingr-card reveal reveal-delay-3">
-        <div class="ingr-num">03</div>
+        <div class="ingr-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c.5 5 1.5 6 6.5 6.5-5 .5-6 1.5-6.5 6.5-.5-5-1.5-6-6.5-6.5 5-.5 6-1.5 6.5-6.5z"/><path d="M18.5 16.5c.2 2 .6 2.4 2.5 2.6-1.9.2-2.3.6-2.5 2.6-.2-2-.6-2.4-2.5-2.6 1.9-.2 2.3-.6 2.5-2.6z"/></svg></div>
         <h3 class="ingr-name">Biotin (vitamin B7)</h3>
         <div class="ingr-desc">Builds keratin, the protein matrix that gives hair shafts their tensile strength and nails their hardness. Works in concert with collagen, not in place of it.</div>
         <span class="ingr-tag">Hair &amp; nail</span>
       </div>
       <div class="ingr-card reveal reveal-delay-4">
-        <div class="ingr-num">04</div>
+        <div class="ingr-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l8.2 4.7v9.6L12 21.5 3.8 16.8V7.2L12 2.5z"/><path d="M12 7.5v9M8 9.8l8 4.4M16 9.8l-8 4.4"/></svg></div>
         <h3 class="ingr-name">Zinc gluconate</h3>
         <div class="ingr-desc">Activates the enzymes that remodel collagen fibre, and slows the matrix metalloproteinases that break collagen down faster as you age.</div>
         <span class="ingr-tag">Structural</span>
       </div>
       <div class="ingr-card reveal reveal-delay-5">
-        <div class="ingr-num">05</div>
+        <div class="ingr-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7s6.3 6.7 6.3 11A6.3 6.3 0 0 1 5.7 13.7C5.7 9.4 12 2.7 12 2.7z"/><path d="M9.3 14.2a2.8 2.8 0 0 0 2.4 2.4"/></svg></div>
         <h3 class="ingr-name">Hyaluronic acid</h3>
         <div class="ingr-desc">Native to skin connective tissue. Binds up to 1,000× its weight in water — the reason hydrated skin reads as firm and full instead of dry and creased.</div>
         <span class="ingr-tag">Hydration</span>
       </div>
       <div class="ingr-card reveal reveal-delay-6">
-        <div class="ingr-num">06</div>
+        <div class="ingr-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20C5 11.7 11.2 5.5 19.5 5.5 19.5 13.8 13.3 20 5 20z"/><path d="M5 20c3.2-5.3 6.5-7.8 11-10"/></svg></div>
         <h3 class="ingr-name">Natural fruit concentrates</h3>
         <div class="ingr-desc">Real fruit, not artificial flavouring. Carries the taste — and adds a small dose of polyphenols and antioxidants while it's at it.</div>
         <span class="ingr-tag">Flavour</span>
