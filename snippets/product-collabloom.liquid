@@ -1601,8 +1601,10 @@
 
   /* Pack / variant selector — keeps every buy box in sync:
      updates the hidden variant id on all forms, the hero price,
-     the strike-through "was" price + save badge, and the CTA button label. */
-  (function () {
+     the strike-through "was" price + save badge, and the CTA button label.
+     Deferred to DOMContentLoaded so it wires BOTH the hero selector and the
+     final-CTA selector (which is parsed later in the page). */
+  document.addEventListener('DOMContentLoaded', function () {
     var groups = Array.prototype.slice.call(document.querySelectorAll('.dc-pack-select'));
     if (!groups.length) return;
 
@@ -1654,7 +1656,7 @@
         if (next) { next.click(); next.focus(); e.preventDefault(); }
       });
     });
-  })();
+  });
 </script>
 
 <!-- ═══ THE PROMISE ═════════════════════════════════════════════════ -->
