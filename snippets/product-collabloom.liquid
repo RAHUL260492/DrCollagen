@@ -101,8 +101,11 @@
     .nav-logo {
       font-family: var(--heading); font-size: 20px; font-weight: 600;
       letter-spacing: .08em;
+      display: inline-flex; align-items: center; gap: 10px;
     }
-    .nav-logo span { color: var(--accent); }
+    .nav-logo__mark { height: 34px; width: auto; flex-shrink: 0; display: block; }
+    .nav-logo__text { display: inline-flex; flex-direction: column; }
+    .nav-logo__main span { color: var(--accent); }
     .nav-back {
       font-size: 11px; font-weight: 500; letter-spacing: .2em;
       text-transform: uppercase; color: var(--warm-dim);
@@ -1357,7 +1360,7 @@
 
 <!-- ═══ NAV ══════════════════════════════════════════════════════ -->
 <nav id="navbar" aria-label="Primary">
-  <a href="{{ routes.root_url }}" id="collabloom-nav-logo" class="nav-logo"><span class="nav-logo__main">Dr<span> Collagen</span></span><span class="nav-logo__sub">Formulated by Doctors</span></a>
+  <a href="{{ routes.root_url }}" id="collabloom-nav-logo" class="nav-logo"><img class="nav-logo__mark" src="{{ 'logo-mark-rose.png' | asset_url }}" alt="Dr Collagen" width="34" height="58"><span class="nav-logo__text"><span class="nav-logo__main">Dr<span> Collagen</span></span><span class="nav-logo__sub">Formulated by Doctors</span></span></a>
   <a href="{{ routes.root_url }}" id="collabloom-nav-back" class="nav-back"><span class="arrow" aria-hidden="true">←</span> <span>Back to Home</span></a>
   <a href="#cta" id="collabloom-nav-cta-buy" class="nav-cta">Add to cart</a>
   <button id="nav-hamburger" class="nav-hamburger" aria-label="Open menu" aria-controls="mobile-drawer" aria-expanded="false">

@@ -218,8 +218,11 @@
       font-size: 20px;
       font-weight: 600;
       letter-spacing: .08em;
+      display: inline-flex; align-items: center; gap: 10px;
     }
-    .nav-logo span { color: var(--accent); }
+    .nav-logo__mark { height: 34px; width: auto; flex-shrink: 0; display: block; }
+    .nav-logo__text { display: inline-flex; flex-direction: column; }
+    .nav-logo__main span { color: var(--accent); }
     .nav-links {
       display: flex; gap: 36px; list-style: none;
     }
@@ -1353,8 +1356,11 @@
       font-size: 22px; font-weight: 600;
       letter-spacing: .08em; margin-bottom: 16px;
       color: #ffffff;
+      display: inline-flex; align-items: center; gap: 12px;
     }
-    .footer-brand .logo span { color: var(--accent); }
+    .footer-brand .logo__mark { height: 40px; width: auto; flex-shrink: 0; display: block; }
+    .footer-brand .logo__text { display: inline-flex; flex-direction: column; }
+    .footer-brand .logo__main span { color: var(--accent); }
     .footer-brand p {
       font-size: 13px; font-weight: 300;
       color: rgba(255,255,255,.55); line-height: 1.7; max-width: 260px;
@@ -2103,7 +2109,7 @@
 
 <!-- ═══ NAV ═════════════════════════════════════════════════════════ -->
 <nav id="navbar" aria-label="Primary">
-  <div class="nav-logo" id="nav-logo"><span class="nav-logo__main">Dr<span> Collagen</span></span><span class="nav-logo__sub">Formulated by Doctors</span></div>
+  <div class="nav-logo" id="nav-logo"><img class="nav-logo__mark" src="{{ 'logo-mark-gold.png' | asset_url }}" alt="Dr Collagen" width="34" height="58"><span class="nav-logo__text"><span class="nav-logo__main">Dr<span> Collagen</span></span><span class="nav-logo__sub">Formulated by Doctors</span></span></div>
   <ul class="nav-links">
     <li class="has-dropdown">
       <a href="#products" id="nav-link-products-dropdown" aria-haspopup="true" aria-expanded="false">Products <span class="caret" aria-hidden="true">▾</span></a>
@@ -2757,7 +2763,7 @@
   <div class="footer-inner">
     <div class="footer-top">
       <div class="footer-brand">
-        <div class="logo"><span class="logo__main">Dr<span> Collagen</span></span><span class="logo__sub">Formulated by Doctors</span></div>
+        <div class="logo"><img class="logo__mark" src="{{ 'logo-mark-cream.png' | asset_url }}" alt="Dr Collagen" width="40" height="69"><span class="logo__text"><span class="logo__main">Dr<span> Collagen</span></span><span class="logo__sub">Formulated by Doctors</span></span></div>
         <p>Japanese marine collagen, micro-hydrolysed and stacked with the co-factors collagen synthesis needs. Four formulas, four outcomes — skin, joints, body composition, gut and energy.</p>
         <div class="footer-social">
           <a href="https://www.instagram.com/drcollagen.india/" id="footer-social-instagram" class="social-btn" aria-label="Instagram" target="_blank" rel="noopener">
