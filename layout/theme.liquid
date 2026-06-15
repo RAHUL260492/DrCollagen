@@ -86,6 +86,14 @@
         {%- assign has_inline_nav = true -%}
     {%- endcase -%}
   {%- endif -%}
+  {%- comment -%} Flagship products now render their landing snippet (with its own
+     nav) via templates/product.liquid — skip the global header/footer there too. {%- endcomment -%}
+  {%- if template.name == 'product' -%}
+    {%- case product.handle -%}
+      {%- when 'collabloom' or 'skelecoll' or 'collatrim' or 'metastable' -%}
+        {%- assign has_inline_nav = true -%}
+    {%- endcase -%}
+  {%- endif -%}
 
   {%- unless has_inline_nav -%}
     {%- comment -%} Global cinematic chrome for fallback pages {%- endcomment -%}
