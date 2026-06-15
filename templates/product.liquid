@@ -1,8 +1,19 @@
 {% comment %}
-  Default product template — for any product NOT covered by the four
-  flagship landing pages. Luxury two-column layout with parallax bottle,
-  reveal animations, and sticky add-to-cart on mobile.
+  Product template. The four flagship products render their full landing-page
+  snippets (so /products/<handle> shows the rich page); every other product
+  uses the default luxury two-column layout below.
 {% endcomment %}
+
+{% case product.handle %}
+  {% when 'collabloom' %}
+    {% render 'product-collabloom' %}
+  {% when 'skelecoll' %}
+    {% render 'product-skelecoll' %}
+  {% when 'collatrim' %}
+    {% render 'product-collatrim' %}
+  {% when 'metastable' %}
+    {% render 'product-metastable' %}
+  {% else %}
 
 <style>
   .product-default {
@@ -153,3 +164,4 @@
     </div>
   </div>
 </section>
+{% endcase %}
