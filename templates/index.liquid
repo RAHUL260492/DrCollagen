@@ -333,13 +333,14 @@
       border: 1px solid rgba(232,205,135,.4);
       color: var(--accent);
       border-radius: 40px;
-      transition: background .3s, color .3s, border-color .3s;
+      transition: background .3s, color .3s, border-color .3s, transform .2s cubic-bezier(.22,1,.36,1);
     }
     .nav-cta:hover {
       background: var(--accent);
       color: var(--ink);
       border-color: var(--accent);
     }
+    .nav-cta:active { transform: scale(.97); }
 
     /* ─── HAMBURGER (mobile nav toggle) ─────────────────────────── */
     .nav-hamburger {
@@ -503,6 +504,7 @@
     .st-title {
       font-family: var(--heading); font-size: clamp(46px,6.4vw,96px);
       font-weight: 300; line-height: 1.05; color: #1a1225; margin-bottom: 18px;
+      text-wrap: balance;
     }
     .st-title em { font-style: italic; color: var(--accent); }
     .st-title .split-char {
@@ -514,6 +516,7 @@
     .st-h2 {
       font-family: var(--heading); font-size: clamp(34px,4.5vw,64px);
       font-weight: 300; line-height: 1.15; color: #1a1225; margin-bottom: 26px;
+      text-wrap: balance;
     }
     .st-h2 em { font-style: italic; color: var(--accent); }
     .st-sub {
@@ -593,6 +596,7 @@
       font-family: var(--heading); font-size: 24px; font-weight: 600;
       line-height: 1;
       letter-spacing: -.01em;
+      font-variant-numeric: tabular-nums;
       white-space: nowrap !important;
       background: linear-gradient(135deg, #e8b72e 0%, #c99a2a 45%, #9c7818 100%);
       -webkit-background-clip: text; background-clip: text;
@@ -663,6 +667,12 @@
       transition: border-color .3s, background .3s; display: inline-block;
     }
     .btn-outline:hover { border-color: rgba(26,18,37,.5); background: rgba(26,18,37,.05); }
+    /* Tactile press feedback — the interface confirms it heard the press.
+       :active is last in source so it wins over the :hover transform. */
+    .btn-primary:active, .btn-outline:active { transform: scale(.97); }
+    @media (prefers-reduced-motion: reduce) {
+      .btn-primary:active, .btn-outline:active { transform: none; }
+    }
     /* Light-section btn-outline override */
     .marquee-section ~ * .btn-outline,
     #products .btn-outline, #science .btn-outline, #stats .btn-outline,
@@ -736,6 +746,7 @@
       font-weight: 300;
       line-height: 1.15;
       color: var(--warm-white);
+      text-wrap: balance;
     }
     .section-title em { font-style: italic; color: var(--accent); }
     .section-body {
@@ -794,12 +805,13 @@
       margin: 0 auto;
     }
     .product-card {
-      background: #ffffff;
-      border: 1px solid rgba(0,0,0,.07);
+      background: #fffdfb;
+      border: 1px solid rgba(26,18,37,.06);
       border-radius: 24px;
       overflow: hidden;
       position: relative;
-      transition: transform .4s cubic-bezier(.2,.8,.2,1), border-color .4s, box-shadow .4s;
+      box-shadow: 0 1px 2px rgba(26,18,37,.04);
+      transition: transform .4s cubic-bezier(.22,1,.36,1), border-color .4s, box-shadow .4s;
     }
     .product-card::before {
       content: '';
@@ -807,14 +819,30 @@
       background: linear-gradient(135deg, rgba(232,183,46,.03) 0%, transparent 60%);
       pointer-events: none;
     }
+    /* Per-product surface wash — each card carries its own hue for
+       art-directed depth instead of a flat identical white grid. */
+    .product-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: 24px;
+      pointer-events: none;
+      background: var(--wash, none);
+      opacity: .55;
+    }
+    /* Live products sit optically forward with a hue-tinted shadow;
+       coming-soon stay flatter so the buyable pair wins the eye. */
+    .product-card:not(.is-coming-soon) {
+      box-shadow: 0 10px 30px -12px var(--shadow, rgba(0,0,0,.10)), 0 1px 2px rgba(26,18,37,.04);
+    }
     .product-card:hover {
       transform: translateY(-8px);
       border-color: rgba(232,183,46,.25);
-      box-shadow: 0 24px 60px rgba(0,0,0,.10), 0 0 0 1px rgba(232,183,46,.08);
+      box-shadow: 0 28px 64px -20px var(--shadow, rgba(0,0,0,.14)), 0 0 0 1px rgba(232,183,46,.08);
     }
+    .product-card:active { transform: scale(.992); }
     .product-image-wrap {
       height: 280px;
-      background: linear-gradient(160deg, var(--blush) 0%, #fbf4de 100%);
+      background: var(--stage, linear-gradient(160deg, var(--blush) 0%, #fbf4de 100%));
       display: flex; align-items: center; justify-content: center;
       position: relative;
       overflow: hidden;
@@ -868,6 +896,8 @@
     }
     .product-info {
       padding: 28px 28px 32px;
+      position: relative;
+      z-index: 1;
     }
     .product-category {
       font-size: 10px; font-weight: 700; letter-spacing: .24em;
@@ -926,6 +956,14 @@
     .product-card:hover .product-cta .cta-label { gap: 14px; }
     /* Whole card clickable — card is an anchor */
     a.product-card { text-decoration: none; display: block; color: inherit; cursor: pointer; }
+
+    /* Per-product hue tokens: a subtle top wash (::after) and a hue-tinted
+       elevation shadow, so each card reads as its own product world and the
+       lift shadow carries the brand color instead of neutral black. */
+    .product-card.collabloom { --wash: radial-gradient(120% 58% at 50% 0%, rgba(224,122,158,.10), transparent 62%); --shadow: rgba(176,85,120,.20); }
+    .product-card.skelecoll  { --wash: radial-gradient(120% 58% at 50% 0%, rgba(176,132,92,.10), transparent 62%); --shadow: rgba(125,90,62,.20); }
+    .product-card.collatrim  { --wash: radial-gradient(120% 58% at 50% 0%, rgba(143,168,82,.09), transparent 62%); --shadow: rgba(98,118,54,.16); }
+    .product-card.metastable { --wash: radial-gradient(120% 58% at 50% 0%, rgba(74,138,46,.08), transparent 62%);  --shadow: rgba(42,88,26,.15); }
 
     /* Product-specific accent gradients */
     .product-card.collabloom .product-image-wrap {
@@ -2019,6 +2057,7 @@
       transition: background .25s, color .25s, border-color .25s, transform .2s;
     }
     .range-chip:hover { background: var(--accent, #e8b72e); color: #2a1d12; border-color: var(--accent, #e8b72e); transform: translateY(-1px); }
+    .range-chip:active { transform: scale(.96); }
     /* Brief highlight when a chip targets a card */
     .product-card.is-flash { box-shadow: 0 0 0 2px var(--accent, #e8b72e), 0 24px 60px rgba(0,0,0,.10); border-color: var(--accent, #e8b72e); }
 
