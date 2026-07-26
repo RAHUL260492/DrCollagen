@@ -11,15 +11,48 @@
     <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
   {%- endif -%}
 
+  {%- comment -%}
+    ─── Journal SEO overrides ──────────────────────────────────────────
+    Journal articles are theme files, not Shopify blog posts, so their
+    title tag and meta description are defined here rather than in admin.
+    Titles are kept under ~55 characters including the brand suffix, and
+    descriptions around 105 characters, with the primary keyword first.
+
+    Adding a weekly article? Add one `when` block below.
+    (See JOURNAL-HOWTO.md at the repo root.)
+  ─────────────────────────────────────────────────────────────────── {%- endcomment -%}
+  {%- assign dc_title = page_title -%}
+  {%- assign dc_desc = page_description -%}
+
+  {%- if template.name == 'page' -%}
+    {%- case page.handle -%}
+      {%- when 'journal' -%}
+        {%- assign dc_title = 'The Dr Collagen Journal' -%}
+        {%- assign dc_desc = 'Evidence-led writing on collagen, skin and joints from the doctors who formulate Dr Collagen.' -%}
+      {%- when 'collagen-for-skin' -%}
+        {%- assign dc_title = 'Collagen for Skin: Does It Work?' -%}
+        {%- assign dc_desc = 'Does collagen work for skin? A dermatologist on the trial evidence, the right dose, and a real timeline.' -%}
+      {%- when 'glutathione-for-skin' -%}
+        {%- assign dc_title = 'Glutathione for Skin: Benefits & Dose' -%}
+        {%- assign dc_desc = 'What oral glutathione does for pigmentation, the 250mg dose trials used, and why IV is a different risk.' -%}
+      {%- when 'collagen-for-joint-pain' -%}
+        {%- assign dc_title = 'Collagen for Joint Pain: The Evidence' -%}
+        {%- assign dc_desc = 'An orthopaedic surgeon on the collagen joint trials, the 5-10g doses that worked, and vs glucosamine.' -%}
+      {%- when 'supplements-for-knee-pain' -%}
+        {%- assign dc_title = 'Supplements for Knee Pain: What Works' -%}
+        {%- assign dc_desc = '11 knee pain supplements graded by trial evidence by an orthopaedic surgeon. What works, what does not.' -%}
+    {%- endcase -%}
+  {%- endif -%}
+
   <title>
-    {{ page_title }}
+    {{ dc_title }}
     {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
     {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-    {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    {%- unless dc_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
   </title>
 
-  {%- if page_description -%}
-    <meta name="description" content="{{ page_description | escape }}">
+  {%- if dc_desc != blank -%}
+    <meta name="description" content="{{ dc_desc | escape }}">
   {%- else -%}
     <meta name="description" content="Japanese marine collagen, micro-hydrolysed to under 2,000 Daltons and stacked with the co-factors collagen synthesis needs. Four formulas for skin, joints, body composition, and gut.">
   {%- endif -%}
@@ -27,9 +60,9 @@
   <!-- Open Graph -->
   <meta property="og:site_name" content="{{ shop.name }}">
   <meta property="og:url" content="{{ canonical_url }}">
-  <meta property="og:title" content="{{ page_title | escape }}">
-  {%- if page_description -%}
-    <meta property="og:description" content="{{ page_description | escape }}">
+  <meta property="og:title" content="{{ dc_title | escape }}">
+  {%- if dc_desc != blank -%}
+    <meta property="og:description" content="{{ dc_desc | escape }}">
   {%- else -%}
     <meta property="og:description" content="Japanese marine collagen, micro-hydrolysed to under 2,000 Daltons. Four formulas for skin, joints, body composition, and gut.">
   {%- endif -%}

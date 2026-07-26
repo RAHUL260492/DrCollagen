@@ -1,0 +1,250 @@
+{% comment %}
+  ══════════════════════════════════════════════════════════════════════
+  JOURNAL ARTICLE TEMPLATE — copy this file to start a new weekly post.
+
+    cp snippets/journal-TEMPLATE.liquid.txt snippets/journal-<handle>.liquid
+
+  Then find-and-replace every {{ ... }} placeholder marked with «».
+  Kept as .txt so Shopify does not try to compile the placeholders.
+
+  The 13-point SEO checklist this structure implements is documented in
+  JOURNAL-HOWTO.md at the repo root. Every block below exists for a
+  reason — do not delete sections, replace their content.
+  ══════════════════════════════════════════════════════════════════════
+
+  JOURNAL ARTICLE — /pages/«handle»
+  Primary keyword ...... «primary keyword»
+  Secondary ............ «2-4 variations and related questions»
+  Product ............... «Collabloom | Skelecoll»
+  Author ................ «Dr Raashi Mehta (skin) | Dr Nachiket Pansey (joints)»
+  Published ............. «YYYY-MM-DD»   Updated: «YYYY-MM-DD»
+  Title tag / meta description live in layout/theme.liquid (dc_seo block).
+{% endcomment %}
+
+{% render 'journal-styles' %}
+
+<article class="jr">
+  <div class="jr-wrap">
+
+    {% comment %}── Tip 12/13: breadcrumb + short keyword URL ──{% endcomment %}
+    <nav class="jr-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> &nbsp;/&nbsp;
+      <a href="/pages/journal">Journal</a> &nbsp;/&nbsp;
+      <span aria-current="page">«Short Title»</span>
+    </nav>
+
+    <header>
+      {% comment %}── Tip 1/5: primary keyword near the start of the H1 ──{% endcomment %}
+      <p class="jr-eyebrow">«Skin Science | Joint Health»</p>
+      <h1 class="jr-h1">«Primary Keyword: Specific Promise»</h1>
+      <p class="jr-standfirst">«Two sentences. State the reader's problem, then what this article gives them that a generic result will not.»</p>
+
+      {% comment %}── Tip 4: visible published + updated date. Tip 9: byline ──{% endcomment %}
+      <div class="jr-byline">
+        {%- if settings.founder_«1|2»_image != blank -%}
+          <img src="{{ settings.founder_«1|2»_image | image_url: width: 92 }}" alt="«Author Name», «Credential» at Dr Collagen" width="46" height="46" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">«NP|RM»</span>
+        {%- endif -%}
+        <div class="jr-byline-txt">
+          <div class="jr-byline-name"><a href="#author-bio">«Author Name»</a> · «Credential»</div>
+          <div class="jr-byline-meta">
+            Published <time datetime="«YYYY-MM-DD»">«DD Month YYYY»</time>
+            &nbsp;·&nbsp; Updated <time datetime="«YYYY-MM-DD»">«DD Month YYYY»</time>
+            &nbsp;·&nbsp; «N» min read
+          </div>
+        </div>
+      </div>
+    </header>
+
+    {% comment %}── Tip 6: visual. Bottle on a tinted plate — never crop the 4:5 slides ──{% endcomment %}
+    <div class="jr-hero jr-hero--«skin|joint»">
+      <img src="{{ '«collabloom|skelecoll»-bottle.png' | asset_url }}"
+           alt="«Descriptive alt naming the product and the article's subject»"
+           width="420" height="560" loading="eager" fetchpriority="high">
+    </div>
+
+    {% comment %}── Tip 2/3: answer the query in the first screen. Also wins AI citations ──{% endcomment %}
+    <div class="jr-answer">
+      <h2>The short answer</h2>
+      <p><strong>«Direct one-sentence answer to the search query.»</strong> «One sentence of the strongest supporting evidence, with a number in it.»</p>
+      <ul>
+        <li><strong>«Point»:</strong> «Specific, quantified.»</li>
+        <li><strong>«Point»:</strong> «Specific, quantified.»</li>
+        <li><strong>«Point»:</strong> «Specific, quantified.»</li>
+        <li><strong>«Point»:</strong> «Include one honest limitation.»</li>
+      </ul>
+    </div>
+
+    <nav class="jr-toc" aria-label="Table of contents">
+      <h2>In this article</h2>
+      <ol>
+        <li><a href="#«anchor-1»">«Section one»</a></li>
+        <li><a href="#«anchor-2»">«Section two»</a></li>
+        <li><a href="#faq">Frequently asked questions</a></li>
+      </ol>
+    </nav>
+
+    <div class="jr-prose">
+
+      {% comment %}── Tip 3: direct answer at the top of each section, short paragraphs ──{% endcomment %}
+      <h2 id="«anchor-1»">«Section heading using a keyword variation»</h2>
+      <p>«Lead with the conclusion, then support it.»</p>
+
+      {% comment %}── Tip 11: cited statistics. Always link the source ──{% endcomment %}
+      <div class="jr-stats">
+        <div class="jr-stat">
+          <p class="jr-stat-num">«42%»</p>
+          <p class="jr-stat-lbl">«What the number means, in plain words»</p>
+          <p class="jr-stat-src"><a href="https://pubmed.ncbi.nlm.nih.gov/?term=«search+terms»" target="_blank" rel="noopener nofollow">«Journal, Year»</a></p>
+        </div>
+        <!-- repeat up to 3 -->
+      </div>
+
+      <h2 id="«anchor-2»">«Section two»</h2>
+      <p>«...»</p>
+
+      {% comment %}── Tip 10: expert insight from a named, credentialled founder ──{% endcomment %}
+      <div class="jr-quote">
+        {%- if settings.founder_«1|2»_image != blank -%}
+          <img src="{{ settings.founder_«1|2»_image | image_url: width: 112 }}" alt="«Author Name»" width="56" height="56" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">«NP|RM»</span>
+        {%- endif -%}
+        <div>
+          <blockquote>"«A clinical observation only a practising doctor could make. Not a product claim.»"</blockquote>
+          <cite><strong>«Author Name»</strong> — «Credential», «Founder|Co-founder» of Dr Collagen</cite>
+        </div>
+      </div>
+
+      {% comment %}── Optional: comparison table. Wrap in .jr-table-scroll for mobile ──{% endcomment %}
+      <div class="jr-table-scroll">
+        <table class="jr-table">
+          <thead><tr><th scope="col"></th><th scope="col">«A»</th><th scope="col">«B»</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">«Dimension»</th><td>«...»</td><td>«...»</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      {% comment %}── Optional: infographic slide, native 4:5, never cropped ──{% endcomment %}
+      <figure class="jr-figure jr-figure--slide">
+        <img src="{{ '«collabloom|skelecoll»-slide-«N».webp' | asset_url }}"
+             alt="«Describe what the infographic states, not 'infographic'»"
+             width="800" height="1000" loading="lazy">
+        <figcaption>«What this shows and why it belongs here.»</figcaption>
+      </figure>
+
+      {% comment %}── Tip 12: internal link to the relevant product ──{% endcomment %}
+      <a class="jr-product" href="/products/«collabloom|skelecoll»">
+        <img src="{{ '«collabloom|skelecoll»-bottle.png' | asset_url }}" alt="«Product» collagen shot" width="240" height="240" loading="lazy">
+        <div>
+          <p class="jr-product-eyebrow">«Positioning line»</p>
+          <h3>«Collabloom|Skelecoll»</h3>
+          <p>«Doses, stated in milligrams. Never a vague blend claim.»</p>
+          <span class="jr-cta">See the full formula →</span>
+        </div>
+      </a>
+
+      <p class="jr-disclaimer">
+        This article is for general information and is not medical advice. Nutritional supplements
+        are not intended to diagnose, treat, cure or prevent any disease. If you are pregnant,
+        breastfeeding, taking prescription medication, or have a known fish or shellfish allergy,
+        speak to a qualified healthcare professional before starting supplementation.
+      </p>
+
+      {% comment %}── FAQ: mirror each Q&A verbatim into the FAQPage JSON-LD below ──{% endcomment %}
+      <h2 id="faq">Frequently asked questions</h2>
+      <div class="jr-faq">
+        <details>
+          <summary>«A question people actually type into Google»</summary>
+          <p>«Answer in 2-3 sentences. Lead with the answer. Name the dose or the number.»</p>
+        </details>
+        <!-- 4-6 questions total -->
+      </div>
+
+      {% comment %}── Tip 11: full source list. Use PubMed search URLs — they never 404 ──{% endcomment %}
+      <section class="jr-sources">
+        <h2>Sources</h2>
+        <ol>
+          <li>«Author» «et al.» "«Study title»." <em>«Journal»</em>, «Year». <a href="https://pubmed.ncbi.nlm.nih.gov/?term=«search+terms»" target="_blank" rel="noopener nofollow">PubMed</a></li>
+        </ol>
+      </section>
+
+      {% comment %}── Tip 9: E-E-A-T author bio with credentials ──{% endcomment %}
+      <aside class="jr-author" id="author-bio">
+        {%- if settings.founder_«1|2»_image != blank -%}
+          <img src="{{ settings.founder_«1|2»_image | image_url: width: 168 }}" alt="«Author Name»" width="84" height="84" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">«NP|RM»</span>
+        {%- endif -%}
+        <div>
+          <p class="jr-author-eyebrow">About the author</p>
+          <h2>«Author Name»</h2>
+          <p class="jr-author-role">«Credential» · «Founder|Co-founder», Dr Collagen</p>
+          <p>«Two or three sentences of genuine clinical experience relevant to THIS article's topic.»</p>
+          <p>«Section they write.» <a href="/pages/our-story">Read the founders' story →</a></p>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  {% comment %}── Tip 12: internal links onward. Always 3 cards ──{% endcomment %}
+  <div class="jr-wrap jr-wrap--wide">
+    <section class="jr-related">
+      <h2>Keep reading</h2>
+      <div class="jr-related-grid">
+        <a class="jr-related-card" href="/pages/«handle»">
+          <p class="jr-related-cat">«Category»</p>
+          <h3>«Title»</h3>
+          <p class="jr-related-dek">«One line.»</p>
+        </a>
+        <!-- 3 total -->
+      </div>
+    </section>
+  </div>
+</article>
+
+{% comment %} ─── Structured data: Article + Breadcrumb + FAQ ─────────────── {% endcomment %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "«Exact H1»",
+      "description": "«Same as the meta description, or a slightly longer version»",
+      "image": "{{ '«collabloom|skelecoll»-bottle.png' | asset_url | prepend: request.origin }}",
+      "datePublished": "«YYYY-MM-DD»",
+      "dateModified": "«YYYY-MM-DD»",
+      "inLanguage": "en",
+      "articleSection": "«Skin Science|Joint Health»",
+      "keywords": "«primary, secondary, variations»",
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ shop.url }}/pages/«handle»" },
+      "author": {
+        "@type": "Person",
+        "name": "«Author Name»",
+        "jobTitle": "«Dermatologist|Orthopaedic Surgeon»",
+        "description": "«One-line credential summary»",
+        "url": "{{ shop.url }}/pages/our-story"
+      },
+      "publisher": { "@type": "Organization", "name": "{{ shop.name }}", "url": "{{ shop.url }}" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ shop.url }}/" },
+        { "@type": "ListItem", "position": 2, "name": "Journal", "item": "{{ shop.url }}/pages/journal" },
+        { "@type": "ListItem", "position": 3, "name": "«Short Title»" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "«Question, matching the <summary> exactly»", "acceptedAnswer": { "@type": "Answer", "text": "«Answer, matching the <p> exactly. Plain text — no HTML, no em dashes inside quotes if avoidable.»" } }
+      ]
+    }
+  ]
+}
+</script>

@@ -1,0 +1,123 @@
+{% comment %}
+  JOURNAL INDEX — /pages/journal
+
+  ┌──────────────────────────────────────────────────────────────────────┐
+  │  TO PUBLISH A NEW ARTICLE, ADD ONE LINE TO jr_data BELOW.            │
+  │  Newest first — the top line renders as the large featured card.     │
+  │                                                                      │
+  │  Fields, separated by ~~ :                                           │
+  │    1 handle       page handle, e.g. collagen-for-skin                │
+  │    2 title        headline shown on the card                         │
+  │    3 dek          one-sentence summary                               │
+  │    4 category     Skin Science | Joint Health                        │
+  │    5 date_iso     2026-07-26   (machine-readable)                    │
+  │    6 date_label   26 July 2026 (human-readable)                      │
+  │    7 read_time    e.g. 9 min read                                    │
+  │    8 image        asset filename                                     │
+  │    9 plate        skin | joint  (background tint)                    │
+  │                                                                      │
+  │  Then add a {% when %} case in templates/page.liquid and a title +   │
+  │  meta description in layout/theme.liquid. See JOURNAL-HOWTO.md.      │
+  └──────────────────────────────────────────────────────────────────────┘
+{% endcomment %}
+
+{% render 'journal-styles' %}
+
+{%- capture jr_data -%}
+supplements-for-knee-pain~~Supplements for Knee Pain: An Orthopaedic Surgeon's Guide~~Eleven ingredients graded by the evidence actually behind them — the three worth your money, the two that are oversold, and the deficiency most Indian patients don't know they have.~~Joint Health~~2026-07-26~~26 July 2026~~11 min read~~skelecoll-bottle.png~~joint
+collagen-for-joint-pain~~Collagen for Joint Pain: What the Research Actually Shows~~Cartilage has no blood supply, which is why repair is slow and what you swallow matters. The trials, the doses that worked, and how collagen compares with glucosamine.~~Joint Health~~2026-07-26~~26 July 2026~~10 min read~~skelecoll-bottle.png~~joint
+glutathione-for-skin~~Glutathione for Skin: Benefits, Dose and Honest Expectations~~The most requested and most oversold ingredient in Indian skincare. What oral glutathione does to pigmentation, at what dose — and why the IV version is a different conversation.~~Skin Science~~2026-07-26~~26 July 2026~~8 min read~~collabloom-bottle.png~~skin
+collagen-for-skin~~Collagen for Skin: What the Evidence Actually Shows~~Your skin loses collagen every year from your mid-twenties. What oral collagen can and cannot do about it — peptide size, the co-factors most brands skip, and a realistic timeline.~~Skin Science~~2026-07-26~~26 July 2026~~9 min read~~collabloom-bottle.png~~skin
+{%- endcapture -%}
+
+{%- assign jr_rows = jr_data | strip | split: '
+' -%}
+
+<div class="jr">
+  <div class="jr-wrap jr-wrap--wide">
+
+    <header class="jr-index-head">
+      <p class="jr-eyebrow">The Dr Collagen Journal</p>
+      <h1>Written by the doctors who formulate it</h1>
+      <p>
+        Evidence-led writing on collagen, skin and joints from a dermatologist and an
+        orthopaedic surgeon — including the parts of the research that do not flatter
+        the supplement industry.
+      </p>
+    </header>
+
+    {%- comment -%} Newest entry renders as the large featured card. {%- endcomment -%}
+    {%- assign feat = jr_rows.first | strip | split: '~~' -%}
+    <a class="jr-feature jr-plate--{{ feat[8] }}" href="/pages/{{ feat[0] }}">
+      <div class="jr-feature-media">
+        <img src="{{ feat[7] | asset_url }}" alt="{{ feat[1] | escape }}" width="420" height="560" loading="eager">
+      </div>
+      <div class="jr-feature-body">
+        <p class="jr-card-meta">
+          Latest &nbsp;·&nbsp; {{ feat[3] }}
+          <span><time datetime="{{ feat[4] }}">{{ feat[5] }}</time> · {{ feat[6] }}</span>
+        </p>
+        <h2>{{ feat[1] }}</h2>
+        <p>{{ feat[2] }}</p>
+        <span class="jr-cta">Read the article →</span>
+      </div>
+    </a>
+
+    {%- if jr_rows.size > 1 -%}
+      <div class="jr-index-grid">
+        {%- for row in jr_rows offset: 1 -%}
+          {%- assign f = row | strip | split: '~~' -%}
+          <a class="jr-card" href="/pages/{{ f[0] }}">
+            <div class="jr-card-media jr-plate--{{ f[8] }}">
+              <img src="{{ f[7] | asset_url }}" alt="{{ f[1] | escape }}" width="420" height="560" loading="lazy">
+            </div>
+            <p class="jr-card-meta">
+              {{ f[3] }}
+              <span><time datetime="{{ f[4] }}">{{ f[5] }}</time> · {{ f[6] }}</span>
+            </p>
+            <h2>{{ f[1] }}</h2>
+            <p>{{ f[2] }}</p>
+          </a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+{% comment %} ─── Structured data: Blog + ItemList + Breadcrumb ───────────── {% endcomment %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Blog",
+      "@id": "{{ shop.url }}/pages/journal",
+      "name": "The Dr Collagen Journal",
+      "description": "Evidence-led writing on collagen, skin and joint health from the dermatologist and orthopaedic surgeon who formulate Dr Collagen.",
+      "inLanguage": "en",
+      "publisher": { "@type": "Organization", "name": "{{ shop.name }}", "url": "{{ shop.url }}" },
+      "blogPost": [
+        {%- for row in jr_rows -%}
+          {%- assign f = row | strip | split: '~~' -%}
+          {
+            "@type": "BlogPosting",
+            "headline": {{ f[1] | json }},
+            "description": {{ f[2] | json }},
+            "datePublished": "{{ f[4] }}",
+            "articleSection": {{ f[3] | json }},
+            "url": "{{ shop.url }}/pages/{{ f[0] }}"
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ shop.url }}/" },
+        { "@type": "ListItem", "position": 2, "name": "Journal", "item": "{{ shop.url }}/pages/journal" }
+      ]
+    }
+  ]
+}
+</script>

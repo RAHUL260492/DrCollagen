@@ -1,0 +1,561 @@
+{% comment %}
+  JOURNAL ARTICLE — /pages/collagen-for-skin
+  Primary keyword ...... collagen for skin
+  Secondary ............ marine collagen benefits, collagen for wrinkles,
+                         does collagen supplement work, collagen skin elasticity
+  Product ............... Collabloom
+  Author ................ Dr Raashi Mehta (Dermatologist, Co-founder)
+  Published ............. 2026-07-26   Updated: 2026-07-26
+  Title tag / meta description live in layout/theme.liquid (dc_seo block).
+{% endcomment %}
+
+{% render 'journal-styles' %}
+
+<article class="jr">
+  <div class="jr-wrap">
+
+    <nav class="jr-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> &nbsp;/&nbsp;
+      <a href="/pages/journal">Journal</a> &nbsp;/&nbsp;
+      <span aria-current="page">Collagen for Skin</span>
+    </nav>
+
+    <header>
+      <p class="jr-eyebrow">Skin Science</p>
+      <h1 class="jr-h1">Collagen for Skin: What the Evidence Actually Shows</h1>
+      <p class="jr-standfirst">
+        Your skin loses collagen every year from your mid-twenties. Here is what oral collagen
+        can and cannot do about it — the peptide size that matters, the co-factors most
+        supplements skip, and how long results honestly take.
+      </p>
+
+      <div class="jr-byline">
+        {%- if settings.founder_2_image != blank -%}
+          <img src="{{ settings.founder_2_image | image_url: width: 92 }}" alt="Dr Raashi Mehta, Dermatologist and Co-founder of Dr Collagen" width="46" height="46" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">RM</span>
+        {%- endif -%}
+        <div class="jr-byline-txt">
+          <div class="jr-byline-name"><a href="#author-bio">Dr Raashi Mehta</a> · Dermatologist</div>
+          <div class="jr-byline-meta">
+            Published <time datetime="2026-07-26">26 July 2026</time>
+            &nbsp;·&nbsp; Updated <time datetime="2026-07-26">26 July 2026</time>
+            &nbsp;·&nbsp; 9 min read
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="jr-hero jr-hero--skin">
+      <img src="{{ 'collabloom-bottle.png' | asset_url }}"
+           alt="Collabloom marine collagen shot — 8,000mg hydrolysed Japanese marine collagen for skin"
+           width="420" height="560" loading="eager" fetchpriority="high">
+    </div>
+
+    <div class="jr-answer">
+      <h2>The short answer</h2>
+      <p>
+        Yes — <strong>collagen for skin works, but only under specific conditions</strong>. Across
+        19 controlled trials covering 1,125 people, hydrolysed collagen improved skin hydration,
+        elasticity and wrinkle depth compared with placebo. What separates a supplement that works
+        from one that does nothing comes down to four things:
+      </p>
+      <ul>
+        <li><strong>Peptide size.</strong> Collagen has to be hydrolysed into fragments small enough to survive digestion and reach your bloodstream intact.</li>
+        <li><strong>Dose.</strong> Most positive trials used 2.5g–10g of collagen peptides per day. Sachets delivering 500mg are below the threshold that has ever been studied.</li>
+        <li><strong>Co-factors.</strong> Collagen synthesis is enzymatic. Without vitamin C and zinc, your body cannot assemble new collagen no matter how much you feed it.</li>
+        <li><strong>Time.</strong> Skin turnover is roughly 28 days. Trials that measured elasticity found meaningful change at 8–12 weeks, not 8–12 days.</li>
+      </ul>
+    </div>
+
+    <nav class="jr-toc" aria-label="Table of contents">
+      <h2>In this article</h2>
+      <ol>
+        <li><a href="#why-skin-loses-collagen">Why your skin loses collagen</a></li>
+        <li><a href="#does-it-survive-digestion">Does oral collagen survive digestion?</a></li>
+        <li><a href="#what-trials-found">What the clinical trials actually found</a></li>
+        <li><a href="#type-i-vs-marine">Type I, marine vs bovine, and why source matters</a></li>
+        <li><a href="#cofactors">The co-factors that decide whether it works</a></li>
+        <li><a href="#how-long">How long before you see anything</a></li>
+        <li><a href="#how-to-choose">How to read a collagen label</a></li>
+        <li><a href="#faq">Frequently asked questions</a></li>
+      </ol>
+    </nav>
+
+    <div class="jr-prose">
+
+      <h2 id="why-skin-loses-collagen">Why your skin loses collagen</h2>
+
+      <p>
+        Collagen is the scaffolding of your dermis. Type I collagen alone accounts for roughly
+        80–90% of the collagen in skin, arranged in dense fibre bundles that give skin its
+        firmness and snap-back. When those bundles thin and fragment, the surface above them
+        loses support — which is what you see as fine lines, crepiness and loss of definition
+        along the jaw.
+      </p>
+
+      <p>
+        The decline starts earlier than most people expect. Dermatological research going back to
+        Shuster's foundational 1975 work has consistently found that skin collagen density falls
+        by roughly <strong>1% per year from the mid-twenties onward</strong>. It is not a cliff at
+        forty; it is a slow, compounding drawdown that has already been running for a decade before
+        most people notice it.
+      </p>
+
+      <p>
+        Two things accelerate it. The first is <strong>ultraviolet exposure</strong> — photoageing
+        is estimated to account for up to 80% of visible facial ageing, because UV activates matrix
+        metalloproteinases, the enzymes that cut collagen fibres apart. The second is
+        <strong>oestrogen decline</strong>: skin collagen content drops sharply in the first five
+        years after menopause, which is why so many women describe their skin changing character
+        rather than simply ageing.
+      </p>
+
+      <div class="jr-stats">
+        <div class="jr-stat">
+          <p class="jr-stat-num">~1%</p>
+          <p class="jr-stat-lbl">Skin collagen lost per year from the mid-twenties</p>
+          <p class="jr-stat-src"><a href="https://pubmed.ncbi.nlm.nih.gov/?term=skin+collagen+density+age+decline" target="_blank" rel="noopener nofollow">Br J Dermatol, 1975</a></p>
+        </div>
+        <div class="jr-stat">
+          <p class="jr-stat-num">80%</p>
+          <p class="jr-stat-lbl">Share of visible facial ageing attributed to UV exposure</p>
+          <p class="jr-stat-src"><a href="https://pubmed.ncbi.nlm.nih.gov/?term=photoaging+facial+skin+aging+80%25" target="_blank" rel="noopener nofollow">Clin Cosmet Investig Dermatol, 2013</a></p>
+        </div>
+        <div class="jr-stat">
+          <p class="jr-stat-num">1,125</p>
+          <p class="jr-stat-lbl">Participants across 19 trials showing hydration and elasticity gains</p>
+          <p class="jr-stat-src"><a href="https://pubmed.ncbi.nlm.nih.gov/?term=hydrolyzed+collagen+skin+meta-analysis" target="_blank" rel="noopener nofollow">Int J Dermatol, 2021</a></p>
+        </div>
+      </div>
+
+      <figure class="jr-figure">
+        <svg viewBox="0 0 640 260" role="img" aria-labelledby="decline-title decline-desc">
+          <title id="decline-title">Relative skin collagen density by age</title>
+          <desc id="decline-desc">A line chart showing skin collagen density falling from 100% at age 20 to roughly 55% by age 65, with an accelerated drop after age 50.</desc>
+          <g stroke="rgba(26,18,37,0.08)" stroke-width="1">
+            <line x1="56" y1="30" x2="620" y2="30"></line>
+            <line x1="56" y1="80" x2="620" y2="80"></line>
+            <line x1="56" y1="130" x2="620" y2="130"></line>
+            <line x1="56" y1="180" x2="620" y2="180"></line>
+          </g>
+          <line x1="56" y1="210" x2="620" y2="210" stroke="rgba(26,18,37,0.16)" stroke-width="1"></line>
+          <g fill="#9a93a3" font-family="DM Sans, sans-serif" font-size="11">
+            <text x="16" y="34">100%</text>
+            <text x="22" y="84">85%</text>
+            <text x="22" y="134">70%</text>
+            <text x="22" y="184">55%</text>
+            <text x="48" y="232">20</text>
+            <text x="160" y="232">30</text>
+            <text x="272" y="232">40</text>
+            <text x="384" y="232">50</text>
+            <text x="496" y="232">60</text>
+            <text x="600" y="232">65</text>
+          </g>
+          <path d="M56,30 L168,63 L280,97 L392,133 L504,172 L616,196"
+                fill="none" stroke="#b8903a" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M56,30 L168,63 L280,97 L392,133 L504,172 L616,196 L616,210 L56,210 Z"
+                fill="rgba(184,144,58,0.10)" stroke="none"></path>
+          <g fill="#b8903a">
+            <circle cx="56" cy="30" r="3.5"></circle>
+            <circle cx="280" cy="97" r="3.5"></circle>
+            <circle cx="504" cy="172" r="3.5"></circle>
+          </g>
+        </svg>
+        <figcaption>
+          Relative skin collagen density by age, indexed to 100% at age 20. The curve steepens
+          after 50 as post-menopausal oestrogen decline compounds the baseline ~1%-per-year loss.
+        </figcaption>
+      </figure>
+
+      <h2 id="does-it-survive-digestion">Does oral collagen survive digestion?</h2>
+
+      <p>
+        This is the objection worth taking seriously, and for a long time it was the correct one.
+        Whole collagen is an enormous molecule — around 300,000 Daltons. Swallow it and your gut
+        breaks it down into individual amino acids, which then go wherever your body needs amino
+        acids. Nothing about that process is skin-specific.
+      </p>
+
+      <p>
+        What changed the picture was the discovery that <strong>hydrolysed collagen behaves
+        differently</strong>. When collagen is enzymatically cleaved into short peptide chains,
+        a meaningful fraction survives digestion as intact di- and tripeptides. Iwai and colleagues
+        demonstrated in 2005 that <strong>Pro-Hyp and Hyp-Gly appear in human blood</strong> after
+        oral ingestion of collagen hydrolysate — measurable, circulating peptides rather than a
+        generic amino acid pool.
+      </p>
+
+      <p>
+        That distinction matters because those specific peptides appear to act as signalling
+        molecules. Rather than being used as raw material, they are thought to reach the dermis and
+        prompt fibroblasts — your collagen-producing cells — to increase output. The supplement is
+        less a delivery of collagen than an instruction to make more of it.
+      </p>
+
+      <p>
+        Which is why <strong>molecular weight is the single most useful number on a collagen
+        label</strong>. Peptides below roughly 2,000 Daltons absorb efficiently. Products that
+        list only "collagen" with no hydrolysation detail are typically sitting far above that
+        threshold — and are, functionally, expensive protein powder.
+      </p>
+
+      <div class="jr-quote">
+        {%- if settings.founder_2_image != blank -%}
+          <img src="{{ settings.founder_2_image | image_url: width: 112 }}" alt="Dr Raashi Mehta" width="56" height="56" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">RM</span>
+        {%- endif -%}
+        <div>
+          <blockquote>
+            "In clinic, the question I get is never 'does collagen work' — it is 'why didn't it work
+            for me'. Nine times out of ten the answer is on the label: the dose was a fraction of
+            what any trial used, or there was no vitamin C anywhere near it."
+          </blockquote>
+          <cite><strong>Dr Raashi Mehta</strong> — Dermatologist, Co-founder of Dr Collagen</cite>
+        </div>
+      </div>
+
+      <h2 id="what-trials-found">What the clinical trials actually found</h2>
+
+      <p>
+        The most useful evidence is the 2021 systematic review and meta-analysis published in the
+        <em>International Journal of Dermatology</em>, which pooled 19 randomised controlled trials
+        covering 1,125 participants. Its conclusion: hydrolysed collagen supplementation produced
+        statistically significant improvements in <strong>skin hydration, elasticity and wrinkle
+        depth</strong> versus placebo.
+      </p>
+
+      <p>Read the underlying trials and a consistent shape emerges:</p>
+
+      <ul>
+        <li><strong>Hydration responds first</strong>, often measurable by week 4. It is also the effect with the largest effect size.</li>
+        <li><strong>Elasticity follows at 8–12 weeks.</strong> This is the change people describe as skin feeling "springier" rather than looking different.</li>
+        <li><strong>Wrinkle depth is the slowest and smallest effect.</strong> Real, statistically significant, but modest — collagen is not a substitute for a procedure.</li>
+        <li><strong>Effective doses clustered between 2.5g and 10g daily.</strong> Below that range, the literature is essentially silent.</li>
+      </ul>
+
+      <p>
+        It is worth being straightforward about the limitations. Many of these trials were
+        industry-funded, sample sizes were often modest, and measurement methods varied between
+        studies. The direction of effect is consistent and the mechanism is plausible — but anyone
+        promising you a transformation in three weeks is selling something the evidence does not
+        support.
+      </p>
+
+      <h2 id="type-i-vs-marine">Type I, marine vs bovine, and why source matters</h2>
+
+      <p>
+        There are 28 known collagen types; three matter for supplementation. <strong>Type I</strong>
+        is the skin, bone and tendon collagen. <strong>Type II</strong> is cartilage-specific — the
+        relevant type for <a href="/pages/collagen-for-joint-pain">joint support</a>.
+        <strong>Type III</strong> sits alongside Type I in skin and blood vessels, more abundant in
+        younger skin.
+      </p>
+
+      <p>
+        For skin, you want Type I. Both marine and bovine collagen supply it, but they are not
+        interchangeable in practice:
+      </p>
+
+      <div class="jr-table-scroll">
+        <table class="jr-table">
+          <thead>
+            <tr><th scope="col"></th><th scope="col">Marine collagen</th><th scope="col">Bovine collagen</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Dominant type</th><td>Almost entirely Type I</td><td>Type I and Type III mixed</td></tr>
+            <tr><th scope="row">Peptide size</th><td>Naturally smaller; hydrolyses to lower molecular weight</td><td>Larger baseline; harder to reduce below 2,000 Da</td></tr>
+            <tr><th scope="row">Absorption</th><td>Generally reported as faster and higher</td><td>Slower, more variable</td></tr>
+            <tr><th scope="row">Best suited to</th><td>Skin, hydration, elasticity</td><td>General structural support, gut lining</td></tr>
+            <tr><th scope="row">Dietary fit</th><td>Pescatarian-friendly</td><td>Not suitable for many dietary restrictions</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        This is why skin-focused formulas are usually marine-based. <a href="/products/collabloom">Collabloom</a>
+        uses <strong>8,000mg of Japanese hydrolysed marine collagen</strong> per 30ml shot — 8g of
+        protein, at the upper end of the doses used in published trials rather than the token
+        amounts common in sachets.
+      </p>
+
+      <h2 id="cofactors">The co-factors that decide whether it works</h2>
+
+      <p>
+        Here is the part most collagen marketing skips. Building collagen is an enzymatic process,
+        and the enzymes have hard requirements. Feeding your body peptides without those co-factors
+        is like delivering bricks to a site with no mortar.
+      </p>
+
+      <h3>Vitamin C — non-negotiable</h3>
+      <p>
+        Prolyl and lysyl hydroxylase, the two enzymes that stabilise the collagen triple helix,
+        require vitamin C as a cofactor. Without it, the helix does not cross-link properly and the
+        collagen your body makes is structurally weak. This is not a marketing claim — it is the
+        biochemistry behind scurvy. Any collagen supplement without vitamin C is working at a
+        deficit by design.
+      </p>
+
+      <h3>Zinc — the enzyme switch</h3>
+      <p>
+        Zinc activates the enzymes that build collagen and helps regulate the matrix
+        metalloproteinases that break it down. It works on both sides of the ledger.
+      </p>
+
+      <h3>Antioxidants — protecting what you just built</h3>
+      <p>
+        New collagen sitting in skin under daily UV and pollution exposure degrades on the same
+        timeline it was built. Glutathione, vitamin E, lycopene and polyphenols such as pine bark
+        extract reduce the oxidative load that drives that degradation. Glutathione in particular
+        has a second role in skin: it inhibits tyrosinase, the enzyme that drives melanin
+        production, which is why it appears in pigmentation protocols
+        (<a href="/pages/glutathione-for-skin">more on that here</a>).
+      </p>
+
+      <h3>Hydration agents — the visible layer</h3>
+      <p>
+        Hyaluronic acid binds up to 1,000 times its weight in water, and oral ceramides support the
+        skin barrier that stops that water escaping. These act faster than collagen itself and are
+        usually responsible for the "my skin looks plumper" effect people report in the first month.
+      </p>
+
+      <figure class="jr-figure jr-figure--slide">
+        <img src="{{ 'collabloom-slide-5.webp' | asset_url }}"
+             alt="Collabloom ingredient breakdown: 8g Japanese marine collagen, glutathione and vitamin C, oral ceramides and hyaluronic acid, Polypodium leucotomos and niacinamide, zinc and biotin, and an antioxidant blend"
+             width="800" height="1000" loading="lazy">
+        <figcaption>
+          A worked example of the co-factor stack: collagen peptides plus the vitamin C, zinc,
+          hydration agents and antioxidants that collagen synthesis and retention actually depend on.
+        </figcaption>
+      </figure>
+
+      <a class="jr-product" href="/products/collabloom">
+        <img src="{{ 'collabloom-bottle.png' | asset_url }}" alt="Collabloom marine collagen shot bottle" width="240" height="240" loading="lazy">
+        <div>
+          <p class="jr-product-eyebrow">Formulated for skin</p>
+          <h3>Collabloom</h3>
+          <p>
+            8,000mg Japanese hydrolysed marine collagen with 250mg glutathione, 250mg vitamin C
+            from amla, 100mg hyaluronic acid, oral ceramides, zinc and biotin. 17 actives, zero
+            sugar, 35 kcal per 30ml shot.
+          </p>
+          <span class="jr-cta">See the full formula →</span>
+        </div>
+      </a>
+
+      <h2 id="how-long">How long before you see anything</h2>
+
+      <p>
+        Skin turnover takes roughly 28 days, and dermal remodelling is slower still. Anyone
+        promising visible change in a fortnight is describing hydration, not collagen. A realistic
+        timeline, based on how the trial data reads:
+      </p>
+
+      <ul>
+        <li><strong>Weeks 1–4 — hydration.</strong> Skin feels less tight, makeup sits better. This is hyaluronic acid and ceramides doing their job.</li>
+        <li><strong>Weeks 4–8 — texture and tone.</strong> Surface smoothness improves. Pigmentation begins to even out if your formula includes glutathione and vitamin C.</li>
+        <li><strong>Weeks 8–12 — elasticity.</strong> The measurable dermal change. Skin recovers faster when pressed; fine lines soften at the edges.</li>
+        <li><strong>Beyond 12 weeks — maintenance.</strong> Benefits plateau and hold while you continue. They fade over a few months if you stop, because the underlying ~1%-per-year decline resumes.</li>
+      </ul>
+
+      <p>
+        The single biggest predictor of whether someone sees results is not the brand — it is
+        whether they took it daily for twelve weeks. Consistency beats formulation, and formulation
+        matters a great deal.
+      </p>
+
+      <h2 id="how-to-choose">How to read a collagen label</h2>
+
+      <p>Five checks, in order of how much they matter:</p>
+
+      <ol>
+        <li><strong>Is a dose in milligrams stated?</strong> If the label says "collagen blend" without a number, assume the number is small. You want 2,500mg minimum; 8,000–10,000mg is the well-studied range.</li>
+        <li><strong>Is it hydrolysed, and to what molecular weight?</strong> "Hydrolysed" should be explicit. Under 2,000 Daltons is the absorption benchmark.</li>
+        <li><strong>Is vitamin C present?</strong> Without it, collagen synthesis is rate-limited regardless of dose.</li>
+        <li><strong>What is the sugar content?</strong> Many collagen drinks carry 8–12g of sugar per serving. Dietary sugar drives glycation, which stiffens and damages existing collagen — actively working against the product.</li>
+        <li><strong>Marine or bovine?</strong> Marine for skin. Bovine is fine, but it is a Type I/III blend optimised for something else.</li>
+      </ol>
+
+      <p>
+        One honest caveat: collagen supplementation is a support, not a replacement for the basics.
+        Daily broad-spectrum SPF prevents more collagen loss than any supplement can rebuild. If you
+        are choosing between sunscreen and a collagen shot, choose the sunscreen. If you are already
+        wearing sunscreen, a well-dosed collagen formula is the next meaningful step.
+      </p>
+
+      <p class="jr-disclaimer">
+        This article is for general information and is not medical advice. Nutritional supplements
+        are not intended to diagnose, treat, cure or prevent any disease. If you are pregnant,
+        breastfeeding, taking prescription medication, or have a known fish or shellfish allergy,
+        speak to a qualified healthcare professional before starting a marine collagen supplement.
+      </p>
+
+      <h2 id="faq">Frequently asked questions</h2>
+
+      <div class="jr-faq">
+        <details>
+          <summary>How much collagen should I take per day for skin?</summary>
+          <p>
+            Published trials showing skin benefits used between 2.5g and 10g of hydrolysed collagen
+            peptides daily. Doses below 2.5g have little supporting evidence. Collabloom delivers
+            8,000mg (8g) per 30ml shot, which sits in the well-studied upper range.
+          </p>
+        </details>
+        <details>
+          <summary>Is marine collagen better than bovine collagen for skin?</summary>
+          <p>
+            For skin specifically, yes. Marine collagen is almost entirely Type I — the dominant
+            collagen in the dermis — and its naturally smaller peptide structure hydrolyses to a
+            lower molecular weight, which is generally reported to absorb faster and more completely
+            than bovine collagen.
+          </p>
+        </details>
+        <details>
+          <summary>When is the best time to take a collagen supplement?</summary>
+          <p>
+            Consistency matters far more than timing. There is no strong evidence favouring morning
+            over evening. Many people take it on an empty stomach in the morning simply because it
+            is easier to remember, and daily adherence is the strongest predictor of results.
+          </p>
+        </details>
+        <details>
+          <summary>Can collagen supplements cause weight gain or breakouts?</summary>
+          <p>
+            Collagen itself is a protein with negligible calories at supplement doses — Collabloom
+            is 35 kcal per shot with zero sugar. Breakouts are more commonly linked to the sugar,
+            dairy or flavouring in poorly formulated collagen drinks than to collagen peptides.
+          </p>
+        </details>
+        <details>
+          <summary>Do I need to keep taking collagen forever?</summary>
+          <p>
+            Benefits are maintained while you supplement and gradually fade over several months
+            after stopping, because the underlying age-related decline of roughly 1% per year
+            resumes. Think of it as ongoing support rather than a fixed course.
+          </p>
+        </details>
+        <details>
+          <summary>Can I take collagen with vitamin C tablets separately?</summary>
+          <p>
+            You can, and it is better than no vitamin C at all. A formula with both included is
+            simpler and ensures they are present together at the point of absorption. Collabloom
+            includes 250mg of vitamin C from amla extract alongside its collagen.
+          </p>
+        </details>
+      </div>
+
+      <section class="jr-sources">
+        <h2>Sources</h2>
+        <ol>
+          <li>de Miranda RB, et al. "Effects of hydrolyzed collagen supplementation on skin aging: a systematic review and meta-analysis." <em>International Journal of Dermatology</em>, 2021. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=hydrolyzed+collagen+skin+aging+systematic+review+meta-analysis" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Iwai K, et al. "Identification of food-derived collagen peptides in human blood after oral ingestion of gelatin hydrolysates." <em>Journal of Agricultural and Food Chemistry</em>, 2005. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Iwai+collagen+peptides+human+blood+gelatin+hydrolysates" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Shuster S, et al. "The influence of age and sex on skin thickness, skin collagen and density." <em>British Journal of Dermatology</em>, 1975. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Shuster+skin+thickness+skin+collagen+density+age+sex" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Flament F, et al. "Effect of the sun on visible clinical signs of aging in Caucasian skin." <em>Clinical, Cosmetic and Investigational Dermatology</em>, 2013. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Flament+sun+visible+clinical+signs+aging+skin" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Pullar JM, et al. "The roles of vitamin C in skin health." <em>Nutrients</em>, 2017. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Pullar+roles+of+vitamin+C+in+skin+health" target="_blank" rel="noopener nofollow">PubMed</a></li>
+        </ol>
+      </section>
+
+      <aside class="jr-author" id="author-bio">
+        {%- if settings.founder_2_image != blank -%}
+          <img src="{{ settings.founder_2_image | image_url: width: 168 }}" alt="Dr Raashi Mehta" width="84" height="84" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">RM</span>
+        {%- endif -%}
+        <div>
+          <p class="jr-author-eyebrow">About the author</p>
+          <h2>Dr Raashi Mehta</h2>
+          <p class="jr-author-role">Dermatologist · Co-founder, Dr Collagen</p>
+          <p>
+            Dr Raashi Mehta is a practising dermatologist and co-founder of Dr Collagen. Her
+            clinical focus is pigmentation, photoageing and barrier repair — the areas where
+            patients most often arrive having already tried a shelf of products that under-delivered.
+            She co-developed the Collabloom formula around a simple principle: collagen peptides are
+            only as useful as the co-factors delivered with them.
+          </p>
+          <p>
+            She writes the skin science section of the Dr Collagen Journal.
+            <a href="/pages/our-story">Read the founders' story →</a>
+          </p>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <div class="jr-wrap jr-wrap--wide">
+    <section class="jr-related">
+      <h2>Keep reading</h2>
+      <div class="jr-related-grid">
+        <a class="jr-related-card" href="/pages/glutathione-for-skin">
+          <p class="jr-related-cat">Skin Science</p>
+          <h3>Glutathione for Skin: Benefits, Dose and Realistic Results</h3>
+          <p class="jr-related-dek">What the master antioxidant does for pigmentation and tone — and why oral dosing is debated.</p>
+        </a>
+        <a class="jr-related-card" href="/pages/collagen-for-joint-pain">
+          <p class="jr-related-cat">Joint Health</p>
+          <h3>Collagen for Joint Pain: What the Research Shows</h3>
+          <p class="jr-related-dek">The athlete and osteoarthritis trials, the doses used, and where collagen fits alongside glucosamine.</p>
+        </a>
+        <a class="jr-related-card" href="/pages/supplements-for-knee-pain">
+          <p class="jr-related-cat">Joint Health</p>
+          <h3>Supplements for Knee Pain: An Orthopaedic Surgeon's Guide</h3>
+          <p class="jr-related-dek">Which ingredients have evidence behind them, which do not, and what to expect from each.</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</article>
+
+{% comment %} ─── Structured data: Article + Breadcrumb + FAQ ─────────────── {% endcomment %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "Collagen for Skin: What the Evidence Actually Shows",
+      "description": "Does collagen work for skin? A dermatologist breaks down the trial evidence, the peptide size that matters, the co-factors most supplements skip, and a realistic timeline.",
+      "image": "{{ 'collabloom-bottle.png' | asset_url | prepend: request.origin }}",
+      "datePublished": "2026-07-26",
+      "dateModified": "2026-07-26",
+      "inLanguage": "en",
+      "articleSection": "Skin Science",
+      "keywords": "collagen for skin, marine collagen benefits, collagen for wrinkles, collagen skin elasticity, hydrolysed collagen",
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ shop.url }}/pages/collagen-for-skin" },
+      "author": {
+        "@type": "Person",
+        "name": "Dr Raashi Mehta",
+        "jobTitle": "Dermatologist",
+        "description": "Practising dermatologist and co-founder of Dr Collagen, specialising in pigmentation, photoageing and barrier repair.",
+        "url": "{{ shop.url }}/pages/our-story"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ shop.name }}",
+        "url": "{{ shop.url }}"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ shop.url }}/" },
+        { "@type": "ListItem", "position": 2, "name": "Journal", "item": "{{ shop.url }}/pages/journal" },
+        { "@type": "ListItem", "position": 3, "name": "Collagen for Skin" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "How much collagen should I take per day for skin?", "acceptedAnswer": { "@type": "Answer", "text": "Published trials showing skin benefits used between 2.5g and 10g of hydrolysed collagen peptides daily. Doses below 2.5g have little supporting evidence. Collabloom delivers 8,000mg (8g) per 30ml shot, which sits in the well-studied upper range." } },
+        { "@type": "Question", "name": "Is marine collagen better than bovine collagen for skin?", "acceptedAnswer": { "@type": "Answer", "text": "For skin specifically, yes. Marine collagen is almost entirely Type I — the dominant collagen in the dermis — and its naturally smaller peptide structure hydrolyses to a lower molecular weight, which is generally reported to absorb faster and more completely than bovine collagen." } },
+        { "@type": "Question", "name": "When is the best time to take a collagen supplement?", "acceptedAnswer": { "@type": "Answer", "text": "Consistency matters far more than timing. There is no strong evidence favouring morning over evening. Many people take it on an empty stomach in the morning simply because it is easier to remember, and daily adherence is the strongest predictor of results." } },
+        { "@type": "Question", "name": "Can collagen supplements cause weight gain or breakouts?", "acceptedAnswer": { "@type": "Answer", "text": "Collagen itself is a protein with negligible calories at supplement doses — Collabloom is 35 kcal per shot with zero sugar. Breakouts are more commonly linked to the sugar, dairy or flavouring in poorly formulated collagen drinks than to collagen peptides." } },
+        { "@type": "Question", "name": "Do I need to keep taking collagen forever?", "acceptedAnswer": { "@type": "Answer", "text": "Benefits are maintained while you supplement and gradually fade over several months after stopping, because the underlying age-related decline of roughly 1% per year resumes. Think of it as ongoing support rather than a fixed course." } },
+        { "@type": "Question", "name": "Can I take collagen with vitamin C tablets separately?", "acceptedAnswer": { "@type": "Answer", "text": "You can, and it is better than no vitamin C at all. A formula with both included is simpler and ensures they are present together at the point of absorption. Collabloom includes 250mg of vitamin C from amla extract alongside its collagen." } }
+      ]
+    }
+  ]
+}
+</script>

@@ -1,0 +1,525 @@
+{% comment %}
+  JOURNAL ARTICLE — /pages/supplements-for-knee-pain
+  Primary keyword ...... supplements for knee pain
+  Secondary ............ best supplement for knee pain, knee pain vitamins,
+                         glucosamine for knees, turmeric for joint pain
+  Product ............... Skelecoll
+  Author ................ Dr Nachiket Pansey (Orthopaedic Surgeon, Founder)
+  Published ............. 2026-07-26   Updated: 2026-07-26
+  Title tag / meta description live in layout/theme.liquid (dc_seo block).
+{% endcomment %}
+
+{% render 'journal-styles' %}
+
+<article class="jr">
+  <div class="jr-wrap">
+
+    <nav class="jr-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> &nbsp;/&nbsp;
+      <a href="/pages/journal">Journal</a> &nbsp;/&nbsp;
+      <span aria-current="page">Supplements for Knee Pain</span>
+    </nav>
+
+    <header>
+      <p class="jr-eyebrow">Joint Health</p>
+      <h1 class="jr-h1">Supplements for Knee Pain: An Orthopaedic Surgeon's Guide</h1>
+      <p class="jr-standfirst">
+        Eleven ingredients, ranked by how much evidence actually sits behind them — including
+        the three I think are worth your money, the two that are oversold, and the one most
+        Indian patients are deficient in without knowing it.
+      </p>
+
+      <div class="jr-byline">
+        {%- if settings.founder_1_image != blank -%}
+          <img src="{{ settings.founder_1_image | image_url: width: 92 }}" alt="Dr Nachiket Pansey, Orthopaedic Surgeon and Founder of Dr Collagen" width="46" height="46" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">NP</span>
+        {%- endif -%}
+        <div class="jr-byline-txt">
+          <div class="jr-byline-name"><a href="#author-bio">Dr Nachiket Pansey</a> · Orthopaedic Surgeon</div>
+          <div class="jr-byline-meta">
+            Published <time datetime="2026-07-26">26 July 2026</time>
+            &nbsp;·&nbsp; Updated <time datetime="2026-07-26">26 July 2026</time>
+            &nbsp;·&nbsp; 11 min read
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="jr-hero jr-hero--joint">
+      <img src="{{ 'skelecoll-bottle.png' | asset_url }}"
+           alt="Skelecoll joint support shot with collagen, glucosamine, calcium, vitamin D3 and magnesium"
+           width="420" height="560" loading="eager" fetchpriority="high">
+    </div>
+
+    <div class="jr-answer">
+      <h2>The short answer</h2>
+      <p>
+        If you are buying one thing for knee pain, the evidence points to
+        <strong>collagen peptides at 5–10g daily</strong>. If you are buying two, add
+        <strong>vitamin D3</strong> — deficiency is close to universal in urban India and it
+        undermines everything else you take. If you are buying three, add
+        <strong>curcumin</strong>, which has repeatedly matched NSAIDs on osteoarthritis pain
+        scores in head-to-head trials.
+      </p>
+      <ul>
+        <li><strong>Strong-to-moderate evidence:</strong> collagen peptides, vitamin D3 (if deficient), curcumin, Boswellia serrata.</li>
+        <li><strong>Mixed evidence:</strong> glucosamine sulphate, chondroitin, oral hyaluronic acid, omega-3.</li>
+        <li><strong>Weak or insufficient evidence:</strong> MSM, Cissus quadrangularis, most proprietary "joint blends".</li>
+        <li><strong>More effective than all of the above:</strong> quadriceps strengthening and weight management. No supplement outperforms them.</li>
+      </ul>
+    </div>
+
+    <nav class="jr-toc" aria-label="Table of contents">
+      <h2>In this article</h2>
+      <ol>
+        <li><a href="#evidence-map">The evidence map</a></li>
+        <li><a href="#worth-it">The three worth your money</a></li>
+        <li><a href="#mixed">The mixed cases</a></li>
+        <li><a href="#weak">The oversold ones</a></li>
+        <li><a href="#stack">How to build a sensible stack</a></li>
+        <li><a href="#not-supplements">What beats every supplement here</a></li>
+        <li><a href="#red-flags">Red flags that need a doctor</a></li>
+        <li><a href="#faq">Frequently asked questions</a></li>
+      </ol>
+    </nav>
+
+    <div class="jr-prose">
+
+      <h2 id="evidence-map">The evidence map</h2>
+
+      <p>
+        Every ingredient below is graded on the same basis: how consistently it has beaten placebo
+        in randomised controlled trials for knee osteoarthritis or activity-related knee pain, and
+        whether independent (non-industry) trials replicated the finding.
+      </p>
+
+      <figure class="jr-figure">
+        <svg viewBox="0 0 640 330" role="img" aria-labelledby="ev-title ev-desc">
+          <title id="ev-title">Strength of clinical evidence for common knee pain supplements</title>
+          <desc id="ev-desc">A horizontal bar chart grading ten supplements by strength of clinical evidence for knee pain. Collagen peptides, vitamin D3 where deficient, and curcumin score highest; Boswellia serrata is moderate; glucosamine sulphate, chondroitin, oral hyaluronic acid and omega-3 are mixed; MSM and Cissus quadrangularis score lowest.</desc>
+          <g font-family="DM Sans, sans-serif" font-size="11.5" fill="#6b6472">
+            <text x="0" y="24">Collagen peptides</text>
+            <text x="0" y="57">Vitamin D3 (if deficient)</text>
+            <text x="0" y="90">Curcumin</text>
+            <text x="0" y="123">Boswellia serrata</text>
+            <text x="0" y="156">Glucosamine sulphate</text>
+            <text x="0" y="189">Chondroitin</text>
+            <text x="0" y="222">Oral hyaluronic acid</text>
+            <text x="0" y="255">Omega-3</text>
+            <text x="0" y="288">MSM</text>
+            <text x="0" y="321">Cissus quadrangularis</text>
+          </g>
+          <g>
+            <rect x="176" y="12"  width="352" height="15" rx="7.5" fill="#b8903a"></rect>
+            <rect x="176" y="45"  width="336" height="15" rx="7.5" fill="#b8903a"></rect>
+            <rect x="176" y="78"  width="320" height="15" rx="7.5" fill="#b8903a"></rect>
+            <rect x="176" y="111" width="256" height="15" rx="7.5" fill="#c9a862"></rect>
+            <rect x="176" y="144" width="176" height="15" rx="7.5" fill="#dcc79a"></rect>
+            <rect x="176" y="177" width="160" height="15" rx="7.5" fill="#dcc79a"></rect>
+            <rect x="176" y="210" width="152" height="15" rx="7.5" fill="#dcc79a"></rect>
+            <rect x="176" y="243" width="136" height="15" rx="7.5" fill="#dcc79a"></rect>
+            <rect x="176" y="276" width="80"  height="15" rx="7.5" fill="#e8ded0"></rect>
+            <rect x="176" y="309" width="64"  height="15" rx="7.5" fill="#e8ded0"></rect>
+          </g>
+        </svg>
+        <figcaption>
+          Relative strength of the randomised trial evidence for knee pain, not relative effect
+          size. A well-evidenced ingredient can still produce a small benefit.
+        </figcaption>
+      </figure>
+
+      <h2 id="worth-it">The three worth your money</h2>
+
+      <h3>1. Collagen peptides — 5,000–10,000mg daily</h3>
+      <p>
+        The best-supported option, and the one with trials designed around function rather than
+        laboratory markers. Clark and colleagues followed 147 athletes for 24 weeks on 10g of
+        collagen hydrolysate daily and found <strong>significant reductions in joint pain when
+        walking, standing, carrying and lifting</strong>. Zdzieblik and colleagues replicated the
+        pattern at 5g daily over 12 weeks in young adults with functional knee pain.
+      </p>
+      <p>
+        Mechanism: absorbed peptides appear to signal chondrocytes — cartilage cells — to increase
+        matrix production, and they supply glycine and proline, the amino acids that dominate
+        collagen's structure. Type I collagen also makes up around 90% of the organic matrix of
+        bone, so the benefit is not limited to cartilage.
+      </p>
+      <p>
+        The catch: <strong>dose</strong>. Most joint capsules contain a few hundred milligrams.
+        Nothing below 2.5g has meaningful supporting evidence, and the joint trials clustered at
+        5–10g. Read the full breakdown in
+        <a href="/pages/collagen-for-joint-pain">collagen for joint pain</a>.
+      </p>
+
+      <h3>2. Vitamin D3 — 600–2,000 IU daily</h3>
+      <p>
+        Not glamorous, and the one I check first in clinic. Studies of urban Indian populations have
+        repeatedly reported <strong>vitamin D deficiency in 70–90% of adults</strong> — a
+        remarkable figure in a country with abundant sunlight, driven by indoor work, sun
+        avoidance, pollution and skin pigmentation.
+      </p>
+      <p>
+        Vitamin D governs how much dietary calcium you actually absorb. Deficiency causes diffuse
+        musculoskeletal pain and proximal muscle weakness in its own right, and weak quadriceps is
+        one of the strongest risk factors for knee osteoarthritis progression.
+      </p>
+      <p>
+        Important nuance, stated plainly: supplementing vitamin D in people who are
+        <strong>already replete</strong> does not improve osteoarthritis outcomes. This is a
+        deficiency correction, not a treatment. Get a 25-hydroxyvitamin D level tested — it is an
+        inexpensive test and it converts guesswork into a decision.
+      </p>
+
+      <h3>3. Curcumin — around 1,000mg daily of a bioavailable form</h3>
+      <p>
+        Curcumin inhibits NF-κB, a central regulator of the inflammatory cascade. A 2016
+        meta-analysis in the <em>Journal of Medicinal Food</em> pooled randomised trials and found
+        roughly 1,000mg per day <strong>improved osteoarthritis symptoms</strong>, with several
+        head-to-head trials showing pain relief comparable to ibuprofen and a better
+        gastrointestinal side-effect profile.
+      </p>
+      <p>
+        The caveat is absorption. Plain turmeric powder is poorly bioavailable — you need a
+        formulated version (piperine-enhanced, phospholipid-complexed or water-soluble). "Contains
+        turmeric" on a label tells you very little.
+      </p>
+
+      <h2 id="mixed">The mixed cases</h2>
+
+      <h3>Glucosamine sulphate — 1,500mg daily</h3>
+      <p>
+        The default joint supplement for three decades, and the evidence is genuinely
+        contested. The <strong>GAIT trial</strong> (<em>New England Journal of Medicine</em>, 2006)
+        randomised nearly 1,600 knee osteoarthritis patients and found glucosamine and chondroitin
+        <strong>no better than placebo</strong> overall. A subgroup with moderate-to-severe pain
+        benefited from the combination, but that result was exploratory and has not reliably
+        replicated.
+      </p>
+      <p>
+        Some meta-analyses of pharmaceutical-grade glucosamine sulphate still find a small benefit;
+        several major clinical guidelines now decline to recommend it. My position: it is cheap,
+        safe and worth a three-month trial at the full 1,500mg dose if you want to test it — but
+        judge it honestly at twelve weeks and stop if nothing has changed.
+      </p>
+
+      <h3>Chondroitin sulphate — 800–1,200mg daily</h3>
+      <p>
+        Same trial history, same verdict, usually sold alongside glucosamine. Some evidence for
+        slowing joint space narrowing on imaging; less convincing evidence that patients feel
+        better. Quality control is also a genuine problem — independent testing has repeatedly
+        found chondroitin products containing substantially less than the labelled amount.
+      </p>
+
+      <h3>Oral hyaluronic acid — 80–200mg daily</h3>
+      <p>
+        Hyaluronic acid is the molecule that makes synovial fluid viscous, and injected HA is an
+        established treatment. The oral case is weaker but not absent: several small trials,
+        including work by Oe and colleagues, reported improved knee pain scores over 8–12 weeks at
+        doses around 200mg. Sensible as part of a stack; thin as a standalone purchase.
+      </p>
+
+      <h3>Omega-3 fatty acids — 1,000–3,000mg EPA/DHA</h3>
+      <p>
+        Strong evidence in <em>rheumatoid</em> arthritis, which is an autoimmune inflammatory
+        disease. Much weaker in osteoarthritis, which is primarily mechanical. Worth taking for
+        cardiovascular and general health; do not expect it to resolve a worn knee.
+      </p>
+
+      <h2 id="weak">The oversold ones</h2>
+
+      <h3>MSM (methylsulfonylmethane)</h3>
+      <p>
+        Appears in almost every joint blend. The trials are small, short and mostly of low quality,
+        with inconsistent results. It is not harmful and it is cheap, but it is present in most
+        formulas because it is inexpensive filler with a scientific-sounding name, not because the
+        data demands it.
+      </p>
+
+      <h3>Cissus quadrangularis</h3>
+      <p>
+        A traditional Ayurvedic preparation with a long history in fracture healing and some
+        preliminary work on bone and tendon. I will be straightforward, including about our own
+        formula: <strong>the modern clinical evidence base for knee osteoarthritis is thin.</strong>
+        <a href="/products/skelecoll">Skelecoll</a> includes it for muscular endurance around the
+        joint on the strength of traditional use and early data — not because it has been proven in
+        the way collagen peptides have.
+      </p>
+
+      <h3>Proprietary "joint complex" blends</h3>
+      <p>
+        If a label lists a "proprietary blend" with a single total weight and no per-ingredient
+        doses, assume the expensive actives are present in trace amounts and the cheap ones make up
+        the mass. This is the most common way an underdosed product is made to look comprehensive.
+        <strong>If you cannot see a milligram figure next to each active, do not buy it.</strong>
+      </p>
+
+      <div class="jr-quote">
+        {%- if settings.founder_1_image != blank -%}
+          <img src="{{ settings.founder_1_image | image_url: width: 112 }}" alt="Dr Nachiket Pansey" width="56" height="56" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">NP</span>
+        {%- endif -%}
+        <div>
+          <blockquote>
+            "Patients bring me carrier bags of supplements. Nine times out of ten the problem is not
+            that they bought the wrong ingredients — it is that every bottle contains a tenth of the
+            dose that was studied. Underdosing is the industry's default setting."
+          </blockquote>
+          <cite><strong>Dr Nachiket Pansey</strong> — Orthopaedic Surgeon, Founder of Dr Collagen</cite>
+        </div>
+      </div>
+
+      <h2 id="stack">How to build a sensible stack</h2>
+
+      <p>Order of operations, assuming no red-flag symptoms:</p>
+
+      <ol>
+        <li><strong>Get vitamin D tested.</strong> If you are deficient, correct it first. It is the cheapest intervention with the highest chance of mattering.</li>
+        <li><strong>Add collagen peptides at 5–10g daily.</strong> This is the load-bearing part of the stack. Give it a full 12 weeks.</li>
+        <li><strong>Ensure calcium and magnesium are adequate</strong> — via diet if possible. Magnesium is required to convert vitamin D to its active form and is commonly under-consumed.</li>
+        <li><strong>Consider bioavailable curcumin</strong> if inflammatory pain is prominent, particularly pain that is worse after activity.</li>
+        <li><strong>Reassess at 12 weeks.</strong> Anything that has not helped by then is unlikely to start.</li>
+      </ol>
+
+      <p>
+        This is the logic <a href="/products/skelecoll">Skelecoll</a> is built on:
+        <strong>10,000mg of Japanese hydrolysed marine collagen</strong> at the trial dose rather
+        than a token amount, with 300mg glucosamine HCl and 120mg hyaluronic acid on the
+        lubrication side, and 250mg calcium, 600 IU vitamin D3 and 50mg magnesium for the bone
+        underneath. Every active is declared with its milligram figure.
+      </p>
+
+      <a class="jr-product" href="/products/skelecoll">
+        <img src="{{ 'skelecoll-bottle.png' | asset_url }}" alt="Skelecoll joint and bone support collagen shot" width="240" height="240" loading="lazy">
+        <div>
+          <p class="jr-product-eyebrow">Dosed to the trials, not to the margin</p>
+          <h3>Skelecoll</h3>
+          <p>
+            10,000mg Japanese hydrolysed marine collagen · 300mg glucosamine HCl · 120mg hyaluronic
+            acid · 250mg calcium · 600 IU vitamin D3 · 50mg magnesium. 13 actives, every dose
+            declared. Zero sugar, 40 kcal per 30ml shot.
+          </p>
+          <span class="jr-cta">See the full formula →</span>
+        </div>
+      </a>
+
+      <h2 id="not-supplements">What beats every supplement here</h2>
+
+      <p>
+        I would be doing you a disservice if I ended without this section. Two interventions
+        outperform everything above, and both are free:
+      </p>
+
+      <p>
+        <strong>Quadriceps strengthening.</strong> Quadriceps weakness is among the
+        best-established modifiable risk factors for knee osteoarthritis pain and progression.
+        Exercise therapy is a first-line recommendation in essentially every major clinical
+        guideline for knee OA. No supplement has that standing.
+      </p>
+
+      <p>
+        <strong>Weight management.</strong> Loads across the knee are amplified several times over
+        during walking and stair climbing, which is why modest weight loss produces
+        disproportionate reductions in joint load and pain. If you are carrying excess weight, this
+        is the single highest-yield change available to you.
+      </p>
+
+      <p>
+        Supplements are a supporting layer on top of those two. Sequenced the other way round, they
+        will disappoint you.
+      </p>
+
+      <h2 id="red-flags">Red flags that need a doctor</h2>
+
+      <p>Stop shopping and get assessed if you have any of the following:</p>
+
+      <ul>
+        <li><strong>A hot, red, swollen knee</strong> — possible infection or acute inflammatory arthritis; this is urgent</li>
+        <li><strong>Locking, catching or giving way</strong> — typically mechanical, such as a meniscal tear</li>
+        <li><strong>Night pain</strong> or pain at complete rest</li>
+        <li><strong>Sudden severe pain after trauma</strong>, or inability to bear weight</li>
+        <li><strong>Multiple swollen joints with morning stiffness beyond an hour</strong> — suggestive of inflammatory arthritis, which needs disease-modifying treatment, not supplements</li>
+      </ul>
+
+      <p class="jr-disclaimer">
+        This article is for general information and is not medical advice. Nutritional supplements
+        are not intended to diagnose, treat, cure or prevent any disease, including osteoarthritis.
+        Dosages mentioned reflect those used in published research and are not personal
+        recommendations. If you have persistent knee pain, a diagnosed joint condition, a fish or
+        shellfish allergy, or take prescription medication, speak to a qualified healthcare
+        professional before starting supplementation.
+      </p>
+
+      <h2 id="faq">Frequently asked questions</h2>
+
+      <div class="jr-faq">
+        <details>
+          <summary>What is the best supplement for knee pain?</summary>
+          <p>
+            On current evidence, collagen peptides at 5–10g daily have the most consistent
+            randomised trial support for activity-related knee pain, followed by vitamin D3 where
+            deficiency is present and bioavailable curcumin for inflammatory pain. No supplement
+            outperforms quadriceps strengthening and weight management.
+          </p>
+        </details>
+        <details>
+          <summary>Does glucosamine actually work for knees?</summary>
+          <p>
+            The evidence is genuinely mixed. The large independent GAIT trial found glucosamine no
+            better than placebo overall for knee osteoarthritis, though a moderate-to-severe pain
+            subgroup benefited from glucosamine combined with chondroitin. It is cheap and safe, so
+            a three-month trial at the full 1,500mg dose is reasonable — but judge it honestly and
+            stop if nothing changes.
+          </p>
+        </details>
+        <details>
+          <summary>How long do knee pain supplements take to work?</summary>
+          <p>
+            Allow 12 weeks. Collagen trials measured significant pain reduction between weeks 8 and
+            24, and curcumin trials typically ran 6 to 12 weeks. Anything promising relief in days
+            is describing an anti-inflammatory effect, not tissue change.
+          </p>
+        </details>
+        <details>
+          <summary>Should I take vitamin D for knee pain?</summary>
+          <p>
+            Only if you are deficient — but in urban India that is likely, with studies reporting
+            deficiency in 70–90% of adults. Vitamin D deficiency itself causes musculoskeletal pain
+            and muscle weakness. Supplementing when already replete does not improve osteoarthritis
+            outcomes, so get a 25-hydroxyvitamin D level tested first.
+          </p>
+        </details>
+        <details>
+          <summary>Is turmeric as good as ibuprofen for joint pain?</summary>
+          <p>
+            Several head-to-head trials found bioavailable curcumin at around 1,000mg daily
+            produced pain relief comparable to ibuprofen in knee osteoarthritis, with fewer
+            gastrointestinal side effects. Plain turmeric powder is poorly absorbed, so the
+            formulation matters as much as the dose.
+          </p>
+        </details>
+        <details>
+          <summary>Can I take collagen and glucosamine together?</summary>
+          <p>
+            Yes — there is no known interaction and they act on different parts of the joint.
+            Collagen peptides support cartilage matrix production, while glucosamine and hyaluronic
+            acid support the proteoglycan and lubrication side. Skelecoll combines both in a single
+            daily shot.
+          </p>
+        </details>
+      </div>
+
+      <section class="jr-sources">
+        <h2>Sources</h2>
+        <ol>
+          <li>Clark KL, et al. "24-week study on the use of collagen hydrolysate as a dietary supplement in athletes with activity-related joint pain." <em>Current Medical Research and Opinion</em>, 2008. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Clark+24-week+collagen+hydrolysate+athletes+activity-related+joint+pain" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Clegg DO, et al. "Glucosamine, chondroitin sulfate, and the two in combination for painful knee osteoarthritis (GAIT)." <em>New England Journal of Medicine</em>, 2006. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Clegg+glucosamine+chondroitin+sulfate+combination+painful+knee+osteoarthritis" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Daily JW, et al. "Efficacy of turmeric extracts and curcumin for alleviating the symptoms of joint arthritis: a systematic review and meta-analysis." <em>Journal of Medicinal Food</em>, 2016. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Daily+turmeric+curcumin+joint+arthritis+systematic+review+meta-analysis" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Zdzieblik D, et al. "Improvement of activity-related knee joint discomfort following supplementation of specific collagen peptides." <em>Applied Physiology, Nutrition, and Metabolism</em>, 2017. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Zdzieblik+activity-related+knee+joint+discomfort+collagen+peptides" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Oe M, et al. "Oral hyaluronan relieves knee pain: a review." <em>Nutrition Journal</em>, 2016. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Oe+oral+hyaluronan+relieves+knee+pain+review" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Ritu G, Gupta A. "Vitamin D deficiency in India: prevalence, causalities and interventions." <em>Nutrients</em>, 2014. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Vitamin+D+deficiency+in+India+prevalence+causalities+interventions" target="_blank" rel="noopener nofollow">PubMed</a></li>
+        </ol>
+      </section>
+
+      <aside class="jr-author" id="author-bio">
+        {%- if settings.founder_1_image != blank -%}
+          <img src="{{ settings.founder_1_image | image_url: width: 168 }}" alt="Dr Nachiket Pansey" width="84" height="84" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">NP</span>
+        {%- endif -%}
+        <div>
+          <p class="jr-author-eyebrow">About the author</p>
+          <h2>Dr Nachiket Pansey</h2>
+          <p class="jr-author-role">Orthopaedic Surgeon · Founder, Dr Collagen</p>
+          <p>
+            Dr Nachiket Pansey is an orthopaedic surgeon and the founder of Dr Collagen. He sees the
+            downstream result of underdosed supplements every week in clinic — patients who have
+            spent months and considerable money on products that never contained enough of anything
+            to work. Skelecoll was his answer to that.
+          </p>
+          <p>
+            He writes the joint and bone health section of the Dr Collagen Journal.
+            <a href="/pages/our-story">Read the founders' story →</a>
+          </p>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <div class="jr-wrap jr-wrap--wide">
+    <section class="jr-related">
+      <h2>Keep reading</h2>
+      <div class="jr-related-grid">
+        <a class="jr-related-card" href="/pages/collagen-for-joint-pain">
+          <p class="jr-related-cat">Joint Health</p>
+          <h3>Collagen for Joint Pain: What the Research Actually Shows</h3>
+          <p class="jr-related-dek">The trials, the doses, and why type I peptides and undenatured type II are not interchangeable.</p>
+        </a>
+        <a class="jr-related-card" href="/pages/collagen-for-skin">
+          <p class="jr-related-cat">Skin Science</p>
+          <h3>Collagen for Skin: What the Evidence Actually Shows</h3>
+          <p class="jr-related-dek">The peptide size that matters, the co-factors most supplements skip, and a realistic timeline.</p>
+        </a>
+        <a class="jr-related-card" href="/pages/glutathione-for-skin">
+          <p class="jr-related-cat">Skin Science</p>
+          <h3>Glutathione for Skin: Benefits, Dose and Honest Expectations</h3>
+          <p class="jr-related-dek">What the master antioxidant does for pigmentation — and why the IV version is a different conversation.</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</article>
+
+{% comment %} ─── Structured data: Article + Breadcrumb + FAQ ─────────────── {% endcomment %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "Supplements for Knee Pain: An Orthopaedic Surgeon's Guide",
+      "description": "Eleven knee pain supplements graded by trial evidence — collagen peptides, vitamin D3 and curcumin lead; glucosamine and chondroitin are mixed; MSM and proprietary blends are oversold.",
+      "image": "{{ 'skelecoll-bottle.png' | asset_url | prepend: request.origin }}",
+      "datePublished": "2026-07-26",
+      "dateModified": "2026-07-26",
+      "inLanguage": "en",
+      "articleSection": "Joint Health",
+      "keywords": "supplements for knee pain, best supplement for knee pain, glucosamine for knees, turmeric for joint pain, knee pain vitamins",
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ shop.url }}/pages/supplements-for-knee-pain" },
+      "author": {
+        "@type": "Person",
+        "name": "Dr Nachiket Pansey",
+        "jobTitle": "Orthopaedic Surgeon",
+        "description": "Orthopaedic surgeon and founder of Dr Collagen, focused on joint preservation, post-operative recovery and age-related musculoskeletal decline.",
+        "url": "{{ shop.url }}/pages/our-story"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ shop.name }}",
+        "url": "{{ shop.url }}"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ shop.url }}/" },
+        { "@type": "ListItem", "position": 2, "name": "Journal", "item": "{{ shop.url }}/pages/journal" },
+        { "@type": "ListItem", "position": 3, "name": "Supplements for Knee Pain" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "What is the best supplement for knee pain?", "acceptedAnswer": { "@type": "Answer", "text": "On current evidence, collagen peptides at 5-10g daily have the most consistent randomised trial support for activity-related knee pain, followed by vitamin D3 where deficiency is present and bioavailable curcumin for inflammatory pain. No supplement outperforms quadriceps strengthening and weight management." } },
+        { "@type": "Question", "name": "Does glucosamine actually work for knees?", "acceptedAnswer": { "@type": "Answer", "text": "The evidence is genuinely mixed. The large independent GAIT trial found glucosamine no better than placebo overall for knee osteoarthritis, though a moderate-to-severe pain subgroup benefited from glucosamine combined with chondroitin. It is cheap and safe, so a three-month trial at the full 1,500mg dose is reasonable — but judge it honestly and stop if nothing changes." } },
+        { "@type": "Question", "name": "How long do knee pain supplements take to work?", "acceptedAnswer": { "@type": "Answer", "text": "Allow 12 weeks. Collagen trials measured significant pain reduction between weeks 8 and 24, and curcumin trials typically ran 6 to 12 weeks. Anything promising relief in days is describing an anti-inflammatory effect, not tissue change." } },
+        { "@type": "Question", "name": "Should I take vitamin D for knee pain?", "acceptedAnswer": { "@type": "Answer", "text": "Only if you are deficient — but in urban India that is likely, with studies reporting deficiency in 70-90% of adults. Vitamin D deficiency itself causes musculoskeletal pain and muscle weakness. Supplementing when already replete does not improve osteoarthritis outcomes, so get a 25-hydroxyvitamin D level tested first." } },
+        { "@type": "Question", "name": "Is turmeric as good as ibuprofen for joint pain?", "acceptedAnswer": { "@type": "Answer", "text": "Several head-to-head trials found bioavailable curcumin at around 1,000mg daily produced pain relief comparable to ibuprofen in knee osteoarthritis, with fewer gastrointestinal side effects. Plain turmeric powder is poorly absorbed, so the formulation matters as much as the dose." } },
+        { "@type": "Question", "name": "Can I take collagen and glucosamine together?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — there is no known interaction and they act on different parts of the joint. Collagen peptides support cartilage matrix production, while glucosamine and hyaluronic acid support the proteoglycan and lubrication side. Skelecoll combines both in a single daily shot." } }
+      ]
+    }
+  ]
+}
+</script>

@@ -4,6 +4,11 @@
   the exact handle (collabloom / skelecoll / collatrim / metastable) and
   the full product landing page renders automatically, no template
   assignment needed. Any other page falls back to the editorial layout.
+
+  Journal articles route the same way: create a blank Page in Shopify
+  admin with the matching handle and the article renders from its
+  snippet. Adding a new article = one {% when %} line below plus the
+  snippet file. See JOURNAL-HOWTO.md at the repo root.
 {% endcomment %}
 
 {% case page.handle %}
@@ -17,6 +22,19 @@
     {% render 'product-metastable' %}
   {% when 'our-story' %}
     {% render 'our-story' %}
+
+  {% comment %}─── Journal ─────────────────────────────────────────────{% endcomment %}
+  {% when 'journal' %}
+    {% render 'journal-index' %}
+  {% when 'collagen-for-skin' %}
+    {% render 'journal-collagen-for-skin' %}
+  {% when 'glutathione-for-skin' %}
+    {% render 'journal-glutathione-for-skin' %}
+  {% when 'collagen-for-joint-pain' %}
+    {% render 'journal-collagen-for-joint-pain' %}
+  {% when 'supplements-for-knee-pain' %}
+    {% render 'journal-supplements-for-knee-pain' %}
+
   {% else %}
     <style>
       .page-editorial {
