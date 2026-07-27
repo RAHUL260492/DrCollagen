@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="{{ request.locale.iso_code }}">
 <head>
+<!-- Gokwik theme code start -->
+{%- comment -%}
+  preconnect (not just dns-prefetch) for the GoKwik hosts.
+
+  Why: snippets/gokwik.liquid loads merchant.integration.js with `defer`, and
+  executeFlow() waits a maximum of 3s (waitForGoKwik) for the SDK before it
+  gives up and does `window.location.href = "/checkout"` — a fallback order.
+  dns-prefetch only resolves DNS; preconnect also completes the TCP + TLS
+  handshake, which typically saves 100-300ms on mobile and widens the margin
+  against that 3s budget.
+
+  dns-prefetch lines are kept as a fallback for browsers without preconnect.
+  No crossorigin: merchant.integration.js is a plain <script>, so a
+  non-CORS connection is the one that actually gets reused.
+{%- endcomment -%}
+<link rel="preconnect" href="https://pdp.gokwik.co">
+<link rel="preconnect" href="https://api.gokwik.co">
+<link rel="dns-prefetch" href="https://pdp.gokwik.co/">
+<link rel="dns-prefetch" href="https://api.gokwik.co">
+{% render 'gokwik' %}
+<!-- Gokwik theme code End -->
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -85,9 +106,46 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 
-  {%- comment -%} Preload first hero frame only on the homepage for fast LCP {%- endcomment -%}
+  <style>
+    /* ── Metric-matched font fallbacks (CLS) ─────────────────────────────
+       Google Fonts load with display=swap, so Georgia/system paints first
+       and Playfair/DM Sans replace it ~450ms later. Measured in-browser,
+       Playfair renders 1.0107x the width of Georgia and DM Sans 1.0102x
+       Arial. That ~1% is small, but .hero-title is clamp(52px,7vw,96px) —
+       enough to change where the heading wraps, and one extra line moved
+       everything below it. That single reflow measured 0.515 CLS on the
+       Collabloom product page (Google's threshold is 0.1).
+
+       size-adjust scales the fallback so it occupies the same width as the
+       real font. The swap then happens without reflowing. Ratios come from
+       measurement, not estimation — re-measure if the fonts ever change. */
+    @font-face {
+      font-family: 'Playfair Fallback';
+      src: local('Georgia'), local('Times New Roman');
+      size-adjust: 101.07%;
+      ascent-override: 105%;
+      descent-override: 21%;
+      line-gap-override: 0%;
+    }
+    @font-face {
+      font-family: 'DM Sans Fallback';
+      src: local('Arial'), local('Helvetica Neue');
+      size-adjust: 101.02%;
+      ascent-override: 100%;
+      descent-override: 24%;
+      line-gap-override: 0%;
+    }
+  </style>
+
+  {%- comment -%}
+    Preload the first hero frame on the homepage for fast LCP — desktop only.
+    #scroll-hero is display:none under 768px, so on phones this was preloading
+    361KB that nothing ever painted. `media` scopes the preload to viewports
+    that actually render the canvas animation.
+  {%- endcomment -%}
   {%- if template.name == 'index' -%}
-    <link rel="preload" as="image" href="{{ 'hero-frame-0001.webp' | asset_url }}">
+    <link rel="preload" as="image" media="(min-width: 769px)" href="{{ 'hero-frame-0001.webp' | asset_url }}">
+    <link rel="preload" as="image" media="(max-width: 768px)" href="{{ 'hero-frame-0003-w800.webp' | asset_url }}">
   {%- endif -%}
 
   <!-- Shared luxury theme system -->

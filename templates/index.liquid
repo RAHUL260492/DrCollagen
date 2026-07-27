@@ -10,8 +10,8 @@
       --fg:           #1a1225;
       --fg-muted:     #5a5268;
       --fg-subtle:    #6b6472;
-      --heading:      'Playfair Display', Georgia, serif;
-      --body:         'DM Sans', -apple-system, sans-serif;
+      --heading:      'Playfair Display', 'Playfair Fallback', Georgia, serif;
+      --body:         'DM Sans', 'DM Sans Fallback', -apple-system, sans-serif;
 
       /* Legacy aliases to prevent breakage: */
       --ink:          var(--bg);
@@ -1677,7 +1677,7 @@
     }
     .doc-strip-content { flex: 1 1 auto; }
     .doc-strip-heading {
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: 'Playfair Display', 'Playfair Fallback', Georgia, serif;
       font-size: clamp(26px, 3.4vw, 40px);
       font-weight: 500;
       line-height: 1.2;
@@ -1824,7 +1824,7 @@
       opacity: 0.55;
     }
     .founder-portrait-placeholder span {
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: 'Playfair Display', 'Playfair Fallback', Georgia, serif;
       font-size: 96px;
       font-weight: 400;
       letter-spacing: -0.02em;
@@ -1841,7 +1841,7 @@
       margin: 0 0 12px;
     }
     .founder-name {
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: 'Playfair Display', 'Playfair Fallback', Georgia, serif;
       font-size: 28px;
       font-weight: 500;
       line-height: 1.15;
@@ -1890,7 +1890,7 @@
       margin: 0 0 14px;
     }
     .m-h {
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: 'Playfair Display', 'Playfair Fallback', Georgia, serif;
       font-weight: 500; line-height: 1.1; letter-spacing: -.015em;
       color: #1a1225; margin: 0 0 14px;
       font-size: clamp(30px, 8.6vw, 40px);
@@ -1947,7 +1947,7 @@
       border-radius: 14px; padding: 14px 16px;
     }
     .m-stat-num {
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: 'Playfair Display', 'Playfair Fallback', Georgia, serif;
       font-size: 26px; font-weight: 500; color: #1a1225; line-height: 1;
     }
     .m-stat-num span { color: var(--accent-deep, #b8903a); }
@@ -2045,7 +2045,7 @@
       gap: 12px 14px; margin: 0 auto 36px; max-width: 1100px; text-align: center;
     }
     .range-helper-q {
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: 'Playfair Display', 'Playfair Fallback', Georgia, serif;
       font-style: italic; font-size: 17px; color: #1a1225;
     }
     .range-chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
@@ -2103,7 +2103,7 @@
       border-top: 1px solid rgba(255,255,255,.1); border-bottom: 1px solid rgba(255,255,255,.1);
     }
     .footer-news-copy h4 {
-      font-family: 'Playfair Display', Georgia, serif; font-weight: 500;
+      font-family: 'Playfair Display', 'Playfair Fallback', Georgia, serif; font-weight: 500;
       font-size: 22px; color: #fff; margin: 0 0 6px;
     }
     .footer-news-copy p { font-size: 13.5px; color: rgba(255,255,255,.6); margin: 0; max-width: 30em; }
@@ -2306,7 +2306,11 @@
     <h1 class="m-h">Fuel what's <em>within</em></h1>
     <p class="m-sub">Doctor-formulated micro-hydrolysed marine collagen — designed to support recovery, mobility, skin elasticity, and structural strength.</p>
     <div class="m-hero-visual">
-      <img src="{{ 'hero-frame-0003.webp' | asset_url }}" alt="The Dr Collagen marine collagen range — four daily shots" width="800" height="343" loading="eager">
+      <img src="{{ 'hero-frame-0003-w800.webp' | asset_url }}"
+           srcset="{{ 'hero-frame-0003-w800.webp' | asset_url }} 800w,
+                   {{ 'hero-frame-0003-w1200.webp' | asset_url }} 1200w"
+           sizes="(max-width: 768px) 100vw, 800px"
+           alt="The Dr Collagen marine collagen range — four daily shots" width="800" height="343" loading="eager" fetchpriority="high">
     </div>
     <div class="m-actions">
       <a href="#products" class="m-btn m-btn--primary" id="m-hero-shop">Shop Now</a>
@@ -2322,7 +2326,16 @@
   <!-- State 2 — Science / Foundation -->
   <section class="m-section m-science">
     <div class="m-figure m-figure--science">
-      <img src="{{ 'hero-frame-0002.webp' | asset_url }}" alt="The human body is structured by collagen" width="800" height="600" loading="lazy">
+      {%- comment -%}
+        height was 600 (1.33:1) but the file is 3910x1675 (2.33:1). The browser
+        reserved a box too tall, then collapsed it on load — that single reflow
+        was ~0.196 of a 0.2 CLS. Declared ratio must match the actual file.
+      {%- endcomment -%}
+      <img src="{{ 'hero-frame-0002-w800.webp' | asset_url }}"
+           srcset="{{ 'hero-frame-0002-w800.webp' | asset_url }} 800w,
+                   {{ 'hero-frame-0002-w1200.webp' | asset_url }} 1200w"
+           sizes="(max-width: 768px) 100vw, 800px"
+           alt="The human body is structured by collagen" width="800" height="343" loading="lazy">
     </div>
     <p class="m-eyebrow">The Foundation</p>
     <h2 class="m-h">Your body runs on <em>collagen</em>.</h2>
@@ -2333,7 +2346,11 @@
   <!-- State 3 — Product Range -->
   <section class="m-section m-range">
     <div class="m-figure">
-      <img src="{{ 'hero-frame-0003.webp' | asset_url }}" alt="Four Dr Collagen formulas on one marine collagen base" width="800" height="343" loading="lazy">
+      <img src="{{ 'hero-frame-0003-w800.webp' | asset_url }}"
+           srcset="{{ 'hero-frame-0003-w800.webp' | asset_url }} 800w,
+                   {{ 'hero-frame-0003-w1200.webp' | asset_url }} 1200w"
+           sizes="(max-width: 768px) 100vw, 800px"
+           alt="Four Dr Collagen formulas on one marine collagen base" width="800" height="343" loading="lazy">
     </div>
     <p class="m-eyebrow">The Range</p>
     <h2 class="m-h">Four formulas.<br>One <em>collagen base</em>.</h2>
@@ -3209,6 +3226,30 @@
       if (lut[mid] < raw) lo = mid + 1; else hi = mid;
     }
     return lo / REMAP_N;
+  }
+
+  // ── Mobile bail-out ───────────────────────────────────────────────
+  // #scroll-hero is `display:none !important` under 768px (see the mobile
+  // media query), but this animation still preloaded all three 3910px
+  // frames — ~1.2MB downloaded on every phone visit to paint nothing.
+  // Bail before any Image() is constructed. Re-checks on resize so a
+  // desktop browser narrowed and widened again still gets the animation.
+  if (window.matchMedia('(max-width: 768px)').matches) {
+    // The preloader is normally dismissed from inside loadCritical()'s
+    // callback (and by a 4s fallback further down) — both of which live
+    // below this return. Dismiss it here or mobile strands at "0%".
+    var mLoader = document.getElementById('loader');
+    if (mLoader) {
+      mLoader.classList.add('fade-out');
+      setTimeout(function () { mLoader.remove(); }, 700);
+    }
+    window.addEventListener('resize', function onWiden() {
+      if (!window.matchMedia('(max-width: 768px)').matches) {
+        window.removeEventListener('resize', onWiden);
+        location.reload();
+      }
+    }, { passive: true });
+    return;
   }
 
   // ── Canvas & elements ─────────────────────────────────────────────

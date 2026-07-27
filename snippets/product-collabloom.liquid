@@ -38,8 +38,8 @@
       --ink:           #2a1225;
       --warm-dim:      #6a5065;
       --muted:         #7a6872;
-      --heading:       'Playfair Display', Georgia, serif;
-      --body:          'DM Sans', -apple-system, sans-serif;
+      --heading:       'Playfair Display', 'Playfair Fallback', Georgia, serif;
+      --body:          'DM Sans', 'DM Sans Fallback', -apple-system, sans-serif;
     }
 
     /* ─── METALLIC ROSE ─────────────────────────────────────────── */
@@ -1496,7 +1496,7 @@
             {%- assign is_bottle = false -%}
             {%- if src contains 'bottle' -%}{%- assign is_bottle = true -%}{%- endif -%}
             <div class="cb-slide{% if is_bottle %} cb-slide--bottle{% endif %}{% if forloop.first %} is-active{% endif %}" data-cb-slide="{{ forloop.index0 }}" role="group" aria-roledescription="slide" aria-label="{{ forloop.index }} of {{ cb_slides.size }}">
-              <img src="{{ src | asset_url }}" alt="Collabloom — image {{ forloop.index }} of {{ cb_slides.size }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+              <img {% if forloop.first %}src="{{ src | asset_url }}"{% else %}data-src="{{ src | asset_url }}"{% endif %} alt="Collabloom — image {{ forloop.index }} of {{ cb_slides.size }}" width="800" height="1000" decoding="async" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
             </div>
           {%- endfor -%}
         </div>
@@ -1542,13 +1542,47 @@
     /* Medium auto-advance: 8 seconds per slide gives a comfortable reading
        window for the infographic slides (especially "Who is it for?",
        "Key Benefits", etc.) while still feeling alive. */
-    var AUTO_MS = 5000;   /* gentle auto-scroll — every 5s */
+    var AUTO_MS = 8000;   /* gentle auto-scroll — every 8s. The slides are
+                             text-heavy infographics; 5s was too quick to read. */
     var idx = 0;
     var timer = null;
+
+    /* On-demand slide loading.
+       All 9 slides carry data-src rather than src. `loading="lazy"` alone
+       was not enough: Chrome widens its lazy-load threshold on slow
+       connections, so on 4G it fetched all nine (~430KB) up front even
+       though only one is on screen. We load the active slide plus its
+       immediate neighbours, then quietly backfill the rest once the page
+       is idle so arrow/thumb navigation still feels instant. */
+    function loadSlide(i) {
+      var s = slides[i];
+      if (!s) return;
+      var img = s.querySelector('img[data-src]');
+      if (!img) return;
+      img.src = img.getAttribute('data-src');
+      img.removeAttribute('data-src');
+    }
+    function loadAround(i) {
+      loadSlide(i);
+      loadSlide((i + 1) % slides.length);
+      loadSlide((i - 1 + slides.length) % slides.length);
+    }
+    var backfilled = false;
+    function backfillRest() {
+      if (backfilled) return;
+      backfilled = true;
+      slides.forEach(function (_, i) { loadSlide(i); });
+    }
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(backfillRest, { timeout: 6000 });
+    } else {
+      setTimeout(backfillRest, 4000);
+    }
 
     function position() {
       var slide = slides[idx];
       if (!slide) return;
+      loadAround(idx);
       // Centre the active slide within the slider viewport
       var sliderW = slider.clientWidth;
       var slideCenter = slide.offsetLeft + (slide.offsetWidth / 2);

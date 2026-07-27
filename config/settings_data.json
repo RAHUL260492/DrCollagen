@@ -1,18 +1,1 @@
-{
-  "current": {
-    "tagline": "Japanese Marine Collagen, redefined.",
-    "color_accent": "#e8b72e",
-    "color_accent_deep": "#b8903a",
-    "color_ink": "#1a1a1a",
-    "color_footer_bg": "#1a1225"
-  },
-  "presets": {
-    "Default": {
-      "tagline": "Japanese Marine Collagen, redefined.",
-      "color_accent": "#e8b72e",
-      "color_accent_deep": "#b8903a",
-      "color_ink": "#1a1a1a",
-      "color_footer_bg": "#1a1225"
-    }
-  }
-}
+{"current":{"mid":"19gplkxn7wgg","envType":"production","goEnable":true,"checkoutSubText":"","checkoutEnableLogo":false,"checkoutEnableBanner":false,"goBuynowEnable":true,"buyNowText":"Buy It Now","buyNowSubText":"","buyNowEnableLogo":false,"buyNowEnableBanner":false,"enableIntlFlow":false,"tagline":"Japanese Marine Collagen, redefined.","color_accent":"#e8b72e","color_accent_deep":"#b8903a","color_ink":"#1a1a1a","color_footer_bg":"#1a1225","priClr":"#000000","secClr":"#ffffff","main-titile":"Checkout","btnBClr":"#000000","btnTextClr":"#ffffff","content_for_index":[],"blocks":{"1219337400145039034":{"type":"shopify:\/\/apps\/kwikpass\/blocks\/kp_login\/603e209b-d585-47ff-8592-837a4faa325b","disabled":false,"settings":{}}}},"presets":{"Default":{"tagline":"Japanese Marine Collagen, redefined.","color_accent":"#e8b72e","color_accent_deep":"#b8903a","color_ink":"#1a1a1a","color_footer_bg":"#1a1225"}}}
