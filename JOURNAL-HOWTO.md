@@ -10,7 +10,7 @@ Page so the URL exists) — everything else is a file in this repo.
 
 | URL | File | Product | Author |
 |---|---|---|---|
-| `/pages/journal` | `snippets/journal-index.liquid` | — | — |
+| `/pages/blog` | `snippets/journal-index.liquid` | — | — |
 | `/pages/collagen-for-skin` | `snippets/journal-collagen-for-skin.liquid` | Collabloom | Dr Raashi Mehta |
 | `/pages/glutathione-for-skin` | `snippets/journal-glutathione-for-skin.liquid` | Collabloom | Dr Raashi Mehta |
 | `/pages/collagen-for-joint-pain` | `snippets/journal-collagen-for-joint-pain.liquid` | Skelecoll | Dr Nachiket Pansey |
@@ -22,7 +22,7 @@ global was modified).
 Also changed:
 - `templates/page.liquid` — routes the five handles above
 - `layout/theme.liquid` — per-article `<title>` and `<meta description>`
-- `sections/footer.liquid` — Journal link corrected from `/blogs/journal` to `/pages/journal`
+- `sections/footer.liquid` — Journal link corrected from `/blogs/journal` to `/pages/blog`
 
 ---
 
@@ -37,7 +37,7 @@ Nothing renders until the Page object exists.
 5. **Template suffix:** leave as `page` (default). Do not create a custom template.
 6. Save.
 
-Do this for all five handles above, then visit `/pages/journal`.
+Do this for all five handles above, then visit `/pages/blog`.
 
 If a page shows the generic editorial layout instead of the article, the handle does not match
 the `{% when %}` string in `templates/page.liquid`. Handles are case-sensitive and Shopify

@@ -47,7 +47,7 @@
 
   {%- if template.name == 'page' -%}
     {%- case page.handle -%}
-      {%- when 'journal' -%}
+      {%- when 'blog' or 'journal' -%}
         {%- assign dc_title = 'The Dr Collagen Journal' -%}
         {%- assign dc_desc = 'Evidence-led writing on collagen, skin and joints from the doctors who formulate Dr Collagen.' -%}
       {%- when 'collagen-for-skin' -%}

@@ -24,7 +24,7 @@
     {% render 'our-story' %}
 
   {% comment %}─── Journal ─────────────────────────────────────────────{% endcomment %}
-  {% when 'journal' %}
+  {% when 'blog' or 'journal' %}
     {% render 'journal-index' %}
   {% when 'collagen-for-skin' %}
     {% render 'journal-collagen-for-skin' %}

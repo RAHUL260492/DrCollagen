@@ -29,7 +29,7 @@
     {% comment %}── Tip 12/13: breadcrumb + short keyword URL ──{% endcomment %}
     <nav class="jr-crumbs" aria-label="Breadcrumb">
       <a href="/">Home</a> &nbsp;/&nbsp;
-      <a href="/pages/journal">Journal</a> &nbsp;/&nbsp;
+      <a href="/pages/blog">Journal</a> &nbsp;/&nbsp;
       <span aria-current="page">«Short Title»</span>
     </nav>
 
@@ -235,7 +235,7 @@
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ shop.url }}/" },
-        { "@type": "ListItem", "position": 2, "name": "Journal", "item": "{{ shop.url }}/pages/journal" },
+        { "@type": "ListItem", "position": 2, "name": "Journal", "item": "{{ shop.url }}/pages/blog" },
         { "@type": "ListItem", "position": 3, "name": "«Short Title»" }
       ]
     },
