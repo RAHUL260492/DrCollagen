@@ -1,0 +1,647 @@
+{% comment %}
+  JOURNAL ARTICLE / pages/collagen-peptides
+  Primary keyword ...... collagen peptides
+  Secondary ............ hydrolyzed collagen, hydrolysed collagen peptides, collagen protein,
+                         what are collagen peptides, Pro-Hyp, Daltons, collagen absorption
+  Product ............... Skelecoll
+  Author ................ Dr Nachiket Pansey (Orthopaedic Surgeon, Founder)
+  Published ............. 2026-07-28   Updated: 2026-07-28
+  Title tag / meta description live in layout/theme.liquid (dc_seo block).
+{% endcomment %}
+
+{% render 'journal-styles' %}
+
+<article class="jr">
+  <div class="jr-wrap">
+
+    <nav class="jr-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> &nbsp;/&nbsp;
+      <a href="/pages/blog">Journal</a> &nbsp;/&nbsp;
+      <span aria-current="page">Collagen Peptides</span>
+    </nav>
+
+    <header>
+      <p class="jr-eyebrow">Joint Health</p>
+      <h1 class="jr-h1">Collagen Peptides: What They Are and How They Actually Work</h1>
+      <p class="jr-standfirst">
+        Whole collagen is far too large to be absorbed, which is the single fact most supplement
+        marketing skips over. This is the science pillar: what hydrolysis does, which fragments
+        survive digestion, and why the useful ones behave like instructions rather than raw material.
+      </p>
+
+      <div class="jr-byline">
+        {%- if settings.founder_1_image != blank -%}
+          <img src="{{ settings.founder_1_image | image_url: width: 92 }}" alt="Dr Nachiket Pansey, Orthopaedic Surgeon and Founder of Dr Collagen" width="46" height="46" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">NP</span>
+        {%- endif -%}
+        <div class="jr-byline-txt">
+          <div class="jr-byline-name"><a href="#author-bio">Dr Nachiket Pansey</a> · Orthopaedic Surgeon</div>
+          <div class="jr-byline-meta">
+            Published <time datetime="2026-07-28">28 July 2026</time>
+            &nbsp;·&nbsp; Updated <time datetime="2026-07-28">28 July 2026</time>
+            &nbsp;·&nbsp; 12 min read
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="jr-hero jr-hero--joint">
+      <img src="{{ 'skelecoll-bottle.png' | asset_url }}"
+           alt="Skelecoll collagen shot containing 10,000mg of hydrolysed Japanese marine collagen peptides in a 30ml serving"
+           width="420" height="560" loading="eager" fetchpriority="high">
+    </div>
+
+    <div class="jr-answer">
+      <h2>The short answer</h2>
+      <p>
+        <strong>Collagen peptides are collagen that has been broken apart with water and enzymes
+        into fragments small enough to cross the gut wall, mostly under 3,000 Daltons.</strong>
+        Once absorbed, a few specific fragments reach the bloodstream intact and act as signals to
+        the cells that build new collagen. Trials that showed benefit used 2.5g to 10g daily.
+      </p>
+      <ul>
+        <li><strong>Native collagen cannot be absorbed.</strong> A collagen molecule is a triple helix weighing roughly 300,000 Daltons. Hydrolysis cuts it into pieces about a hundredth of that size.</li>
+        <li><strong>Two dipeptides do most of the interesting work.</strong> Pro-Hyp and Hyp-Gly survive digestion, appear in blood within an hour or two, and prompt fibroblasts and chondrocytes to increase matrix production.</li>
+        <li><strong>Effective doses are gram-level.</strong> Skin trials used 2.5g to 5g daily over 8 to 12 weeks. Joint trials used 5g to 10g over 12 to 24 weeks.</li>
+        <li><strong>The honest limit:</strong> peptides in blood are measurable and the clinical outcomes are moderate, but nobody has proven that a swallowed peptide ends up inside a specific wrinkle or a specific knee. The mechanism is inferred, not observed.</li>
+      </ul>
+    </div>
+
+    <nav class="jr-toc" aria-label="Table of contents">
+      <h2>In this article</h2>
+      <ol>
+        <li><a href="#what-are-they">What are collagen peptides?</a></li>
+        <li><a href="#daltons">Why does size matter, and what is a Dalton?</a></li>
+        <li><a href="#mechanism">How do collagen peptides actually work?</a></li>
+        <li><a href="#evidence">What does the evidence show for collagen peptides at 5g to 10g?</a></li>
+        <li><a href="#labels">How do you read a hydrolysed collagen label in India?</a></li>
+        <li><a href="#timing">Does timing matter, or only consistency?</a></li>
+        <li><a href="#limits">What collagen peptides do not do</a></li>
+        <li><a href="#faq">Frequently asked questions</a></li>
+      </ol>
+    </nav>
+
+    <div class="jr-prose">
+
+      <h2 id="what-are-they">What are collagen peptides?</h2>
+
+      <p>
+        Collagen peptides are short chains of amino acids produced by breaking whole collagen into
+        fragments, a process called hydrolysis. They are the same protein you already have in your
+        skin, bone and cartilage, only cut into pieces small enough that your intestine can move
+        them into the bloodstream. Everything else in this article follows from that one structural
+        change.
+      </p>
+
+      <p>
+        Start with the parent molecule. Collagen is the protein that gives connective tissue its
+        tensile strength, and it accounts for roughly a third of all the protein in the human body.
+        Its shape is unusual: three long polypeptide chains wound around each other into a rope,
+        the triple helix, stabilised by an amino acid found almost nowhere else in nature at this
+        density. That amino acid is hydroxyproline. It is going to matter later, so remember it.
+      </p>
+
+      <p>
+        In tissue, those triple helices bundle into fibrils and fibrils bundle into fibres. The
+        result is mechanically excellent and nutritionally useless in its raw state. You cannot eat
+        a tendon and expect the collagen to arrive anywhere. The digestive tract has to dismantle
+        it, and if it cannot dismantle it far enough, the protein passes through largely unused.
+      </p>
+
+      <p>
+        Hydrolysis does the dismantling in advance, in a factory rather than in your gut. Collagen
+        is extracted from fish skin and scales, or from bovine hide, then treated with water, heat
+        and specific proteolytic enzymes that cut the chains at predictable points. What comes out
+        is a fine, near-tasteless powder that dissolves in cold water without gelling. On labels
+        you will see it written as hydrolysed collagen, hydrolyzed collagen with a z in American
+        labelling, collagen hydrolysate, or collagen peptides. Those four terms describe the same
+        material.
+      </p>
+
+      <p>
+        Gelatin sits in the middle and confuses people. Gelatin is collagen that has been denatured
+        by heat, so the triple helix has unwound, but the chains have not been chopped into small
+        peptides. That is why gelatin sets into a jelly and why collagen peptides do not. It is
+        also why a bowl of homemade bone broth is not a substitute for a measured peptide dose,
+        a point I make in the OPD at least twice a week.
+      </p>
+
+      <div class="jr-table-scroll">
+        <table class="jr-table">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Native collagen</th>
+              <th scope="col">Gelatin</th>
+              <th scope="col">Collagen peptides</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Structure</th><td>Intact triple helix</td><td>Unwound single chains</td><td>Short fragments</td></tr>
+            <tr><th scope="row">Rough molecular weight</th><td>About 300,000 Da</td><td>50,000 to 100,000 Da</td><td>Typically 1,000 to 3,000 Da</td></tr>
+            <tr><th scope="row">Cold water solubility</th><td>None</td><td>Poor, sets on cooling</td><td>Complete, no gelling</td></tr>
+            <tr><th scope="row">Absorption</th><td>Negligible as peptides</td><td>Partial, variable</td><td>Measurable in blood within hours</td></tr>
+            <tr><th scope="row">Everyday example</th><td>Tendon, fish skin, hide</td><td>Jelly, panna cotta, thickened broth</td><td>The powder inside a shot or sachet</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        If you want the tissue-type version of this story, which type I, II and III actually do and
+        where each one lives, that sits in a separate article on
+        <a href="/pages/types-of-collagen">types of collagen</a>. This one stays on the chemistry.
+      </p>
+
+      <h2 id="daltons">Why does size matter, and what is a Dalton?</h2>
+
+      <p>
+        Size matters because the small intestine only lets small things through, and a Dalton is
+        simply the unit used to weigh molecules. One Dalton is roughly the weight of a single
+        hydrogen atom. Peptides below about 2,000 to 3,000 Daltons cross the intestinal wall in
+        measurable quantities; a 300,000 Dalton triple helix does not cross at all.
+      </p>
+
+      <p>
+        Think of the gut lining as a wall with two kinds of opening. Free amino acids and very
+        short peptides, two or three units long, have dedicated transporters that carry them
+        through the cells lining the intestine. Larger molecules have no such escort. They either
+        get broken down further or they continue down the tract and leave.
+      </p>
+
+      <p>
+        This is why the number on a peptide specification sheet, the average molecular weight, is
+        the most informative figure a manufacturer can publish and the one most rarely printed on a
+        consumer pack. A good hydrolysate averages somewhere between 1,000 and 3,000 Daltons, which
+        works out to peptide chains of roughly ten to thirty amino acids. Push the hydrolysis too
+        far and you end up with free amino acids, which is just an expensive way of buying glycine.
+        Do not push far enough and you have sold your customer flavoured gelatin.
+      </p>
+
+      <p>
+        There is a marketing trap here worth naming. Lower is not automatically better. Brands
+        advertising extremely low molecular weights, in the low hundreds of Daltons, are describing
+        a product closer to free amino acids than to the peptides used in the published trials. The
+        specific fragments that seem to do the signalling are two and three amino acids long, and
+        they need to arrive as fragments, not as their component parts. A number in the 1,000 to
+        3,000 range is what the clinical literature actually studied.
+      </p>
+
+      <div class="jr-stats">
+        <div class="jr-stat">
+          <p class="jr-stat-num">300,000 Da</p>
+          <p class="jr-stat-lbl">Approximate weight of one intact collagen triple helix, far too large to be absorbed</p>
+          <p class="jr-stat-src"><a href="https://pubmed.ncbi.nlm.nih.gov/?term=collagen+triple+helix+structure+molecular+weight+review" target="_blank" rel="noopener nofollow">Annu Rev Biochem, collagen structure review</a></p>
+        </div>
+        <div class="jr-stat">
+          <p class="jr-stat-num">1 to 2 hrs</p>
+          <p class="jr-stat-lbl">Time to peak blood levels of hydroxyproline-containing peptides after an oral dose</p>
+          <p class="jr-stat-src"><a href="https://pubmed.ncbi.nlm.nih.gov/?term=Iwai+identification+of+food-derived+collagen+peptides+in+human+blood+after+oral+ingestion" target="_blank" rel="noopener nofollow">J Agric Food Chem, 2005</a></p>
+        </div>
+        <div class="jr-stat">
+          <p class="jr-stat-num">2.5g</p>
+          <p class="jr-stat-lbl">Daily collagen peptide dose that improved measured skin elasticity in 8 weeks</p>
+          <p class="jr-stat-src"><a href="https://pubmed.ncbi.nlm.nih.gov/?term=Proksch+oral+supplementation+specific+collagen+peptides+skin+physiology" target="_blank" rel="noopener nofollow">Skin Pharmacol Physiol, 2014</a></p>
+        </div>
+      </div>
+
+      <h2 id="mechanism">How do collagen peptides actually work?</h2>
+
+      <p>
+        They work as signals, not as building material. A small number of specific fragments,
+        chiefly the dipeptides Pro-Hyp and Hyp-Gly, survive digestion intact, appear in the
+        bloodstream, and reach connective tissue where they appear to prompt fibroblasts and
+        chondrocytes to increase their output of new collagen matrix. Your body does not take a
+        swallowed peptide and slot it into your skin.
+      </p>
+
+      <p>
+        That distinction is the whole article in one line. <strong>Collagen peptides are not
+        bricks, they are instructions.</strong> The intuitive model, that you eat collagen and it
+        becomes your collagen, is wrong in a way that actually matters, because if it were true
+        then any protein with a decent glycine content would do the same job, and the trials would
+        not show a difference between collagen peptides and an equivalent dose of ordinary protein.
+      </p>
+
+      <p>
+        Here is the sequence as the research describes it. Hydrolysed collagen is unusually rich in
+        proline and hydroxyproline. During digestion most of it is broken down to free amino acids
+        like any other protein. But peptide bonds involving hydroxyproline resist the common
+        digestive enzymes, so a fraction escapes complete breakdown. Iwai and colleagues showed in
+        2005 that after a dose of collagen hydrolysate, human blood contains identifiable
+        hydroxyproline-containing peptides, with Pro-Hyp the most abundant, peaking within one to
+        two hours.
+      </p>
+
+      <p>
+        Then the interesting part. Shigemura and colleagues reported in 2009 that Pro-Hyp added to
+        cultured fibroblasts, the cells that manufacture collagen in skin, increased their growth
+        and activity. Later work has described similar behaviour in chondrocytes, the equivalent
+        cells in cartilage. The working model is that circulating Pro-Hyp acts something like a
+        damage signal: the body reads a spike in collagen fragments as evidence that collagen
+        somewhere has been broken down, and responds by upregulating repair. Whether that is the
+        complete explanation, I would not bet on. It is the best one currently available.
+      </p>
+
+      <p>
+        Two honest caveats belong here rather than at the end. First, most of the fibroblast and
+        chondrocyte work is in cell culture and animal models, and cells in a dish behave more
+        obligingly than cells in a fifty-year-old knee. Second, nobody has traced an individual
+        ingested peptide to a specific site of new collagen deposition in a living human. We have a
+        measurable blood signal, a plausible cellular mechanism, and clinical outcomes at the far
+        end. The middle of the chain is inferred.
+      </p>
+
+      <div class="jr-quote">
+        {%- if settings.founder_1_image != blank -%}
+          <img src="{{ settings.founder_1_image | image_url: width: 112 }}" alt="Dr Nachiket Pansey" width="56" height="56" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">NP</span>
+        {%- endif -%}
+        <div>
+          <blockquote>
+            "Patients ask me whether eating collagen turns into their collagen. It does not, and the
+            honest answer is more interesting than the marketing one. You are not supplying the
+            material, you are sending a message that material is needed. That also explains why the
+            effect is slow and why stopping for a fortnight undoes more than people expect."
+          </blockquote>
+          <cite><strong>Dr Nachiket Pansey</strong>, Orthopaedic Surgeon, Founder of Dr Collagen</cite>
+        </div>
+      </div>
+
+      <h2 id="evidence">What does the evidence show for collagen peptides at 5g to 10g?</h2>
+
+      <p>
+        Across skin and joint outcomes, the evidence is consistent, moderate in size, and slow to
+        appear. Skin trials at 2.5g to 5g daily have repeatedly improved measured elasticity and
+        hydration over 8 to 12 weeks. Joint trials at 5g to 10g daily have reduced activity-related
+        pain over 12 to 24 weeks. Nothing in that literature is dramatic.
+      </p>
+
+      <h3>Skin: Proksch et al., 2014</h3>
+      <p>
+        A double-blind, placebo-controlled trial gave women either 2.5g or 5g of specific collagen
+        peptides daily for eight weeks. Skin elasticity, measured instrumentally rather than by
+        self-report, improved significantly against placebo in both dose groups, with the effect
+        still partially present four weeks after supplementation stopped. Two things stand out: the
+        lower dose worked, and the benefit faded once the signal stopped arriving. The fuller
+        review of that literature sits in
+        <a href="/pages/collagen-for-skin">collagen for skin</a>.
+      </p>
+
+      <h3>Joints: Clark et al., 2008</h3>
+      <p>
+        The most cited joint trial followed 147 athletes at Penn State with activity-related joint
+        pain for 24 weeks on 10g of collagen hydrolysate daily against placebo. The collagen group
+        reported significantly less pain when walking, standing, carrying and lifting. It is a
+        functional result rather than an imaging result, which is worth remembering: pain scores
+        improved, cartilage was not shown to regrow.
+      </p>
+
+      <h3>Joints at a lower dose: Zdzieblik et al., 2017</h3>
+      <p>
+        Young adults with knee discomfort but no diagnosed arthritis took 5g of specific collagen
+        peptides daily for 12 weeks and reported significantly reduced activity-related knee pain.
+        This trial covers the largest real-world group, people with early wear rather than
+        established disease. The joint evidence in full sits in
+        <a href="/pages/collagen-for-joint-pain">collagen for joint pain</a>.
+      </p>
+
+      <h3>Bone: König et al., 2018</h3>
+      <p>
+        Postmenopausal women with reduced bone mineral density took 5g of collagen peptides daily
+        for twelve months and showed increased bone mineral density against placebo. Twelve months
+        is the point. Bone and cartilage operate on a timescale that makes a four-week trial of any
+        supplement close to meaningless.
+      </p>
+
+      <p>
+        Where does that leave the sceptic's objection, that collagen peptides are just protein?
+        Partly answered and partly open. Several trials used an isonitrogenous control, meaning the
+        placebo group received an equivalent amount of other protein, and collagen still came out
+        ahead, which points at the peptide signal rather than the amino acids. But collagen is a
+        poor protein by conventional standards, missing tryptophan entirely, and it should never
+        replace dal, paneer, eggs or whey in your daily intake. That comparison has its own article:
+        <a href="/pages/collagen-vs-whey-protein">collagen vs whey protein</a>.
+      </p>
+
+      <h2 id="labels">How do you read a hydrolysed collagen label in India?</h2>
+
+      <p>
+        Look for three things: the word hydrolysed or peptides rather than plain collagen, a dose
+        stated in milligrams or grams of collagen itself rather than of a proprietary blend, and an
+        FSSAI licence number on the pack. If any of the three is missing, you are guessing.
+      </p>
+
+      <p>
+        The vocabulary first. On an Indian label you will encounter <strong>hydrolysed collagen</strong>,
+        <strong>hydrolyzed collagen peptides</strong>, <strong>collagen hydrolysate</strong> and
+        <strong>collagen peptides</strong>, and for practical purposes these are interchangeable.
+        What should make you pause is a label that says only "marine collagen" or "collagen
+        protein" with no mention of hydrolysis, because unhydrolysed collagen in a drink is either
+        badly described or badly formulated.
+      </p>
+
+      <p>
+        Then the dose, which is where most of the disappointment in this category comes from. The
+        trials above used 2.5g to 10g. A sachet declaring "collagen blend 1,000mg" is at best a
+        tenth of a studied joint dose, and the word blend usually means the collagen is sharing
+        that thousand milligrams with several other ingredients. Convert everything to grams before
+        you compare, because 10,000mg and 10g are the same thing and packs switch units precisely
+        because the larger number looks better.
+      </p>
+
+      <p>
+        A few more checks I would apply, having read a lot of these packs:
+      </p>
+
+      <ul>
+        <li><strong>Source and type.</strong> Marine collagen from fish is type I, bovine is type I and III. If a pack says type II at gram-level doses, the type designation is doing no useful work, since hydrolysed type II behaves like any other peptide.</li>
+        <li><strong>Serving size versus per-100g figures.</strong> Some packs state content per 100g of powder, which is not what you are swallowing. Read the per-serving column.</li>
+        <li><strong>Added vitamin C.</strong> Not marketing. Vitamin C is a required co-factor for the enzymes that hydroxylate proline during collagen synthesis, so a peptide product without it is asking your body to build with one tool missing.</li>
+        <li><strong>Sugar.</strong> Many Indian collagen drinks carry 8g to 15g of added sugar per serving to cover the taste. Check the nutrition panel, not the front of the pack.</li>
+        <li><strong>FSSAI licence.</strong> A fourteen-digit number on the label. Its absence on an imported pack sold in India is a genuine red flag.</li>
+      </ul>
+
+      <p>
+        Format is a separate question, and one that changes the answer on both cost and compliance.
+        Tablets, capsules and liquid shots are compared properly in
+        <a href="/pages/collagen-tablets-vs-shots">collagen tablets vs capsules vs shots</a>, so I
+        will restrict myself to the arithmetic that belongs here: to reach 10g of collagen from
+        500mg tablets you would swallow twenty of them a day, which is why almost no tablet product
+        in the Indian market is delivering a studied dose.
+      </p>
+
+      <a class="jr-product" href="/products/skelecoll">
+        <img src="{{ 'skelecoll-bottle.png' | asset_url }}" alt="Skelecoll joint and bone support collagen peptide shot" width="240" height="240" loading="lazy">
+        <div>
+          <p class="jr-product-eyebrow">A studied peptide dose, not a token one</p>
+          <h3>Skelecoll</h3>
+          <p>
+            10,000mg Japanese hydrolysed marine collagen with 300mg glucosamine HCl, 120mg
+            hyaluronic acid, 250mg calcium, 600 IU vitamin D3, 50mg magnesium, 500mg Cissus
+            quadrangularis and 40mg vitamin C from amla. 13 actives, zero sugar, 40 kcal per 30ml
+            shot.
+          </p>
+          <span class="jr-cta">See the full formula →</span>
+        </div>
+      </a>
+
+      <h2 id="timing">Does timing matter, or only consistency?</h2>
+
+      <p>
+        Consistency matters, timing barely does. The empty-stomach rule that circulates online has
+        no meaningful trial support, and the studies that produced the results everyone quotes did
+        not control the time of day at all. Take it whenever you will reliably remember to take it.
+      </p>
+
+      <p>
+        The empty-stomach argument runs like this: food in the stomach slows gastric emptying and
+        competes for absorption, therefore peptide levels in blood will be lower. The first half is
+        true and the second half does not follow in any way that has been shown to change an
+        outcome. Peak plasma levels may shift by an hour. No trial has demonstrated that this
+        alters skin elasticity or joint pain scores after twelve weeks, and the trials that
+        produced those endpoints mostly instructed participants to take the dose daily without
+        specifying conditions.
+      </p>
+
+      <p>
+        The bedtime claim is similar. Growth hormone does peak in early sleep, and that is
+        biologically real, but the leap from that fact to "therefore collagen must be taken at
+        night" is an inference nobody has tested against a morning dose. If taking it at night helps
+        you remember, take it at night for that reason and not because of a hormone chart.
+      </p>
+
+      <p>
+        What does appear to matter, based on how these trials were run and on what I see in
+        follow-up:
+      </p>
+
+      <ul>
+        <li><strong>Daily, without gaps.</strong> The Pro-Hyp signal clears within hours. A dose taken four times a week is a signal that stops arriving for most of the week.</li>
+        <li><strong>A full dose, not a split one.</strong> Trials gave the full 2.5g to 10g as a single daily serving. There is no evidence that splitting helps and it doubles the number of chances to forget.</li>
+        <li><strong>Vitamin C on board.</strong> Either in the product or from your diet. Amla, guava, citrus and capsicum all do the job.</li>
+        <li><strong>Twelve weeks before you judge it.</strong> Proksch measured skin at eight weeks; the joint and bone trials needed twelve weeks to twelve months. Stopping at three weeks tells you nothing.</li>
+      </ul>
+
+      <figure class="jr-figure jr-figure--slide">
+        <img src="{{ 'skelecoll-slide-3.webp' | asset_url }}"
+             alt="Skelecoll daily use: one 30ml shot once daily, shake well, drink or dilute, keep moving, stay consistent, best served chilled"
+             width="800" height="1000" loading="lazy">
+        <figcaption>
+          One shot, once a day, taken on the days you do not feel like it. Adherence is the variable
+          that separates people who get a result from people who get an opinion.
+        </figcaption>
+      </figure>
+
+      <p>
+        On the practical side, a liquid peptide shot has one real advantage over powder and it is
+        not absorption, whatever the category likes to imply. It is that the dose is fixed and the
+        decision is already made. In India a daily 10g peptide dose in any format tends to land
+        somewhere between 60 and 120 rupees a day, and the cheapest product you abandon in week
+        three is more expensive than the one you finish.
+      </p>
+
+      <h2 id="limits">What collagen peptides do not do</h2>
+
+      <p>
+        They do not treat disease, they do not regrow cartilage, and they do not work fast. This
+        section exists because the gap between what the trials showed and what the category claims
+        is wide enough to be worth stating plainly, even on a page that sells a collagen product.
+      </p>
+
+      <ul>
+        <li><strong>No cartilage regrowth.</strong> No trial has demonstrated that oral collagen peptides regrow cartilage in humans. What they have shown is reduced pain and better function. Any brand claiming regrowth is describing a result nobody has produced.</li>
+        <li><strong>Not a treatment for arthritis.</strong> Collagen peptides support tissue that is under load. They do not modify the course of osteoarthritis or of any inflammatory arthritis, and rheumatoid arthritis in particular needs disease-modifying drugs, not a shot.</li>
+        <li><strong>Not a complete protein.</strong> Collagen contains no tryptophan and is low in several other essential amino acids. It cannot be counted towards your protein requirement in the way dal, paneer, eggs or whey can.</li>
+        <li><strong>Not proven to reverse ageing.</strong> Measured elasticity and hydration improved in trials lasting weeks. That is not the same as reversing anything, and the effect faded after supplementation stopped.</li>
+        <li><strong>Not for everyone.</strong> Marine peptides come from fish, so anyone with a fish or shellfish allergy should avoid them. If you are pregnant, breastfeeding, on prescription medication or have chronic kidney disease, ask your own doctor before adding a gram-level protein supplement.</li>
+      </ul>
+
+      <p>
+        One product-specific disclosure while I am at it. Skelecoll contains 300mg of glucosamine
+        HCl, and the glucosamine monotherapy trials used 1,500mg. That 300mg is a supporting
+        co-factor inside a stack built around the 10g collagen dose, and it should not be read as a
+        glucosamine therapy. If you want to test high-dose glucosamine on its own merits, buy it
+        separately at 1,500mg and judge it over three months.
+      </p>
+
+      <p class="jr-disclaimer">
+        This article is for general information and is not medical advice. Nutritional supplements
+        are not intended to diagnose, treat, cure or prevent any disease. If you are pregnant,
+        breastfeeding, taking prescription medication, or have a known fish or shellfish allergy,
+        speak to a qualified healthcare professional before starting supplementation.
+      </p>
+
+      <h2 id="faq">Frequently asked questions</h2>
+
+      <div class="jr-faq">
+        <details>
+          <summary>What is the difference between collagen and collagen peptides?</summary>
+          <p>
+            Collagen peptides are collagen that has been hydrolysed, meaning broken into fragments
+            of roughly 1,000 to 3,000 Daltons. Whole collagen is a triple helix of about 300,000
+            Daltons and is too large to be absorbed. The protein is identical; only the fragment
+            size differs, and that difference is what makes peptides usable.
+          </p>
+        </details>
+        <details>
+          <summary>Is hydrolyzed collagen the same as collagen peptides?</summary>
+          <p>
+            Yes. Hydrolysed collagen, hydrolyzed collagen peptides, collagen hydrolysate and
+            collagen peptides all describe the same enzymatically broken-down material. The spelling
+            with a z is simply American labelling convention. Gelatin is not the same thing, because
+            it is unwound but not cut into small peptides.
+          </p>
+        </details>
+        <details>
+          <summary>How do collagen peptides get absorbed into the body?</summary>
+          <p>
+            Peptides under roughly 2,000 to 3,000 Daltons cross the intestinal wall using peptide
+            transporters, and a fraction containing hydroxyproline resists digestion completely.
+            Iwai and colleagues detected these fragments, mainly Pro-Hyp, in human blood peaking one
+            to two hours after an oral dose.
+          </p>
+        </details>
+        <details>
+          <summary>How many grams of collagen peptides should I take daily?</summary>
+          <p>
+            Skin trials used 2.5g to 5g daily and joint trials used 5g to 10g daily. Skelecoll
+            provides 10,000mg, which is 10g, in a single 30ml shot, matching the dose used in the
+            24-week athlete trial by Clark and colleagues. Take it daily rather than in bursts.
+          </p>
+        </details>
+        <details>
+          <summary>Should collagen peptides be taken on an empty stomach?</summary>
+          <p>
+            It makes little practical difference. Food may shift peak blood levels by about an hour,
+            but no trial has shown that this changes skin or joint outcomes at twelve weeks. Pick
+            the time of day you will actually stick to, because consistency changes results and
+            timing does not.
+          </p>
+        </details>
+        <details>
+          <summary>Are collagen peptides the same as collagen protein powder?</summary>
+          <p>
+            Usually yes, since most products sold as collagen protein are hydrolysed peptides. But
+            collagen is an incomplete protein with no tryptophan, so it should not replace whey,
+            dal, paneer or eggs in your protein intake. Treat it as a targeted supplement for
+            connective tissue rather than a protein source.
+          </p>
+        </details>
+      </div>
+
+      <section class="jr-sources">
+        <h2>Sources</h2>
+        <ol>
+          <li>Iwai K, et al. "Identification of food-derived collagen peptides in human blood after oral ingestion of gelatin hydrolysates." <em>Journal of Agricultural and Food Chemistry</em>, 2005. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Iwai+identification+of+food-derived+collagen+peptides+in+human+blood+after+oral+ingestion+gelatin+hydrolysates" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Shigemura Y, et al. "Effect of prolyl-hydroxyproline (Pro-Hyp), a food-derived collagen peptide in human blood, on growth of fibroblasts from mouse skin." <em>Journal of Agricultural and Food Chemistry</em>, 2009. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Shigemura+prolyl-hydroxyproline+Pro-Hyp+food-derived+collagen+peptide+fibroblasts" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Proksch E, et al. "Oral supplementation of specific collagen peptides has beneficial effects on human skin physiology." <em>Skin Pharmacology and Physiology</em>, 2014. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Proksch+oral+supplementation+specific+collagen+peptides+beneficial+effects+human+skin+physiology" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Clark KL, et al. "24-week study on the use of collagen hydrolysate as a dietary supplement in athletes with activity-related joint pain." <em>Current Medical Research and Opinion</em>, 2008. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Clark+24-week+collagen+hydrolysate+athletes+activity-related+joint+pain" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Zdzieblik D, et al. "Improvement of activity-related knee joint discomfort following supplementation of specific collagen peptides." <em>Applied Physiology, Nutrition, and Metabolism</em>, 2017. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Zdzieblik+activity-related+knee+joint+discomfort+collagen+peptides" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>König D, et al. "Specific collagen peptides improve bone mineral density and bone markers in postmenopausal women." <em>Nutrients</em>, 2018. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Konig+specific+collagen+peptides+bone+mineral+density+postmenopausal+women" target="_blank" rel="noopener nofollow">PubMed</a></li>
+        </ol>
+      </section>
+
+      <aside class="jr-author" id="author-bio">
+        {%- if settings.founder_1_image != blank -%}
+          <img src="{{ settings.founder_1_image | image_url: width: 168 }}" alt="Dr Nachiket Pansey" width="84" height="84" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">NP</span>
+        {%- endif -%}
+        <div>
+          <p class="jr-author-eyebrow">About the author</p>
+          <h2>Dr Nachiket Pansey</h2>
+          <p class="jr-author-role">Orthopaedic Surgeon · Founder, Dr Collagen</p>
+          <p>
+            Dr Nachiket Pansey is an orthopaedic surgeon and the founder of Dr Collagen. He read the
+            peptide absorption literature properly only after patients started arriving with 500mg
+            collagen tablets and asking why nothing had changed, and the molecular weight question
+            turned out to explain most of it. Skelecoll was built around a 10g peptide dose because
+            that is the number the trials used.
+          </p>
+          <p>
+            He writes the joint and bone health section of the Dr Collagen Journal.
+            <a href="/pages/our-story">Read the founders' story →</a>
+          </p>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <div class="jr-wrap jr-wrap--wide">
+    <section class="jr-related">
+      <h2>Keep reading</h2>
+      <div class="jr-related-grid">
+        <a class="jr-related-card" href="/pages/types-of-collagen">
+          <p class="jr-related-cat">Joint Health</p>
+          <h3>Types of Collagen: 1 vs 2 vs 3 Explained</h3>
+          <p class="jr-related-dek">Which type lives where, which ones a supplement can realistically influence, and why the number on the pack is often decoration.</p>
+        </a>
+        <a class="jr-related-card" href="/pages/collagen-tablets-vs-shots">
+          <p class="jr-related-cat">Joint Health</p>
+          <h3>Collagen Tablets vs Capsules vs Shots</h3>
+          <p class="jr-related-dek">Format changes the dose you can realistically swallow. The arithmetic, the cost per gram, and what people actually stick to.</p>
+        </a>
+        <a class="jr-related-card" href="/pages/collagen-for-joint-pain">
+          <p class="jr-related-cat">Joint Health</p>
+          <h3>Collagen for Joint Pain: What the Research Actually Shows</h3>
+          <p class="jr-related-dek">Cartilage has no blood supply, which is why repair is slow. The trials, the doses that worked, and how collagen compares with glucosamine.</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</article>
+
+{% comment %} ─── Structured data: Article + Breadcrumb + FAQ ─────────────── {% endcomment %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "Collagen Peptides: What They Are and How They Actually Work",
+      "description": "An orthopaedic surgeon explains what collagen peptides are, why hydrolysis matters, how Pro-Hyp and Hyp-Gly signal fibroblasts and chondrocytes, and the 2.5g to 10g doses used in trials.",
+      "image": "{{ 'skelecoll-bottle.png' | asset_url | prepend: request.origin }}",
+      "datePublished": "2026-07-28",
+      "dateModified": "2026-07-28",
+      "inLanguage": "en",
+      "articleSection": "Joint Health",
+      "keywords": "collagen peptides, hydrolyzed collagen, hydrolysed collagen peptides, collagen protein, collagen absorption, Pro-Hyp",
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ shop.url }}/pages/collagen-peptides" },
+      "author": {
+        "@type": "Person",
+        "name": "Dr Nachiket Pansey",
+        "jobTitle": "Orthopaedic Surgeon",
+        "description": "Orthopaedic surgeon and founder of Dr Collagen, focused on joint preservation, post-operative recovery and age-related musculoskeletal decline.",
+        "url": "{{ shop.url }}/pages/our-story"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ shop.name }}",
+        "url": "{{ shop.url }}"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ shop.url }}/" },
+        { "@type": "ListItem", "position": 2, "name": "Journal", "item": "{{ shop.url }}/pages/blog" },
+        { "@type": "ListItem", "position": 3, "name": "Collagen Peptides" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "What is the difference between collagen and collagen peptides?", "acceptedAnswer": { "@type": "Answer", "text": "Collagen peptides are collagen that has been hydrolysed, meaning broken into fragments of roughly 1,000 to 3,000 Daltons. Whole collagen is a triple helix of about 300,000 Daltons and is too large to be absorbed. The protein is identical; only the fragment size differs, and that difference is what makes peptides usable." } },
+        { "@type": "Question", "name": "Is hydrolyzed collagen the same as collagen peptides?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Hydrolysed collagen, hydrolyzed collagen peptides, collagen hydrolysate and collagen peptides all describe the same enzymatically broken-down material. The spelling with a z is simply American labelling convention. Gelatin is not the same thing, because it is unwound but not cut into small peptides." } },
+        { "@type": "Question", "name": "How do collagen peptides get absorbed into the body?", "acceptedAnswer": { "@type": "Answer", "text": "Peptides under roughly 2,000 to 3,000 Daltons cross the intestinal wall using peptide transporters, and a fraction containing hydroxyproline resists digestion completely. Iwai and colleagues detected these fragments, mainly Pro-Hyp, in human blood peaking one to two hours after an oral dose." } },
+        { "@type": "Question", "name": "How many grams of collagen peptides should I take daily?", "acceptedAnswer": { "@type": "Answer", "text": "Skin trials used 2.5g to 5g daily and joint trials used 5g to 10g daily. Skelecoll provides 10,000mg, which is 10g, in a single 30ml shot, matching the dose used in the 24-week athlete trial by Clark and colleagues. Take it daily rather than in bursts." } },
+        { "@type": "Question", "name": "Should collagen peptides be taken on an empty stomach?", "acceptedAnswer": { "@type": "Answer", "text": "It makes little practical difference. Food may shift peak blood levels by about an hour, but no trial has shown that this changes skin or joint outcomes at twelve weeks. Pick the time of day you will actually stick to, because consistency changes results and timing does not." } },
+        { "@type": "Question", "name": "Are collagen peptides the same as collagen protein powder?", "acceptedAnswer": { "@type": "Answer", "text": "Usually yes, since most products sold as collagen protein are hydrolysed peptides. But collagen is an incomplete protein with no tryptophan, so it should not replace whey, dal, paneer or eggs in your protein intake. Treat it as a targeted supplement for connective tissue rather than a protein source." } }
+      ]
+    }
+  ]
+}
+</script>
