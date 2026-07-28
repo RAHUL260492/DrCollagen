@@ -1218,8 +1218,12 @@
     .quality-row .q-icon {
       width: 32px; height: 32px; border-radius: 10px;
       background: var(--accent-soft);
+      color: var(--gold, #b8903a);
       display: flex; align-items: center; justify-content: center;
       font-size: 15px; flex-shrink: 0;
+    }
+    .quality-row .q-icon svg {
+      width: 18px; height: 18px; display: block;
     }
     .quality-row .q-text {
       font-size: 13px; font-weight: 400;
@@ -1488,8 +1492,10 @@
       .nav-cta { display: none; }
       .nav-hamburger { display: block; }
 
-      /* Light sections */
-      #products, #science, #stats, #about, #ingredients, #cta, #testimonials { padding: 80px 24px; }
+      /* Light sections: 64px rhythm on mobile/tablet so stacked neighbour paddings
+         stay ~110px max; 20px gutter matches the .m-section base */
+      #products, #science, #stats, #about, #ingredients, #cta, #testimonials { padding: 64px 20px; }
+      .section-header { margin-bottom: 44px; }
       .science-inner, .about-inner { grid-template-columns: 1fr; gap: 48px; }
       .stats-grid { grid-template-columns: repeat(2,1fr); }
       .ingredients-grid { grid-template-columns: 1fr 1fr; }
@@ -1576,6 +1582,46 @@
 
       /* Performance: reduce particles, hide grain */
       #film-grain { display: none; }
+    }
+
+    /* Ingredients — mobile density pass: icon tile inline with title,
+       tighter padding/gaps. Placed after the ≤900/≤600 blocks so it wins
+       the cascade over the shared section-padding + grid rules above. */
+    @media (max-width: 900px) {
+      #ingredients { padding: 64px 20px; }
+      .ingredients-grid { margin-top: 40px; gap: 14px; }
+      .ingr-card {
+        padding: 20px;
+        border-radius: 16px;
+        display: grid;
+        grid-template-columns: 40px 1fr;
+        grid-template-areas:
+          "icon name"
+          "desc desc"
+          "tag  tag";
+        column-gap: 14px;
+        row-gap: 12px;
+        align-items: center;
+        align-content: start;
+      }
+      /* No hover-lift on touch (sticky hover); subtle brand press instead */
+      .ingr-card:hover { transform: none; box-shadow: none; }
+      .ingr-card:active { transform: scale(.985); border-color: rgba(232,183,46,.35); }
+      .ingr-icon {
+        grid-area: icon;
+        width: 40px; height: 40px;
+        border-radius: 12px;
+        margin-bottom: 0;
+      }
+      .ingr-icon svg { width: 22px; height: 22px; }
+      .ingr-name { grid-area: name; font-size: 15px; line-height: 1.3; margin-bottom: 0; }
+      .ingr-desc { grid-area: desc; font-size: 14px; line-height: 1.6; }
+      .ingr-tag {
+        grid-area: tag; justify-self: start;
+        margin-top: 0;
+        font-size: 8.5px; letter-spacing: .18em;
+        padding: 3px 9px;
+      }
     }
 
     /* Small mobile ≤ 380px */
@@ -1675,6 +1721,7 @@
       font-size: 52px; line-height: 1;
       box-shadow: 0 14px 36px rgba(184, 144, 58, .32);
     }
+    .doc-strip-icon svg { width: 46px; height: 46px; display: block; }
     .doc-strip-content { flex: 1 1 auto; }
     .doc-strip-heading {
       font-family: 'Playfair Display', 'Playfair Fallback', Georgia, serif;
@@ -1710,9 +1757,10 @@
       border-radius: 999px;
     }
     @media (max-width: 720px) {
-      #doctor-strip { padding: 56px 20px; }
+      #doctor-strip { padding: 48px 20px; }
       .doc-strip-inner { flex-direction: column; align-items: flex-start; gap: 28px; }
       .doc-strip-icon { width: 72px; height: 72px; font-size: 38px; }
+      .doc-strip-icon svg { width: 34px; height: 34px; }
       .doc-strip-lede { font-size: 15px; }
     }
 
@@ -1883,7 +1931,7 @@
        there. (See the breakpoint rules at the bottom of this block.)
        ════════════════════════════════════════════════════════════════ */
     .m-module { display: none; }            /* shown only ≤768px */
-    .m-section { padding: 56px 22px; }
+    .m-section { padding: 48px 20px; }
     .m-eyebrow {
       font-size: 11px; font-weight: 600; letter-spacing: .26em;
       text-transform: uppercase; color: var(--accent-deep, #b8903a);
@@ -1921,7 +1969,7 @@
 
     /* Hero */
     .m-hero {
-      padding: calc(env(safe-area-inset-top) + 92px) 22px 44px;
+      padding: calc(env(safe-area-inset-top) + 92px) 20px 40px;
       background: linear-gradient(180deg, #fbf6e8 0%, #fffefa 100%);
       text-align: left;
     }
@@ -1937,7 +1985,17 @@
       margin: 18px 0 0; font-size: 11.5px; font-weight: 500;
       color: var(--accent-deep, #b8903a);
     }
+    .m-trust > span { white-space: nowrap; }
     .m-trust .dot { opacity: .45; }
+    /* Narrow phones can't fit the full row on one line — force the wrap
+       BEFORE the last item so a separator dot never dangles at a line end:
+       "Doctor-formulated · 10,000+ customers" / "Results from 28 days". */
+    @media (max-width: 479px) {
+      .m-trust { row-gap: 4px; }
+      .m-trust .dot:nth-child(4) {
+        flex-basis: 100%; height: 0; overflow: hidden; visibility: hidden;
+      }
+    }
     /* Two key stats above the fold */
     .m-stats {
       display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px;
@@ -1966,11 +2024,20 @@
        callouts span nearly the whole width, so no horizontal crop. */
     .m-figure--science img { width: 100%; height: auto; object-fit: contain; }
     .m-science { background: #fffefa; }
-    .m-range { background: linear-gradient(180deg, #fffefa 0%, #fbf6e8 100%); }
+    .m-range { background: linear-gradient(180deg, #fffefa 0%, #fbf6e8 100%); padding-top: 28px; }
+    /* The Range figure reuses the hero lineup photo (hero-frame-0003.webp).
+       Re-crop it here — taller 4:3 frame anchored to the right, where the four
+       bottles and goal icons sit — so it reads as a close-up product shot
+       rather than a repeat of the hero composition. Crop fraction depends only
+       on the container aspect, so it is identical on every device width. */
+    .m-range .m-figure { aspect-ratio: 4 / 3; }
+    .m-range .m-figure img {
+      width: 100%; height: 100%; object-fit: cover; object-position: 100% 50%;
+    }
 
     /* Decision cards (state 4) */
-    .m-decision { background: #fbf6e8; }
-    .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 24px; }
+    .m-decision { background: #fbf6e8; padding-top: 44px; padding-bottom: 40px; }
+    .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 6px 0 20px; }
     .m-card {
       display: flex; flex-direction: column; text-decoration: none; position: relative;
       background: #fff; border: 1px solid rgba(184,144,58,.18);
@@ -1994,16 +2061,34 @@
       color: var(--accent-deep, #b8903a); margin: 0;
     }
 
-    /* Sticky bottom CTA (mobile) — subtle, premium */
+    /* Sticky bottom CTA (mobile) — slim solid-gold band; the band itself is
+       the button surface, so no pill-in-a-strip double chrome. */
     .m-sticky-cta {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 420;
-      display: none; padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-      background: rgba(251,246,232,.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      border-top: 1px solid rgba(184,144,58,.22);
-      transform: translateY(110%); transition: transform .35s cubic-bezier(.2,.8,.2,1);
+      display: none; padding: 0 0 env(safe-area-inset-bottom);
+      background: var(--accent, #e8b72e);
+      border-top: 1px solid rgba(184,144,58,.45);
+      box-shadow: 0 -10px 28px rgba(184,144,58,.18);
+      transform: translateY(110%); transition: transform .5s cubic-bezier(.22,1,.36,1);
     }
     .m-sticky-cta.is-visible { transform: translateY(0); }
-    .m-sticky-cta .m-btn { margin: 0; }
+    .m-sticky-cta .m-btn {
+      margin: 0; min-height: 54px; padding: 12px 22px;
+      background: none; border-radius: 0; box-shadow: none;
+      color: #1a1225; font-weight: 700; letter-spacing: .16em;
+      transition: transform .18s cubic-bezier(.22,1,.36,1), background-color .18s ease;
+    }
+    .m-sticky-cta .m-btn:active { transform: scale(.97); background: rgba(26,18,37,.07); }
+    /* Dock the back-to-top FAB while the CTA band is up (they share the same
+       reveal threshold). When the band yields to the footer the FAB returns —
+       exactly where back-to-top is most useful. :has() is safe in 2026
+       browsers; without it the FAB simply behaves as before. */
+    @media (max-width: 768px) {
+      .dc-back-to-top { bottom: calc(20px + env(safe-area-inset-bottom)); }
+      body:has(.m-sticky-cta.is-visible) .dc-back-to-top {
+        opacity: 0; transform: translateY(16px); pointer-events: none;
+      }
+    }
 
     /* ─── Header polish ─────────────────────────────────────────────── */
     /* Desktop CTA — filled gold for stronger contrast, still premium */
@@ -2028,9 +2113,11 @@
         color: #1a1225; text-decoration: none;
       }
       .nav-shop-icon svg { width: 22px; height: 22px; }
+      /* Marquee band: balanced internal breathing between story module and grid */
+      .marquee-section { padding: 28px 0; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .m-sticky-cta { transition: none; }
+      .m-sticky-cta, .m-sticky-cta .m-btn, .dc-back-to-top { transition: none; }
     }
 
     /* ════════════════════════════════════════════════════════════════
@@ -2125,9 +2212,40 @@
     @media (max-width: 600px) {
       .range-helper { flex-direction: column; gap: 14px; }
       .range-chip { min-height: 44px; font-size: 13px; }
-      .cta-shortcuts { gap: 18px; }
+      .cta-shortcuts { gap: 18px; margin-top: 18px; }
+      #cta { padding-top: 56px; }
+      .cta-sub { margin-bottom: 34px; }
       .footer-newsletter { flex-direction: column; align-items: stretch; }
       .footer-news-form { max-width: 100%; }
+    }
+
+    /* Mobile <=900px: .btn-primary joins the flat-gold pill language.
+       The dark brown-to-ink gradient reads muddy on the cream grounds at
+       phone sizes — match the .m-btn--primary gold gradient + ink text used
+       by every other mobile CTA. Press scale(.97) and its reduced-motion
+       guard are inherited from the base rules. Desktop keeps the dark pill. */
+    @media (max-width: 900px) {
+      .btn-primary {
+        background: linear-gradient(135deg, #e8b72e 0%, #c99a2a 100%);
+        color: #2a1d12;
+        text-shadow: none;
+        box-shadow: 0 10px 26px rgba(184,144,58,.28);
+      }
+      .btn-primary::before { display: none; } /* white sheen sweep was tuned for the dark pill */
+      .btn-primary:hover {
+        filter: none;
+        box-shadow: 0 14px 32px rgba(184,144,58,.34);
+      }
+      /* Trust band + final CTA: full-width, centered, tap-safe (matches .m-btn) */
+      .doc-strip-cta .btn-primary,
+      #cta .cta-actions .btn-primary,
+      #cta .cta-actions .btn-outline {
+        display: flex; align-items: center; justify-content: center;
+        width: 100%; max-width: 420px; margin: 0 auto;
+        min-height: 52px; box-sizing: border-box;
+        font-size: 12px; letter-spacing: .14em;
+      }
+      #cta .cta-actions { flex-direction: column; gap: 12px; }
     }
 
     /* Short desktop/laptop viewports (e.g. 15" HD panels ~660-760px tall):
@@ -2562,7 +2680,7 @@
 <!-- ═══ FORMULATED BY DOCTORS STRIP ═══════════════════════════════════ -->
 <section id="doctor-strip">
   <div class="doc-strip-inner reveal">
-    <div class="doc-strip-icon" aria-hidden="true">⚕</div>
+    <div class="doc-strip-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.5a1.5 1.5 0 0 0-1.5 1.5v3.5H6A1.5 1.5 0 0 0 4.5 10v4A1.5 1.5 0 0 0 6 15.5h3.5V19a1.5 1.5 0 0 0 1.5 1.5h2a1.5 1.5 0 0 0 1.5-1.5v-3.5H18a1.5 1.5 0 0 0 1.5-1.5v-4A1.5 1.5 0 0 0 18 8.5h-3.5V5A1.5 1.5 0 0 0 13 3.5z"/></svg></div>
     <div class="doc-strip-content">
       <p class="section-overline">The Difference</p>
       <h2 class="doc-strip-heading">Formulated by <em>doctors</em>. Not by marketers.</h2>
@@ -2659,27 +2777,25 @@
     <div class="about-visual reveal">
       <div class="about-img-grid">
         <div class="about-img-cell tall">
-          <div class="inner" style="background:linear-gradient(160deg,#faf3dc,#fbf6e3); min-height:320px;">
-            <svg viewBox="0 0 80 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:180px;opacity:.5;">
-              <rect x="26" y="0" width="28" height="14" rx="5" fill="#c8a060"/>
-              <rect x="18" y="14" width="44" height="170" rx="12" fill="#f7edf2"/>
-              <rect x="18" y="14" width="44" height="170" rx="12" fill="url(#aboutGrad)" opacity="0.6"/>
-              <rect x="20" y="50" width="40" height="100" rx="6" fill="#e8b72e" opacity="0.12"/>
-              <text x="40" y="95" text-anchor="middle" fill="#4a3040" font-size="6" font-family="Georgia, serif" font-weight="400" letter-spacing="1">Dr</text>
-              <text x="40" y="107" text-anchor="middle" fill="#e8b72e" font-size="5" font-family="Georgia, serif" letter-spacing="2">COLLAGEN</text>
-              <defs><linearGradient id="aboutGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8b72e" stop-opacity="0.18"/><stop offset="100%" stop-color="#b8903a" stop-opacity="0.08"/></linearGradient></defs>
+          <div class="inner" style="background:radial-gradient(120% 90% at 50% 30%, rgba(232,183,46,.14), rgba(232,183,46,0) 62%), linear-gradient(160deg,#f8eed2,#fdf7e6); min-height:320px;">
+            <img src="{{ 'collabloom-bottle.png' | asset_url }}" alt="Dr Collagen marine collagen shot bottle" loading="lazy" style="width:auto;height:100%;max-height:300px;object-fit:contain;border-radius:0;filter:drop-shadow(0 18px 28px rgba(184,144,58,.28));">
+          </div>
+        </div>
+        <div class="about-img-cell">
+          <div class="inner" style="background:linear-gradient(135deg,#fbeed3,#fdf8ec);min-height:140px;flex-direction:column;gap:4px;text-align:center;">
+            <div style="font-size:9px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);">Up to</div>
+            <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:300;line-height:1;color:var(--accent);white-space:nowrap;">10g</div>
+            <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:4px;">Marine Collagen / Shot</div>
+          </div>
+        </div>
+        <div class="about-img-cell">
+          <div class="inner" style="background:linear-gradient(135deg,#faf3dc,#fbf6e3);min-height:140px;flex-direction:column;gap:10px;text-align:center;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#b8903a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block;">
+              <ellipse cx="10.2" cy="12" rx="6.9" ry="4.5"/>
+              <path d="M16.9 12l4.3-3.4c-.5 2.2-.5 4.6 0 6.8Z"/>
+              <path d="M12.6 8.4c1.3 2.3 1.3 4.9 0 7.2"/>
+              <circle cx="7" cy="10.8" r="0.6" fill="#b8903a" stroke="none"/>
             </svg>
-          </div>
-        </div>
-        <div class="about-img-cell">
-          <div class="inner" style="background:linear-gradient(135deg,#edf8f9,#f5fafb);min-height:140px;flex-direction:column;gap:8px;">
-            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:300;color:var(--accent);">Up to 10g</div>
-            <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#9a95a2;">Marine Collagen / Shot</div>
-          </div>
-        </div>
-        <div class="about-img-cell">
-          <div class="inner" style="background:linear-gradient(135deg,#faf3dc,#fbf6e3);min-height:140px;flex-direction:column;gap:8px;">
-            <div style="font-size:28px;">🐠</div>
             <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);">Japanese Source</div>
           </div>
         </div>
@@ -2698,28 +2814,28 @@
 
       <div class="about-qualities">
         <div class="quality-row">
-          <div class="q-icon">✓</div>
+          <div class="q-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 3.5v4.8a4.2 4.2 0 0 0 8.4 0V3.5"/><path d="M9.7 12.5v3.6a4.4 4.4 0 0 0 8.8 0v-2.4"/><circle cx="18.5" cy="10.8" r="2.4"/></svg></div>
           <div class="q-text">
             Dermatologist formulated
             <span>Every product reviewed by board-certified dermatologists.</span>
           </div>
         </div>
         <div class="quality-row">
-          <div class="q-icon">🏭</div>
+          <div class="q-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5V5.5h4v7l5-3.5v3.5l5-3.5v11.5"/><path d="M2.5 20.5h19"/><path d="M7.2 16.8h.01M11.7 16.8h.01M16.2 16.8h.01"/></svg></div>
           <div class="q-text">
             GMP-certified facility
             <span>Manufactured to pharmaceutical-grade standards.</span>
           </div>
         </div>
         <div class="quality-row">
-          <div class="q-icon">🌿</div>
+          <div class="q-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3H6.8A1.8 1.8 0 0 0 5 4.8v14.4A1.8 1.8 0 0 0 6.8 21h10.4a1.8 1.8 0 0 0 1.8-1.8V7.5L14.5 3z"/><path d="M14.5 3v4.5H19"/><path d="M8.5 11.5h7M8.5 15h7"/></svg></div>
           <div class="q-text">
             Full-label transparency
             <span>Every active and its dose printed on the label. No proprietary blends.</span>
           </div>
         </div>
         <div class="quality-row">
-          <div class="q-icon">🔬</div>
+          <div class="q-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2.5v5.5a2 2 0 0 0 .25 1l5.5 10a2 2 0 0 1-1.75 3H6a2 2 0 0 1-1.75-3l5.5-10a2 2 0 0 0 .25-1V2.5"/><path d="M6.5 15h11"/><path d="M8.5 2.5h7"/></svg></div>
           <div class="q-text">
             Third-party tested
             <span>Every batch independently verified for purity and dose.</span>
@@ -3089,9 +3205,13 @@
 (function () {
   var bar = document.getElementById('m-sticky-cta');
   if (!bar) return;
+  var footer = document.querySelector('footer');
   var ticking = false;
   function check() {
     var show = window.scrollY > window.innerHeight * 0.8;
+    if (show && footer) {
+      show = footer.getBoundingClientRect().top > window.innerHeight - 60;
+    }
     bar.classList.toggle('is-visible', show);
     ticking = false;
   }
@@ -3251,6 +3371,7 @@
     }, { passive: true });
     return;
   }
+
 
   // ── Canvas & elements ─────────────────────────────────────────────
   const section   = document.getElementById('scroll-hero');
