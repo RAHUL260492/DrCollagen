@@ -28,8 +28,20 @@
   <meta name="theme-color" content="#1a1225">
 
   <link rel="canonical" href="{{ canonical_url }}">
+  {%- comment -%}
+    Favicon. Without an icon link the browser falls back to requesting
+    /favicon.ico at the domain root, which Shopify does not serve: that 404
+    was the console error in Lighthouse's best-practices audit, and it left
+    the store with a blank browser tab. A merchant-uploaded favicon still
+    wins; the theme assets are the fallback when that setting is empty.
+  {%- endcomment -%}
   {%- if settings.favicon != blank -%}
     <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+  {%- else -%}
+    <link rel="icon" href="{{ 'favicon.ico' | asset_url }}" sizes="any">
+    <link rel="icon" type="image/png" href="{{ 'favicon.png' | asset_url }}">
+    <link rel="apple-touch-icon" href="{{ 'apple-touch-icon.png' | asset_url }}">
   {%- endif -%}
 
   {%- comment -%}
