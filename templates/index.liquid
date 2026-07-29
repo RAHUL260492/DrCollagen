@@ -1476,6 +1476,8 @@
     nav.in-dark-section .nav-logo { color: #f4f0ea; }
     nav.in-dark-section .nav-links a { color: rgba(244,240,234,.6); }
     nav.in-dark-section .nav-links a:hover { color: #f4f0ea; }
+    nav.in-dark-section .nav-icon { color: rgba(244,240,234,.85); }
+    nav.in-dark-section .nav-icon:hover { color: #f4f0ea; }
     nav.in-dark-section .nav-cta { border-color: rgba(244,240,234,.3); color: rgba(244,240,234,.8); }
     nav.in-dark-section .nav-cta:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
     nav.scrolled.in-dark-section {
@@ -2109,19 +2111,46 @@
     .nav-cta:hover { background: var(--accent-deep, #b8903a); border-color: var(--accent-deep, #b8903a); color: #fff !important; }
     nav.in-dark-section .nav-cta { color: #2a1d12 !important; }
     /* Mobile shop icon (next to hamburger) */
-    .nav-shop-icon { display: none; }
+    /* Account + cart icons. The old .nav-shop-icon was a bag that merely
+       scrolled to #products and only existed on mobile, so the store had no
+       header route to the cart or to customer login at any breakpoint. */
+    .drawer-account { display: flex; flex-direction: column; gap: 2px; margin: 6px 0 14px; }
+    .drawer-account a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 4px; min-height: 48px;
+      color: #2a2235; text-decoration: none; font-size: 15px; font-weight: 500;
+      border-bottom: 1px solid rgba(26,18,37,.07);
+    }
+    .drawer-account a svg { width: 20px; height: 20px; color: var(--accent-deep, #b8903a); flex-shrink: 0; }
+    .drawer-account a:active { background: rgba(232,183,46,.08); }
+    .nav-icons { display: inline-flex; align-items: center; gap: 2px; margin-left: 10px; }
+    .nav-icon {
+      position: relative;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px;
+      color: #1a1225; text-decoration: none;
+      transition: color .3s ease, transform .2s cubic-bezier(.22,1,.36,1);
+    }
+    .nav-icon svg { width: 21px; height: 21px; }
+    .nav-icon:hover { color: var(--accent-deep, #b8903a); }
+    .nav-icon:active { transform: scale(.94); }
+    .nav-cart-count {
+      position: absolute; top: 3px; right: 1px;
+      min-width: 17px; height: 17px; padding: 0 4px;
+      border-radius: 20px; background: var(--accent, #e8b72e); color: #2a1d12;
+      font-size: 10px; font-weight: 700; line-height: 17px; text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+    @media (prefers-reduced-motion: reduce) { .nav-icon:active { transform: none; } }
 
     /* ════ Breakpoint switch: mobile module on, canvas scroll off ════ */
     @media (max-width: 768px) {
       #scroll-hero, #chapter-markers { display: none !important; }
       .m-module { display: block; }
       .m-sticky-cta { display: block; }
-      .nav-shop-icon {
-        display: inline-flex; align-items: center; justify-content: center;
-        width: 40px; height: 40px; margin-left: auto; margin-right: 6px;
-        color: #1a1225; text-decoration: none;
-      }
-      .nav-shop-icon svg { width: 22px; height: 22px; }
+      .nav-icons { margin-left: auto; margin-right: 2px; gap: 0; }
+      .nav-icon { width: 38px; height: 38px; }
+      .nav-icon svg { width: 21px; height: 21px; }
       /* Marquee band: balanced internal breathing between story module and grid */
       .marquee-section { padding: 28px 0; }
     }
@@ -2324,9 +2353,15 @@
     {% if settings.show_testimonials %}<li><a href="#testimonials" id="nav-link-testimonials">Reviews</a></li>{% endif %}
   </ul>
   <a href="#products" id="nav-cta-shop" class="nav-cta">Shop the range</a>
-  <a href="#products" class="nav-shop-icon" id="nav-shop-icon" aria-label="Shop">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
-  </a>
+  <div class="nav-icons">
+    <a href="{{ routes.account_url }}" class="nav-icon" id="nav-account" aria-label="{% if customer %}Your account{% else %}Sign in{% endif %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg>
+    </a>
+    <a href="{{ routes.cart_url }}" class="nav-icon" id="nav-cart" aria-label="Cart{% if cart.item_count > 0 %}, {{ cart.item_count }} item{% if cart.item_count > 1 %}s{% endif %}{% endif %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+      {%- if cart.item_count > 0 -%}<span class="nav-cart-count">{{ cart.item_count }}</span>{%- endif -%}
+    </a>
+  </div>
   <button id="nav-hamburger" class="nav-hamburger"
           aria-label="Open menu" aria-controls="mobile-drawer" aria-expanded="false">
     <span></span><span></span><span></span>
@@ -2349,6 +2384,16 @@
     <li><a href="#about" id="drawer-link-about">About</a></li>
     {% if settings.show_testimonials %}<li><a href="#testimonials" id="drawer-link-testimonials">Reviews</a></li>{% endif %}
   </ul>
+  <div class="drawer-account">
+    <a href="{{ routes.account_url }}" id="drawer-link-account">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg>
+      <span>{% if customer %}Your account{% else %}Sign in{% endif %}</span>
+    </a>
+    <a href="{{ routes.cart_url }}" id="drawer-link-cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+      <span>Cart{% if cart.item_count > 0 %} ({{ cart.item_count }}){% endif %}</span>
+    </a>
+  </div>
   <div class="drawer-cta">
     <a href="#products" id="drawer-cta-shop" class="btn-primary">Shop the Range</a>
   </div>
