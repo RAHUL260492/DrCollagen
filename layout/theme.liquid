@@ -181,8 +181,12 @@
   <!-- Motion One — must load SYNCHRONOUSLY because the homepage and product
        snippets reference Motion.animate / Motion.inView inline. Adding defer
        here will cause those inline scripts to throw ReferenceError and the
-       homepage loader will hang. -->
-  <script src="https://cdn.jsdelivr.net/npm/motion@11.11.17/dist/motion.js"></script>
+       homepage loader will hang.
+       Self-hosted (was cdn.jsdelivr.net): as a parser-blocking script in head
+       it sat on the critical path, and a third-party origin meant a fresh DNS
+       + TLS handshake before it could even start. Same-origin reuses the
+       connection that already delivered the document. -->
+  <script src="{{ 'motion.js' | asset_url }}"></script>
 
   <!-- Shared luxury runtime — safe to defer, only listens for DOMContentLoaded -->
   <script src="{{ 'theme.js' | asset_url }}" defer></script>

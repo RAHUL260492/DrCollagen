@@ -167,6 +167,15 @@
       transition: opacity .7s ease, filter .7s ease;
     }
     #loader.fade-out { opacity: 0; filter: blur(8px); pointer-events: none; }
+    /* Mobile has no canvas hero to mask (#scroll-hero is display:none under
+       768px), so the loader only delayed first paint: the hero image finished
+       downloading at ~400ms but could not paint until JS removed this overlay
+       and its 700ms fade completed, which measured as a 2.3s LCP render delay.
+       Hiding it in CSS makes the mobile LCP purely network-bound. The JS
+       bail-out still calls fade-out/remove on it, which is harmless. */
+    @media (max-width: 768px) {
+      #loader { display: none !important; }
+    }
     .loader-brand {
       font-family: var(--heading);
       font-size: clamp(18px, 3vw, 26px);
