@@ -27,7 +27,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="theme-color" content="#1a1225">
 
-  <link rel="canonical" href="{{ canonical_url }}">
+  {%- comment -%}
+    Collabloom and Skelecoll are reachable at BOTH /pages/<handle> (legacy) and
+    /products/<handle> (where the nav, footer and sitemap now point). Both served
+    ~18,000 words of the same content and each declared itself canonical, so
+    Search Console reported "Duplicate, Google chose different canonical than
+    user" and the ranking signals were split across two URLs. Point the legacy
+    page at the product URL so they consolidate. A 301 redirect in admin is the
+    better fix; this holds the line until that exists.
+  {%- endcomment -%}
+  {%- assign dc_canonical = canonical_url -%}
+  {%- if template.name == 'page' -%}
+    {%- case page.handle -%}
+      {%- when 'collabloom' -%}{%- assign dc_canonical = shop.url | append: '/products/collabloom' -%}
+      {%- when 'skelecoll' -%}{%- assign dc_canonical = shop.url | append: '/products/skelecoll' -%}
+    {%- endcase -%}
+  {%- endif -%}
+  <link rel="canonical" href="{{ dc_canonical }}">
   {%- comment -%}
     Favicon. Without an icon link the browser falls back to requesting
     /favicon.ico at the domain root, which Shopify does not serve: that 404
