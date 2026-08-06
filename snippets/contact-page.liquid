@@ -1,0 +1,241 @@
+{% comment %}
+  CONTACT PAGE — /pages/contact
+  Routed from templates/page.liquid via {% when 'contact' %}.
+
+  Three things live here: the Shopify contact form (posts to the store's
+  notification email), a WhatsApp button, and the registered office address.
+  Styling uses the shared theme.css tokens so it matches the rest of the site.
+{% endcomment %}
+
+<style>
+  .ct {
+    font-family: var(--dc-body);
+    color: var(--dc-ink);
+    background: linear-gradient(180deg, #fdfaf3 0%, var(--dc-paper) 46%);
+    padding: var(--space-6) 0 var(--space-6);
+  }
+  .ct-wrap { max-width: 1100px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 40px); }
+
+  .ct-head { text-align: center; margin-bottom: var(--space-5); }
+  .ct-eyebrow {
+    font-size: var(--fs-xs); font-weight: 700; letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase; color: var(--dc-accent); margin: 0 0 var(--space-2);
+  }
+  .ct-head h1 {
+    font-family: var(--dc-heading);
+    font-size: clamp(38px, 5.4vw, 60px); font-weight: 400;
+    line-height: var(--lh-tight); letter-spacing: var(--ls-tight);
+    color: var(--dc-ink); margin: 0 0 var(--space-2);
+  }
+  .ct-head p {
+    font-size: var(--fs-md); line-height: 1.6; color: var(--dc-muted);
+    max-width: 540px; margin: 0 auto;
+  }
+
+  .ct-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: clamp(32px, 5vw, 64px);
+    align-items: start;
+  }
+
+  /* ── Form ─────────────────────────────────────────────────────────── */
+  .ct-card {
+    background: #fff; border: 1px solid var(--dc-line);
+    border-radius: var(--dc-radius-md); padding: clamp(26px, 4vw, 40px);
+    box-shadow: var(--dc-shadow-sm);
+  }
+  .ct-card h2 {
+    font-family: var(--dc-heading); font-size: var(--fs-xl); font-weight: 400;
+    color: var(--dc-ink); margin: 0 0 var(--space-3);
+  }
+  .ct-field { margin-bottom: 18px; }
+  .ct-field label {
+    display: block; font-size: var(--fs-xs); font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--dc-muted); margin-bottom: 8px;
+  }
+  .ct-field input, .ct-field textarea {
+    width: 100%; box-sizing: border-box;
+    font-family: var(--dc-body); font-size: var(--fs-base); color: var(--dc-ink);
+    background: var(--dc-paper); border: 1px solid var(--dc-line-strong);
+    border-radius: var(--dc-radius-sm); padding: 13px 15px;
+    transition: border-color var(--dur-fast) var(--ease-soft), background var(--dur-fast) var(--ease-soft);
+  }
+  .ct-field textarea { min-height: 132px; resize: vertical; line-height: 1.6; }
+  .ct-field input:focus, .ct-field textarea:focus {
+    outline: none; border-color: var(--dc-accent); background: #fff;
+  }
+  .ct-submit {
+    width: 100%; cursor: pointer; border: none;
+    font-family: var(--dc-body); font-size: var(--fs-xs); font-weight: 700;
+    letter-spacing: var(--ls-button); text-transform: uppercase;
+    color: #fff; background: var(--dc-ink);
+    border-radius: var(--dc-radius-pill); padding: 16px 24px;
+    transition: background var(--dur-med) var(--ease), transform var(--dur-fast) var(--ease);
+  }
+  .ct-submit:hover { background: var(--dc-ink-soft); }
+  .ct-submit:active { transform: scale(.985); }
+
+  .ct-note { font-size: var(--fs-xs); color: var(--dc-subtle); margin: 14px 0 0; line-height: 1.6; }
+
+  .ct-success, .ct-errors {
+    border-radius: var(--dc-radius-sm); padding: 14px 16px;
+    font-size: var(--fs-sm); line-height: 1.6; margin-bottom: 20px;
+  }
+  .ct-success { background: rgba(34,197,94,.10); border: 1px solid rgba(34,197,94,.35); color: #166534; }
+  .ct-errors  { background: rgba(220,38,38,.07); border: 1px solid rgba(220,38,38,.30); color: #991b1b; }
+  .ct-errors ul { margin: 6px 0 0; padding-left: 18px; }
+
+  /* ── Details column ───────────────────────────────────────────────── */
+  .ct-block { margin-bottom: var(--space-4); }
+  .ct-block h3 {
+    font-size: var(--fs-xs); font-weight: 700; letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase; color: var(--dc-accent); margin: 0 0 12px;
+  }
+  .ct-block address {
+    font-style: normal; font-size: var(--fs-base); line-height: 1.75;
+    color: var(--dc-ink-soft);
+  }
+  .ct-block a { color: var(--dc-ink-soft); text-decoration: none; border-bottom: 1px solid var(--dc-line-strong); }
+  .ct-block a:hover { color: var(--dc-accent); }
+
+  /* WhatsApp button — brand green, since users recognise it by colour. */
+  .ct-wa {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #25D366; color: #fff; text-decoration: none;
+    font-size: var(--fs-sm); font-weight: 500; letter-spacing: .02em;
+    padding: 13px 22px; border-radius: var(--dc-radius-pill);
+    border: none; box-shadow: 0 6px 18px rgba(37, 211, 102, .28);
+    transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-med) var(--ease);
+  }
+  .ct-wa:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(37, 211, 102, .34); color: #fff; }
+  .ct-wa:active { transform: scale(.98); }
+  .ct-wa svg { flex: 0 0 20px; }
+  .ct-wa-sub { display: block; font-size: var(--fs-xs); color: var(--dc-subtle); margin-top: 10px; }
+
+  @media (max-width: 860px) {
+    .ct-grid { grid-template-columns: 1fr; gap: 36px; }
+    .ct { padding: var(--space-5) 0; }
+  }
+</style>
+
+<section class="ct">
+  <div class="ct-wrap">
+
+    <header class="ct-head">
+      <p class="ct-eyebrow">Dr Collagen</p>
+      <h1>Contact us</h1>
+      <p>
+        Questions about a formula, an order, or which product suits you —
+        message us on WhatsApp for the quickest reply, or send the form below.
+      </p>
+    </header>
+
+    <div class="ct-grid">
+
+      {%- comment -%} Shopify's built-in contact form — posts to the store's
+        notification email set in Settings → Notifications. {%- endcomment -%}
+      <div class="ct-card">
+        <h2>Send us a message</h2>
+
+        {% form 'contact' %}
+          {%- if form.posted_successfully? -%}
+            <p class="ct-success">Thank you — your message has been sent. We usually reply within one working day.</p>
+          {%- endif -%}
+
+          {%- if form.errors -%}
+            <div class="ct-errors">
+              <strong>Please check the following:</strong>
+              <ul>
+                {%- for field in form.errors -%}
+                  <li>{{ form.errors.messages[field] }}</li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+
+          <div class="ct-field">
+            <label for="ct-name">Name</label>
+            <input type="text" id="ct-name" name="contact[name]" value="{{ form.name }}" autocomplete="name" required>
+          </div>
+
+          <div class="ct-field">
+            <label for="ct-email">Email</label>
+            <input type="email" id="ct-email" name="contact[email]" value="{{ form.email }}" autocomplete="email" required>
+          </div>
+
+          <div class="ct-field">
+            <label for="ct-phone">Phone (optional)</label>
+            <input type="tel" id="ct-phone" name="contact[phone]" value="{{ form.phone }}" autocomplete="tel" inputmode="tel">
+          </div>
+
+          <div class="ct-field">
+            <label for="ct-body">Message</label>
+            <textarea id="ct-body" name="contact[body]" required>{{ form.body }}</textarea>
+          </div>
+
+          <button type="submit" class="ct-submit">Send message</button>
+          <p class="ct-note">We reply within one working day, Monday to Saturday.</p>
+        {% endform %}
+      </div>
+
+      <div>
+        <div class="ct-block">
+          <h3>WhatsApp</h3>
+          <a class="ct-wa" href="https://wa.me/918889908081" target="_blank" rel="noopener"
+             aria-label="Chat with Dr Collagen on WhatsApp at +91 88899 08081">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.06 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.42-.07-.13-.27-.2-.57-.35z"/>
+              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm0 18.02h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.17 8.17 0 0 1-1.26-4.37c0-4.53 3.69-8.22 8.24-8.22a8.22 8.22 0 0 1 8.23 8.23c0 4.53-3.69 8.22-8.22 8.22z"/>
+            </svg>
+            Chat on WhatsApp
+          </a>
+          <span class="ct-wa-sub">+91 88899 08081 · fastest way to reach us</span>
+        </div>
+
+        <div class="ct-block">
+          <h3>Phone</h3>
+          <address><a href="tel:+918889908081">+91 88899 08081</a></address>
+        </div>
+
+        <div class="ct-block">
+          <h3>Registered Office</h3>
+          <address>
+            2nd Floor, B-9/404, Natraj Apartment,<br>
+            Wing B, Matunga,<br>
+            Mumbai &ndash; 400019,<br>
+            Maharashtra, India
+          </address>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% comment %} Structured data so the address and phone are machine-readable. {% endcomment %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "{{ shop.name }}",
+  "url": "{{ shop.url }}",
+  "telephone": "+918889908081",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "2nd Floor, B-9/404, Natraj Apartment, Wing B, Matunga",
+    "addressLocality": "Mumbai",
+    "postalCode": "400019",
+    "addressRegion": "Maharashtra",
+    "addressCountry": "IN"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+918889908081",
+    "contactType": "customer service",
+    "areaServed": "IN",
+    "availableLanguage": ["en", "hi"]
+  }
+}
+</script>

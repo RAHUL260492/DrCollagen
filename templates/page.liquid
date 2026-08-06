@@ -12,6 +12,8 @@
 {% endcomment %}
 
 {% case page.handle %}
+  {% when 'contact' %}
+    {% render 'contact-page' %}
   {% when 'collabloom' %}
     {% render 'product-collabloom' %}
   {% when 'skelecoll' %}
