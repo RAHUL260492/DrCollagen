@@ -100,18 +100,25 @@
   .ct-block a { color: var(--dc-ink-soft); text-decoration: none; border-bottom: 1px solid var(--dc-line-strong); }
   .ct-block a:hover { color: var(--dc-accent); }
 
-  /* WhatsApp button — brand green, since users recognise it by colour. */
-  .ct-wa {
+  /* WhatsApp button — brand green, since users recognise it by colour.
+     Selector is .ct-block a.ct-wa, not .ct-wa: the generic `.ct-block a`
+     rule above is specificity 0,1,1 and was overriding a bare .ct-wa
+     (0,1,0), painting the icon and label ink-dark on the green pill. */
+  .ct-block a.ct-wa {
     display: inline-flex; align-items: center; gap: 10px;
     background: #25D366; color: #fff; text-decoration: none;
     font-size: var(--fs-sm); font-weight: 500; letter-spacing: .02em;
     padding: 13px 22px; border-radius: var(--dc-radius-pill);
-    border: none; box-shadow: 0 6px 18px rgba(37, 211, 102, .28);
+    border: none; border-bottom: none;
+    box-shadow: 0 6px 18px rgba(37, 211, 102, .28);
     transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-med) var(--ease);
   }
-  .ct-wa:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(37, 211, 102, .34); color: #fff; }
-  .ct-wa:active { transform: scale(.98); }
-  .ct-wa svg { flex: 0 0 20px; }
+  .ct-block a.ct-wa:hover {
+    transform: translateY(-2px); box-shadow: 0 10px 24px rgba(37, 211, 102, .34);
+    color: #fff; border-bottom: none;
+  }
+  .ct-block a.ct-wa:active { transform: scale(.98); }
+  .ct-block a.ct-wa svg { flex: 0 0 21px; color: #fff; }
   .ct-wa-sub { display: block; font-size: var(--fs-xs); color: var(--dc-subtle); margin-top: 10px; }
 
   @media (max-width: 860px) {
