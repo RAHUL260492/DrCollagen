@@ -21,45 +21,6 @@
   }
   .jr-wrap--wide { max-width: 1140px; }
 
-  /* ─── Breakout ──────────────────────────────────────────────────────
-     The prose column is capped at 760px so a line of 18px text lands near
-     75 characters, which is where reading comfort sits. The problem was
-     that stat rows, comparison tables, infographics and the product card
-     were capped at the same 760px, so on a 1440px screen the whole article
-     rendered as a narrow ribbon with 340px of dead space either side.
-
-     These elements now break out past the measure while the text does not.
-     margin-left: 50% moves the element to the centre of the prose column,
-     then translateX(-50%) pulls it back by half its own width, so it stays
-     centred at whatever width it is given. Below 900px it is left alone,
-     because the column already fills a tablet or phone. */
-  @media (min-width: 900px) {
-    .jr-prose .jr-stats,
-    .jr-prose .jr-table-scroll,
-    .jr-prose .jr-figure,
-    .jr-prose .jr-product {
-      width: min(1060px, calc(100vw - 80px));
-      margin-left: 50%;
-      transform: translateX(-50%);
-    }
-    /* The answer box and FAQ are read, not scanned, so they stay narrower,
-       but a little wider than the measure to signal they are set apart. */
-    .jr-answer, .jr-faq {
-      width: min(880px, calc(100vw - 80px));
-      margin-left: 50%;
-      transform: translateX(-50%);
-    }
-  }
-
-  /* ─── Breadcrumb (also mirrored as BreadcrumbList JSON-LD) ─────── */
-  .jr-crumbs {
-    font-size: var(--fs-xs);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--dc-subtle);
-    padding-top: var(--space-5);
-    margin: 0 0 var(--space-3);
-  }
   .jr-crumbs a { color: var(--dc-subtle); text-decoration: none; }
   .jr-crumbs a:hover { color: var(--dc-accent); }
   .jr-crumbs span[aria-current] { color: var(--dc-muted); }
@@ -650,5 +611,35 @@
     .jr-author { grid-template-columns: 1fr; gap: 18px; text-align: center; }
     .jr-author img, .jr-author .jr-avatar-fallback { margin: 0 auto; }
     .jr-stat { padding: 20px 18px; }
+  }
+
+  /* ─── Breakout ──────────────────────────────────────────────────────
+     Declared last on purpose. An earlier version of this sat near the top of
+     the file and set margin-left:50% on .jr-answer and .jr-faq, but both
+     components declare a `margin` shorthand further down which reset it. The
+     transform still applied, so those boxes were dragged 440px left and ran
+     off the screen. Source order plus a two-class selector fixes that.
+
+     The prose column keeps a readable measure while data and media break
+     past it: margin-left:50% moves the element to the centre of the column,
+     translateX(-50%) pulls it back by half its own width, so it stays centred
+     at whatever width it is given. Only above 900px, since tablet and phone
+     already fill the screen. */
+  @media (min-width: 900px) {
+    .jr-prose .jr-stats,
+    .jr-prose .jr-table-scroll,
+    .jr-prose .jr-figure,
+    .jr-prose .jr-product {
+      width: min(1060px, calc(100vw - 80px));
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
+    /* Read, not scanned: wider than the measure, narrower than the media. */
+    .jr-wrap .jr-answer,
+    .jr-prose .jr-faq {
+      width: min(880px, calc(100vw - 80px));
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
   }
 </style>
