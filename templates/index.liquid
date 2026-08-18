@@ -5,6 +5,12 @@
       --accent-glow:  rgba(232,183,46,.3);
       --accent-soft:  rgba(232,183,46,.08);
       --gold:         #b8903a;
+      /* Text-safe gold. --accent (#e8b72e, 1.85:1) and --gold (#b8903a, 2.94:1)
+         both fail WCAG AA on the light grounds, so small copy set in them was
+         failing contrast across the page. #8a6a1e is already in the palette
+         (it anchors the .btn-primary gradient) and clears 5.0:1 on #fffefa.
+         Decorative use of --accent (fills, borders, icons) is unchanged. */
+      --accent-text:  #8a6a1e;
       --gold-dim:     rgba(184,144,58,.2);
       --bg:           #ffffff;
       --fg:           #1a1225;
@@ -1131,7 +1137,7 @@
       color: var(--warm-white);
       margin-bottom: 10px;
     }
-    .stat-big .counter { color: var(--accent); }
+    .stat-big .counter { color: var(--accent-text, #8a6a1e); }
     .stat-card .stat-label {
       font-size: 10px; font-weight: 500; letter-spacing: .25em;
       text-transform: uppercase; color: var(--muted);
@@ -1344,7 +1350,7 @@
       padding: 4px 10px; border-radius: 20px;
       background: var(--accent-soft);
       border: 1px solid rgba(232,205,135,.2);
-      color: var(--accent);
+      color: var(--accent-text, #8a6a1e);
     }
 
     /* ─── CTA SECTION ────────────────────────────────────────────── */
@@ -1431,7 +1437,7 @@
       color: var(--accent);
       background: var(--accent-soft);
     }
-    .footer-col h4 {
+    .footer-col h3 {
       font-size: 11px; font-weight: 600; letter-spacing: .25em;
       text-transform: uppercase; color: #ffffff;
       margin-bottom: 20px;
@@ -1896,7 +1902,7 @@
       font-weight: 700;
       letter-spacing: .24em;
       text-transform: uppercase;
-      color: var(--dc-accent, #b8903a);
+      color: var(--accent-text, #8a6a1e);
       margin: 0 0 12px;
     }
     .founder-name {
@@ -1945,7 +1951,7 @@
     .m-section { padding: 48px 20px; }
     .m-eyebrow {
       font-size: 11px; font-weight: 600; letter-spacing: .26em;
-      text-transform: uppercase; color: var(--accent-deep, #b8903a);
+      text-transform: uppercase; color: var(--accent-text, #8a6a1e);
       margin: 0 0 14px;
     }
     .m-h {
@@ -1954,7 +1960,7 @@
       color: #1a1225; margin: 0 0 14px;
       font-size: clamp(30px, 8.6vw, 40px);
     }
-    .m-h em { font-style: italic; color: var(--accent-deep, #b8903a); }
+    .m-h em { font-style: italic; color: var(--accent-text, #8a6a1e); }
     .m-sub {
       font-size: 15px; line-height: 1.65; color: var(--muted, #6b6472);
       margin: 0 0 22px; max-width: 30em;
@@ -2069,7 +2075,7 @@
     .m-card-goal { font-size: 13px; font-weight: 700; color: #1a1225; margin: 0 0 2px; }
     .m-card-name {
       font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
-      color: var(--accent-deep, #b8903a); margin: 0;
+      color: var(--accent-text, #8a6a1e); margin: 0;
     }
 
     /* Sticky bottom CTA (mobile) — slim solid-gold band; the band itself is
@@ -2215,7 +2221,7 @@
     /* Footer: product tags, coming-soon subhead, newsletter module */
     .footer-tag {
       font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
-      color: var(--gold, #b8903a); opacity: .8; margin-left: 4px;
+      color: var(--accent-text, #8a6a1e); opacity: 1; margin-left: 4px;
     }
     .footer-tag--soon { opacity: .78; }
     .footer-subhead {
@@ -2536,21 +2542,21 @@
     <h2 class="m-h">Targeted by goal.</h2>
     <div class="m-grid">
       <a class="m-card" href="/products/collabloom" id="m-card-collabloom">
-        <div class="m-card-img"><img src="{{ 'collabloom-bottle.png' | asset_img_url: 'x600' }}" alt="Collabloom" loading="lazy"></div>
+        <div class="m-card-img"><img src="{{ 'collabloom-bottle.png' | asset_img_url: 'x600' }}" alt="Collabloom" width="65" height="300" loading="lazy"></div>
         <p class="m-card-goal">Skin Glow</p><p class="m-card-name">Collabloom</p>
       </a>
       <a class="m-card" href="/products/skelecoll" id="m-card-skelecoll">
-        <div class="m-card-img"><img src="{{ 'skelecoll-bottle.png' | asset_img_url: 'x600' }}" alt="Skelecoll" loading="lazy"></div>
+        <div class="m-card-img"><img src="{{ 'skelecoll-bottle.png' | asset_img_url: 'x600' }}" alt="Skelecoll" width="73" height="300" loading="lazy"></div>
         <p class="m-card-goal">Bones &amp; Joints</p><p class="m-card-name">Skelecoll</p>
       </a>
       <a class="m-card m-card--soon" href="/pages/collatrim" id="m-card-collatrim">
         <span class="m-card-soon">Coming Soon</span>
-        <div class="m-card-img"><img src="{{ 'collatrim-bottle.png' | asset_img_url: 'x600' }}" alt="Collatrim" loading="lazy"></div>
+        <div class="m-card-img"><img src="{{ 'collatrim-bottle.png' | asset_img_url: 'x600' }}" alt="Collatrim" width="182" height="300" loading="lazy"></div>
         <p class="m-card-goal">Body Tone</p><p class="m-card-name">Collatrim</p>
       </a>
       <a class="m-card m-card--soon" href="/pages/metastable" id="m-card-metastable">
         <span class="m-card-soon">Coming Soon</span>
-        <div class="m-card-img"><img src="{{ 'metastable-bottle.png' | asset_img_url: 'x600' }}" alt="Metastable" loading="lazy"></div>
+        <div class="m-card-img"><img src="{{ 'metastable-bottle.png' | asset_img_url: 'x600' }}" alt="Metastable" width="180" height="300" loading="lazy"></div>
         <p class="m-card-goal">Gut, Energy &amp; Immunity</p><p class="m-card-name">Metastable</p>
       </a>
     </div>
@@ -2614,7 +2620,7 @@
       <a href="/products/collabloom" id="product-card-collabloom" class="product-card collabloom reveal reveal-delay-1">
         <div class="product-image-wrap">
           <!-- Shopify: replace src with {{ 'collabloom.png' | asset_url }} -->
-          <img src="{{ 'collabloom-bottle.png' | asset_img_url: 'x600' }}" alt="Collabloom bottle — marine collagen shot for skin, hair and nails" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <img src="{{ 'collabloom-bottle.png' | asset_img_url: 'x600' }}" alt="Collabloom bottle — marine collagen shot for skin, hair and nails" width="131" height="600" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
           <svg class="bottle-placeholder" style="display:none;" viewBox="0 0 60 160" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="20" y="0" width="20" height="10" rx="4" fill="#b05578"/>
             <rect x="15" y="10" width="30" height="130" rx="8" fill="#fde4ec"/>
@@ -2645,7 +2651,7 @@
       <a href="/products/skelecoll" id="product-card-skelecoll" class="product-card skelecoll reveal reveal-delay-2">
         <div class="product-image-wrap">
           <!-- Shopify: replace src with {{ 'skelecoll.png' | asset_url }} -->
-          <img src="{{ 'skelecoll-bottle.png' | asset_img_url: 'x600' }}" alt="Skelecoll bottle — Type II collagen for bone, joint and cartilage support" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <img src="{{ 'skelecoll-bottle.png' | asset_img_url: 'x600' }}" alt="Skelecoll bottle — Type II collagen for bone, joint and cartilage support" width="146" height="600" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
           <svg class="bottle-placeholder" style="display:none;" viewBox="0 0 60 160" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="20" y="0" width="20" height="10" rx="4" fill="#7d5a3e"/>
             <rect x="15" y="10" width="30" height="130" rx="8" fill="#f3e5d2"/>
@@ -2674,7 +2680,7 @@
       <a href="#products" id="product-card-collatrim" class="product-card collatrim is-coming-soon reveal reveal-delay-3">
         <div class="product-image-wrap">
           <!-- Shopify: replace src with {{ 'collatrim.png' | asset_url }} -->
-          <img src="{{ 'collatrim-bottle.png' | asset_img_url: 'x600' }}" alt="Collatrim bottle — collagen with metabolism support for body composition and skin tone" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <img src="{{ 'collatrim-bottle.png' | asset_img_url: 'x600' }}" alt="Collatrim bottle — collagen with metabolism support for body composition and skin tone" width="365" height="600" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
           <svg class="bottle-placeholder" style="display:none;" viewBox="0 0 60 160" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="20" y="0" width="20" height="10" rx="4" fill="#627636"/>
             <rect x="15" y="10" width="30" height="130" rx="8" fill="#ebeed6"/>
@@ -2702,7 +2708,7 @@
       <a href="#products" id="product-card-metastable" class="product-card metastable is-coming-soon reveal reveal-delay-4">
         <div class="product-image-wrap">
           <!-- Shopify: replace src with {{ 'metastable.png' | asset_url }} -->
-          <img src="{{ 'metastable-bottle.png' | asset_img_url: 'x600' }}" alt="Metastable bottle — collagen with adaptogens and probiotics for energy, gut and immunity" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <img src="{{ 'metastable-bottle.png' | asset_img_url: 'x600' }}" alt="Metastable bottle — collagen with adaptogens and probiotics for energy, gut and immunity" width="360" height="600" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
           <svg class="bottle-placeholder" style="display:none;" viewBox="0 0 60 160" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="20" y="0" width="20" height="10" rx="4" fill="#c8a060"/>
             <rect x="15" y="10" width="30" height="130" rx="8" fill="#ecf8e4"/>
@@ -3036,7 +3042,7 @@
         </div>
       </div>
       <div class="footer-col">
-        <h4>Shop</h4>
+        <h3>Shop</h3>
         <ul>
           <li><a href="/products/collabloom" id="footer-link-products-collabloom">Collabloom™ <span class="footer-tag">Skin Glow</span></a></li>
           <li><a href="/products/skelecoll" id="footer-link-products-skelecoll">Skelecoll™ <span class="footer-tag">Bones &amp; Joints</span></a></li>
@@ -3048,7 +3054,7 @@
         </ul>
       </div>
       <div class="footer-col">
-        <h4>Company</h4>
+        <h3>Company</h3>
         <ul>
           <li><a href="/pages/our-story" id="footer-link-company-story">Our Story</a></li>
           <li><a href="#about" id="footer-link-company-about">About</a></li>
@@ -3057,7 +3063,7 @@
         </ul>
       </div>
       <div class="footer-col">
-        <h4>Support</h4>
+        <h3>Support</h3>
         <ul>
           <li><a href="/pages/contact" id="footer-link-support-contact">Contact</a></li>
           <li><a href="/policies/shipping-policy" id="footer-link-support-shipping">Shipping</a></li>
