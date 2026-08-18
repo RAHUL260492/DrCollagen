@@ -159,7 +159,21 @@
        while removing the redundant italic + 600 mid-bolds. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  {%- comment -%}
+    Loaded off the critical path. As a plain <link rel="stylesheet"> to a
+    third-party origin this cost ~750ms of render-blocking time for 1.5KB:
+    almost all of it the DNS + TLS + request round trip, not the download.
+
+    media="print" makes the browser fetch it at low priority without blocking
+    render; onload flips it to media="all" and it applies normally. Safe here
+    only because the 'Playfair Fallback' / 'DM Sans Fallback' faces below are
+    metric-matched with size-adjust, so the swap does not reflow - that was
+    worth 0.515 CLS on the Collabloom page before those were added. Keep the
+    fallbacks in sync with this if the font stack ever changes.
+  {%- endcomment -%}
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" media="print" onload="this.media='all';this.onload=null">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap"></noscript>
 
   <style>
     /* ── Metric-matched font fallbacks (CLS) ─────────────────────────────
@@ -214,15 +228,17 @@
   <!-- Shared luxury theme system -->
   {{ 'theme.css' | asset_url | stylesheet_tag }}
 
-  <!-- Motion One — must load SYNCHRONOUSLY because the homepage and product
-       snippets reference Motion.animate / Motion.inView inline. Adding defer
-       here will cause those inline scripts to throw ReferenceError and the
-       homepage loader will hang.
-       Self-hosted (was cdn.jsdelivr.net): as a parser-blocking script in head
-       it sat on the critical path, and a third-party origin meant a fresh DNS
-       + TLS handshake before it could even start. Same-origin reuses the
-       connection that already delivered the document. -->
-  <script src="{{ 'motion.js' | asset_url }}"></script>
+  <!-- Motion One - deferred. It used to load synchronously here because the
+       homepage and product snippets destructure `Motion` in inline scripts,
+       and a bare `defer` made those throw ReferenceError. Those five blocks
+       are now gated on DOMContentLoaded, which deferred scripts are
+       guaranteed to run before, so `defer` is safe. As a parser-blocking
+       script this was the single largest render-blocking item on the site
+       (~1.2s per PageSpeed). Self-hosted rather than CDN so it reuses the
+       connection that already delivered the document.
+       If you re-add a bare `Motion` reference to an inline script, gate it on
+       DOMContentLoaded too - do not remove `defer` to make it work. -->
+  <script src="{{ 'motion.js' | asset_url }}" defer></script>
 
   <!-- Shared luxury runtime — safe to defer, only listens for DOMContentLoaded -->
   <script src="{{ 'theme.js' | asset_url }}" defer></script>

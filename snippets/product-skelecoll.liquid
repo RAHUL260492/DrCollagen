@@ -1942,6 +1942,17 @@
 </footer>
 
 <script>
+/* ── Motion One gate ──────────────────────────────────────────────
+   motion.js is loaded with `defer` so it no longer blocks first render
+   (it was costing ~1.2s on the critical path). Deferred scripts finish
+   executing before DOMContentLoaded fires, so gating this block on that
+   event guarantees `Motion` is defined by the time the code below
+   destructures it. If you ever remove `defer` from the motion.js tag in
+   layout/theme.liquid, this wrapper can go too - but not before.
+   Nothing here declares anything at top level, so the extra function
+   scope changes no behaviour. */
+document.addEventListener('DOMContentLoaded', function () {
+
 (function() {
   const nav = document.getElementById('navbar');
   function update() { nav.classList.toggle('scrolled', window.scrollY > 60); }
@@ -2183,4 +2194,6 @@
   });
 })();
 
+
+});
 </script>
