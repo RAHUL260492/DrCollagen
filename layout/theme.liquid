@@ -200,6 +200,14 @@
   {%- endcomment -%}
   {%- if template.name == 'index' -%}
     <link rel="preload" as="image" media="(min-width: 769px)" href="{{ 'hero-frame-0001.webp' | asset_url }}">
+    {%- comment -%}
+      The mobile hero is the LCP element. It lives inside .m-module, which is
+      display:none above 768px, so it only ever renders on a phone — one
+      candidate (800w) is enough and the preload can point straight at it.
+      Do not add a 1200w candidate to that <img> without updating this hint:
+      a preload that resolves to a different file than the renderer picks
+      costs one wasted download and delays LCP by ~1s on a 4G connection.
+    {%- endcomment -%}
     <link rel="preload" as="image" media="(max-width: 768px)" href="{{ 'hero-frame-0003-w800.webp' | asset_url }}">
   {%- endif -%}
 
