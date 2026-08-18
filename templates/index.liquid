@@ -1188,7 +1188,8 @@
     .about-float-badge .num {
       font-family: var(--heading);
       font-size: 36px; font-weight: 300;
-      color: var(--accent);
+      /* sits on solid #ffffff, where --accent is 1.87:1 */
+      color: var(--accent-text, #8a6a1e);
       line-height: 1;
     }
     .about-float-badge .txt {
@@ -2221,7 +2222,9 @@
     /* Footer: product tags, coming-soon subhead, newsletter module */
     .footer-tag {
       font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
-      color: var(--accent-text, #8a6a1e); opacity: 1; margin-left: 4px;
+      /* On the dark footer a LIGHTER gold is the accessible one:
+         #8a6a1e scores 3.60 here, #b8903a scores 6.13. */
+      color: var(--gold, #b8903a); opacity: 1; margin-left: 4px;
     }
     .footer-tag--soon { opacity: .78; }
     .footer-subhead {
@@ -2812,19 +2815,19 @@
     </div>
     <div class="stats-grid reveal reveal-delay-1">
       <div class="stat-card">
-        <div class="stat-big"><span class="counter" data-target="10000">0</span><span style="color:var(--accent)">+</span></div>
+        <div class="stat-big"><span class="counter" data-target="10000">0</span><span style="color:var(--accent-text,#8a6a1e)">+</span></div>
         <div class="stat-label">customers<br>and counting</div>
       </div>
       <div class="stat-card">
-        <div class="stat-big"><span class="counter" data-target="10">0</span><span style="color:var(--accent)">g</span></div>
+        <div class="stat-big"><span class="counter" data-target="10">0</span><span style="color:var(--accent-text,#8a6a1e)">g</span></div>
         <div class="stat-label">up to 10g collagen<br>per serving</div>
       </div>
       <div class="stat-card">
-        <div class="stat-big"><span class="counter" data-target="2000">0</span><span style="color:var(--accent)">Da</span></div>
+        <div class="stat-big"><span class="counter" data-target="2000">0</span><span style="color:var(--accent-text,#8a6a1e)">Da</span></div>
         <div class="stat-label">micro-hydrolysed<br>for absorption</div>
       </div>
       <div class="stat-card">
-        <div class="stat-big"><span class="counter" data-target="28">0</span><span style="color:var(--accent)">+</span></div>
+        <div class="stat-big"><span class="counter" data-target="28">0</span><span style="color:var(--accent-text,#8a6a1e)">+</span></div>
         <div class="stat-label">results from<br>28 days</div>
       </div>
     </div>
