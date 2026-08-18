@@ -2226,7 +2226,10 @@
          #8a6a1e scores 3.60 here, #b8903a scores 6.13. */
       color: var(--gold, #b8903a); opacity: 1; margin-left: 4px;
     }
-    .footer-tag--soon { opacity: .78; }
+    /* .78 opacity blends --gold toward the dark footer, landing at #957435
+       and 4.17:1, just under AA. .9 keeps the coming-soon items visibly
+       quieter than the live ones while clearing 5.16:1. */
+    .footer-tag--soon { opacity: .9; }
     .footer-subhead {
       font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
       color: rgba(255,255,255,.6); margin: 18px 0 8px;
