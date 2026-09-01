@@ -52,10 +52,35 @@
     letter-spacing: 0.08em;
     color: #fff;
     margin-bottom: 18px;
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
     text-decoration: none;
   }
-  .dc-footer-brand .dc-logo span { color: var(--dc-accent-bright); }
+  .dc-footer-brand .dc-logo__mark {
+    height: 46px;
+    width: auto;
+    flex-shrink: 0;
+    display: block;
+  }
+  .dc-footer-brand .dc-logo__text {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    line-height: 1;
+  }
+  .dc-footer-brand .dc-logo__main { font: inherit; }
+  .dc-footer-brand .dc-logo__main span { color: var(--dc-accent-bright); }
+  .dc-footer-brand .dc-logo__sub {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    white-space: nowrap;
+  }
   .dc-footer-brand p {
     font-size: 14px;
     line-height: 1.75;
@@ -179,7 +204,13 @@
     <div class="dc-footer-grid">
 
       <div class="dc-footer-brand dc-reveal-up">
-        <a href="{{ routes.root_url }}" class="dc-logo">Dr<span> Collagen</span></a>
+        <a href="{{ routes.root_url }}" class="dc-logo">
+          <img class="dc-logo__mark" src="{{ 'logo-mark-cream.png' | asset_img_url: 'x120' }}" alt="" width="40" height="69" loading="lazy">
+          <span class="dc-logo__text">
+            <span class="dc-logo__main">Dr<span> Collagen</span></span>
+            <span class="dc-logo__sub">Formulated by Doctors</span>
+          </span>
+        </a>
         <p>{{ section.settings.brand_blurb }}</p>
         <div class="dc-social" aria-label="Social links">
           {%- assign instagram_url = section.settings.instagram_url | default: 'https://www.instagram.com/drcollagen.india/' -%}
@@ -194,8 +225,9 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
           </a>
           {%- endif -%}
-          {%- if section.settings.youtube_url != blank -%}
-          <a href="{{ section.settings.youtube_url }}" aria-label="YouTube" rel="noopener" target="_blank">
+          {%- assign youtube_url = section.settings.youtube_url | default: 'https://www.youtube.com/@DrCollagen-b6' -%}
+          {%- if youtube_url != blank -%}
+          <a href="{{ youtube_url }}" aria-label="YouTube" rel="noopener" target="_blank">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
           </a>
           {%- endif -%}

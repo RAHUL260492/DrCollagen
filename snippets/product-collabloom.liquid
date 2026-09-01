@@ -5,6 +5,7 @@
   with the right handle, every price and CTA pulls from Shopify.
 {%- endcomment -%}
 {%- assign dc_handle = 'collabloom' -%}
+{%- assign dc_float_video = 'collabloom-float.mp4' -%}
 {%- assign dc_product = all_products[dc_handle] -%}
 {%- if dc_product and dc_product.id != blank -%}
   {%- assign dc_price = dc_product.price | money -%}
@@ -1398,6 +1399,260 @@
       .cb-sticky { display: flex; }
     }
 
+    /* ══ CONTENT CONDENSATION LAYER ═══════════════════════════════════
+       Progressive disclosure only: same information, less of it on screen
+       at once. Brand tokens, type and colour are untouched — this changes
+       hierarchy and wrapping, not the visual language. */
+
+    /* --- At-a-glance benefit strip: the "why should I care" answer --- */
+    #glance { padding-top: 0; }
+    .glance-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+      max-width: 1180px; margin: 0 auto;
+    }
+    .glance-card {
+      background: #fff;
+      border: 1px solid rgba(224,122,158,.18);
+      border-radius: 18px;
+      padding: 26px 24px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .glance-card > svg {
+      width: 26px; height: 26px; flex-shrink: 0;
+      stroke: var(--accent-deep); stroke-width: 1.5; fill: none;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .glance-card h3 {
+      font-family: var(--heading); font-size: 18px; font-weight: 500;
+      color: var(--ink); margin: 0; line-height: 1.25; letter-spacing: -.01em;
+    }
+    .glance-card p {
+      font-size: 13.5px; line-height: 1.6; color: var(--muted);
+      margin: 0; font-weight: 300;
+    }
+
+    /* --- Reusable "read more" disclosure for dense prose --- */
+    .dc-more > summary {
+      cursor: pointer; list-style: none;
+      font-size: 13px; font-weight: 500; letter-spacing: .04em;
+      color: var(--accent-deep);
+      display: inline-flex; align-items: center; gap: 8px;
+      min-height: 44px;
+    }
+    .dc-more > summary::-webkit-details-marker { display: none; }
+    .dc-more > summary::after {
+      content: ''; width: 7px; height: 7px; flex-shrink: 0;
+      border-right: 1.6px solid currentColor;
+      border-bottom: 1.6px solid currentColor;
+      transform: rotate(45deg) translateY(-2px);
+      transition: transform .25s ease;
+    }
+    .dc-more[open] > summary::after { transform: rotate(-135deg) translateY(1px); }
+    .dc-more .dc-more__label--less { display: none; }
+    .dc-more[open] .dc-more__label--more { display: none; }
+    .dc-more[open] .dc-more__label--less { display: inline; }
+
+    /* --- Ingredient cards as accordions --- */
+    .ing-card > summary { list-style: none; display: block; }
+    .ing-card > summary::-webkit-details-marker { display: none; }
+    .ing-headtext { min-width: 0; }
+    .ing-chev {
+      display: none; flex-shrink: 0; width: 9px; height: 9px;
+      border-right: 1.8px solid var(--accent-deep);
+      border-bottom: 1.8px solid var(--accent-deep);
+      transform: rotate(45deg); transition: transform .25s ease;
+    }
+    .ing-card[open] > summary .ing-chev { transform: rotate(-135deg); }
+
+    /* ══ MOBILE-FIRST CONDENSATION (phones + small tablets) ══════════ */
+    @media (max-width: 899px) {
+      /* Benefit strip: 2x2, tighter */
+      .glance-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .glance-card { padding: 18px 16px; gap: 8px; border-radius: 14px; }
+      .glance-card h3 { font-size: 15px; }
+      .glance-card p { font-size: 12.5px; line-height: 1.5; }
+      .glance-card > svg { width: 22px; height: 22px; }
+
+      /* Hero: bullets become a tight scannable list, not paragraphs */
+      .hero-bullets { gap: 9px; margin-bottom: 28px; }
+      .hero-bullets li { font-size: 13px; line-height: 1.45; align-items: flex-start; }
+      .hero-bullets li::before { margin-top: 4px; }
+      .hero-tagline { font-size: 15.5px; line-height: 1.55; }
+
+      /* Ingredients: collapse to a tappable accordion row */
+      .ing-card { padding: 4px 18px; }
+      .ing-card > summary {
+        display: flex; align-items: center; gap: 14px;
+        cursor: pointer; padding: 16px 0; min-height: 56px;
+      }
+      .ing-chev { display: block; }
+      .ing-icon {
+        width: 42px; height: 42px; border-radius: 12px;
+        margin-bottom: 0; flex-shrink: 0;
+      }
+      .ing-icon svg { width: 20px; height: 20px; }
+      .ing-headtext { flex: 1 1 auto; }
+      .ing-dose { font-size: 10.5px; letter-spacing: .12em; margin-bottom: 3px; }
+      .ing-name { font-size: 16px; line-height: 1.25; margin-bottom: 0; }
+      .ing-card__body { padding: 2px 0 18px; }
+      .ing-list li { font-size: 13.5px; line-height: 1.5; }
+
+      /* Section intros: shorter measure, less air */
+      .lede { font-size: 14.5px; line-height: 1.65; }
+
+      /* Timeline: compact cards */
+      .tl-text { font-size: 13px; line-height: 1.5; }
+
+      /* Results / stat cards */
+      .res-label { font-size: 12.5px; line-height: 1.5; }
+    }
+
+    @media (max-width: 420px) {
+      .glance-grid { gap: 10px; }
+      .glance-card { padding: 16px 14px; }
+      .glance-card h3 { font-size: 14px; }
+    }
+
+    /* ══ CONDENSATION — SECOND PASS ═══════════════════════════════════
+       #use, #timeline and #results. Same information, fewer screens. */
+    @media (max-width: 899px) {
+
+      /* --- How to use: tight numbered rows, instructions stay visible --- */
+      .use-steps { gap: 10px; margin-top: 24px; }
+      .use-step {
+        padding: 14px 16px; gap: 14px;
+        align-items: center; border-radius: 12px;
+      }
+      .use-step-num { width: 30px; height: 30px; font-size: 13px; }
+      .use-step-text h4 { font-size: 13.5px; margin-bottom: 2px; }
+      .use-step-text p { font-size: 12.5px; line-height: 1.5; }
+
+      /* --- Timeline: swipeable row rather than a stacked 2x2 block --- */
+      .tl-grid {
+        display: flex; grid-template-columns: none; gap: 12px;
+        overflow-x: auto; scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        border-top: none; border-bottom: none;
+        margin-inline: -20px; padding: 4px 20px 10px;
+        scrollbar-width: none;
+      }
+      .tl-grid::-webkit-scrollbar { display: none; }
+      .tl-item,
+      .tl-item:nth-child(odd),
+      .tl-item:nth-last-child(-n+2) {
+        flex: 0 0 74%; scroll-snap-align: start;
+        padding: 22px 20px;
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 16px; background: #fff;
+      }
+      .tl-week { font-size: 11px; letter-spacing: .2em; margin-bottom: 10px; }
+      .tl-num { font-size: 34px; margin-bottom: 8px; }
+
+      /* --- Results: compact credibility chips --- */
+      .res-grid { gap: 10px; }
+      .res-card { padding: 16px 14px; }
+      .res-proof { font-size: 16px; margin-bottom: 4px; }
+    }
+
+    /* ══ PACK SELECTOR ════════════════════════════════════════════════
+       The real variant names ("Pack of 1 Box (10 Bottles)") are far longer
+       than the original 140px basis assumed, so three cards wrapped 2 + 1
+       at ragged widths. Equal flex columns on desktop; a full-width stack
+       on mobile, where the name gets its own line above price + saving. */
+    .dc-pack-select { max-width: 560px; margin-top: 22px; }
+    .dc-pack { flex: 1 1 0; min-width: 0; }
+    .dc-pack__name { overflow-wrap: anywhere; }
+
+    @media (max-width: 899px) {
+      .dc-pack-select {
+        flex-direction: column; flex-wrap: nowrap;
+        max-width: 100%; gap: 10px;
+      }
+      .dc-pack {
+        width: 100%; flex: 0 0 auto;
+        flex-direction: row; flex-wrap: wrap; align-items: center;
+        column-gap: 10px; row-gap: 2px;
+        padding: 13px 16px; min-height: 56px;
+      }
+      .dc-pack__name  { flex: 1 1 100%; font-size: 14px; line-height: 1.3; }
+      .dc-pack__price { flex: 0 0 auto; font-size: 13.5px; font-weight: 600; color: var(--ink); }
+      .dc-pack__save  { flex: 0 0 auto; }
+      .dc-pack__rec   { top: -9px; right: 12px; }
+    }
+
+    /* ══ BUY ROW ══════════════════════════════════════════════════════
+       .btn-inline-form had no base style, so the form fell back to block
+       and the quantity stepper sat on its own line above the button. The
+       CTA section carried a local fix at 600px; this promotes it to the
+       shared rule so hero and CTA behave the same at every width. */
+    .btn-inline-form {
+      display: flex; align-items: center; gap: 12px; flex-wrap: nowrap;
+    }
+    .btn-inline-form .dc-qty { flex: 0 0 auto; }
+    .btn-inline-form .btn-primary { flex: 0 1 auto; }
+
+    @media (max-width: 899px) {
+      .btn-inline-form { width: 100%; gap: 10px; }
+      .btn-inline-form .btn-primary {
+        flex: 1 1 auto; min-width: 0; text-align: center;
+        padding-left: 16px; padding-right: 16px;
+      }
+    }
+
+    /* ══ FLOATING PRODUCT VIDEO (mobile) ══════════════════════════════
+       Small picture-in-picture style teaser above the sticky buy bar.
+       Muted native autoplay; tap to expand into a full-screen player
+       with sound. Desktop never shows it. */
+    .dc-fv, .dc-fv-modal { display: none; }
+    @media (max-width: 899px) {
+      .dc-fv {
+        display: block; position: fixed; left: 14px;
+        bottom: calc(94px + env(safe-area-inset-bottom));
+        width: 104px; aspect-ratio: 9 / 16; z-index: 455;
+        border-radius: 16px; overflow: hidden;
+        border: 2px solid #fff;
+        box-shadow: 0 12px 32px rgba(0,0,0,.3);
+        background: var(--theme-2);
+      }
+      .dc-fv[hidden] { display: none; }
+      .dc-fv__vid { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .dc-fv__tap {
+        position: absolute; inset: 0; border: 0; background: transparent;
+        padding: 0; cursor: pointer;
+      }
+      .dc-fv__close {
+        position: absolute; top: 4px; right: 4px; width: 28px; height: 28px;
+        border: 0; border-radius: 50%; cursor: pointer;
+        background: rgba(0,0,0,.55); color: #fff;
+        font-size: 16px; line-height: 1;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .dc-fv__hint {
+        position: absolute; right: 4px; bottom: 4px; width: 26px; height: 26px;
+        border-radius: 50%; pointer-events: none;
+        background: rgba(0,0,0,.55); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .dc-fv__hint svg { width: 13px; height: 13px; }
+      .dc-fv-modal {
+        display: flex; position: fixed; inset: 0; z-index: 600;
+        background: rgba(0,0,0,.85);
+        align-items: center; justify-content: center;
+        padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
+      }
+      .dc-fv-modal[hidden] { display: none; }
+      .dc-fv-modal video {
+        max-width: 100%; max-height: 82vh;
+        border-radius: 18px; background: #000;
+      }
+      .dc-fv-modal__close {
+        position: absolute; top: calc(14px + env(safe-area-inset-top)); right: 14px;
+        width: 44px; height: 44px; border: 0; border-radius: 50%; cursor: pointer;
+        background: rgba(255,255,255,.16); color: #fff; font-size: 22px; line-height: 1;
+        display: flex; align-items: center; justify-content: center;
+      }
+    }
+
   </style>
 
 <!-- ═══ SKIP TO CONTENT ═════════════════════════════════════════════ -->
@@ -1741,6 +1996,35 @@
   });
 </script>
 
+<!-- ═══ AT A GLANCE ════════════════════════════════════════════════ -->
+<section id="glance">
+  <div class="inner">
+    <p class="overline reveal" style="text-align:center;">What it does</p>
+    <div class="glance-grid">
+      <div class="glance-card reveal reveal-delay-1">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20M12 12l7.07-7.07M12 12L4.93 19.07M12 12l-7.07-7.07M12 12l7.07 7.07"/></svg>
+        <h3>Glow &amp; Even Tone</h3>
+        <p>Glutathione and Vitamin C target dullness and pigmentation.</p>
+      </div>
+      <div class="glance-card reveal reveal-delay-2">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z"/></svg>
+        <h3>Deep Hydration</h3>
+        <p>Hyaluronic acid and ceramides plump skin from within.</p>
+      </div>
+      <div class="glance-card reveal reveal-delay-3">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+        <h3>Sun-Damage Defence</h3>
+        <p>Polypodium leucotomos supports skin against UV, from the inside.</p>
+      </div>
+      <div class="glance-card reveal reveal-delay-4">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+        <h3>Hair &amp; Nails</h3>
+        <p>Zinc and biotin strengthen hair shafts and nail beds.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ THE PROMISE ═════════════════════════════════════════════════ -->
 <section id="promise">
   <div class="inner">
@@ -1754,7 +2038,10 @@
       <p class="overline">Why Collabloom</p>
       <h2 class="heading">Bloom into your <em>best skin</em>.</h2>
       <p>Collabloom combines micro-hydrolysed marine collagen with skin-focused co-factors to support elasticity, radiance, hair and nails from within — all in one 30ml daily shot, designed for daily use.</p>
-      <p>The formula pairs 8,000mg of Japanese hydrolysed marine collagen with 240mg of Polypodium leucotomos — a botanical that helps support the skin's defence against sun damage from within — plus 250mg of Glutathione and 250mg of Vitamin C (Amla), oral ceramides and hyaluronic acid for hydration, and a full antioxidant stack. 17 actives, no sugar, 35 kcal.</p>
+      <details class="dc-more">
+        <summary><span class="dc-more__label--more">See the full formula</span><span class="dc-more__label--less">Show less</span></summary>
+        <p>The formula pairs 8,000mg of Japanese hydrolysed marine collagen with 240mg of Polypodium leucotomos — a botanical that helps support the skin's defence against sun damage from within — plus 250mg of Glutathione and 250mg of Vitamin C (Amla), oral ceramides and hyaluronic acid for hydration, and a full antioxidant stack. 17 actives, no sugar, 35 kcal.</p>
+      </details>
       <p class="promise-bestfor"><strong>Best for:</strong> dullness, skin elasticity, radiance, and hair &amp; nail support.</p>
     </div>
   </div>
@@ -1770,85 +2057,127 @@
     </div>
 
     <div class="ing-grid">
-      <div class="ing-card reveal reveal-delay-1">
-        <div class="ing-icon">
+      <details class="ing-card reveal reveal-delay-1" open>
+        <summary>
+          <div class="ing-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s5-5 10-5 10 5 10 5-5 5-10 5-10-5-10-5Z"/><path d="M12 7c-1.5 1.5-2.5 3-2.5 5s1 3.5 2.5 5"/><circle cx="6" cy="11" r="1"/></svg>
         </div>
-        <div class="ing-dose">Anti-ageing</div>
-        <h3 class="ing-name">Japanese Marine Collagen (Hydrolysed)</h3>
-        <ul class="ing-list">
+          <div class="ing-headtext">
+            <div class="ing-dose">Anti-ageing</div>
+            <h3 class="ing-name">Japanese Marine Collagen (Hydrolysed)</h3>
+          </div>
+          <span class="ing-chev" aria-hidden="true"></span>
+        </summary>
+        <div class="ing-card__body">
+          <ul class="ing-list">
           <li><strong>8,000mg per 30ml shot</strong> — 8g protein, zero sugar</li>
           <li>Hydrolysed peptides for easy absorption</li>
           <li>Supports the skin barrier, firmness and elasticity</li>
           <li>Helps support skin as natural collagen declines from your mid-twenties</li>
         </ul>
-      </div>
-      <div class="ing-card reveal reveal-delay-2">
-        <div class="ing-icon">
+        </div>
+      </details>
+      <details class="ing-card reveal reveal-delay-2" open>
+        <summary>
+          <div class="ing-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20M12 12l7.07-7.07M12 12L4.93 19.07M12 12l-7.07-7.07M12 12l7.07 7.07"/></svg>
         </div>
-        <div class="ing-dose">Pigmentation</div>
-        <h3 class="ing-name">Glutathione + Vitamin C (Amla Extract)</h3>
-        <ul class="ing-list">
+          <div class="ing-headtext">
+            <div class="ing-dose">Pigmentation</div>
+            <h3 class="ing-name">Glutathione + Vitamin C (Amla Extract)</h3>
+          </div>
+          <span class="ing-chev" aria-hidden="true"></span>
+        </summary>
+        <div class="ing-card__body">
+          <ul class="ing-list">
           <li><strong>250mg Glutathione</strong> — the master antioxidant that fights dark spots and uneven tone</li>
           <li><strong>250mg Vitamin C (Amla)</strong> — keeps glutathione working at full strength</li>
           <li>Both also support natural collagen production</li>
           <li>Together: targets <em>dullness, blemishes, tanning and pigmentation</em></li>
         </ul>
-      </div>
-      <div class="ing-card reveal reveal-delay-3">
-        <div class="ing-icon">
+        </div>
+      </details>
+      <details class="ing-card reveal reveal-delay-3" open>
+        <summary>
+          <div class="ing-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z"/></svg>
         </div>
-        <div class="ing-dose">Hydration</div>
-        <h3 class="ing-name">Hyaluronic Acid + Oral Ceramides + Aloe Vera</h3>
-        <ul class="ing-list">
+          <div class="ing-headtext">
+            <div class="ing-dose">Hydration</div>
+            <h3 class="ing-name">Hyaluronic Acid + Oral Ceramides + Aloe Vera</h3>
+          </div>
+          <span class="ing-chev" aria-hidden="true"></span>
+        </summary>
+        <div class="ing-card__body">
+          <ul class="ing-list">
           <li><strong>100mg Hyaluronic Acid</strong> — binds up to <em>1,000×</em> its weight in moisture, plumping skin from within</li>
           <li><strong>30mg Oral Ceramides</strong> — rebuild the skin's moisture-lock layer</li>
           <li><strong>50mg Aloe Vera</strong> — soothes and supports hydration</li>
           <li>Improves elasticity and softens the look of fine lines caused by dryness</li>
         </ul>
-      </div>
-      <div class="ing-card reveal reveal-delay-1">
-        <div class="ing-icon">
+        </div>
+      </details>
+      <details class="ing-card reveal reveal-delay-1" open>
+        <summary>
+          <div class="ing-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
         </div>
-        <div class="ing-dose">Sun-damage Defence</div>
-        <h3 class="ing-name">Polypodium Leucotomos + Niacinamide + Vitamin E + Lycopene + Beta-Carotene</h3>
-        <ul class="ing-list">
+          <div class="ing-headtext">
+            <div class="ing-dose">Sun-damage Defence</div>
+            <h3 class="ing-name">Polypodium Leucotomos + Niacinamide + Vitamin E + Lycopene + Beta-Carotene</h3>
+          </div>
+          <span class="ing-chev" aria-hidden="true"></span>
+        </summary>
+        <div class="ing-card__body">
+          <ul class="ing-list">
           <li><strong>240mg Polypodium leucotomos</strong> — a fern extract that works like internal sun protection. Helps your skin handle UV better.</li>
           <li><strong>20mg Niacinamide (Vitamin B3)</strong> — keeps dark spots from forming</li>
           <li><strong>4mg Vitamin E + 2mg Lycopene + 1.8mg Beta-Carotene</strong> — antioxidants that protect skin cells when sun does land on them</li>
           <li><em>Highest Polypodium dose</em> of any Indian oral collagen</li>
           <li class="ing-list-note">Topical sunscreen still matters — this works as the support layer from the inside.</li>
         </ul>
-      </div>
-      <div class="ing-card reveal reveal-delay-2">
-        <div class="ing-icon">
+        </div>
+      </details>
+      <details class="ing-card reveal reveal-delay-2" open>
+        <summary>
+          <div class="ing-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
         </div>
-        <div class="ing-dose">Hair &amp; Nails</div>
-        <h3 class="ing-name">Zinc + Biotin</h3>
-        <ul class="ing-list">
+          <div class="ing-headtext">
+            <div class="ing-dose">Hair &amp; Nails</div>
+            <h3 class="ing-name">Zinc + Biotin</h3>
+          </div>
+          <span class="ing-chev" aria-hidden="true"></span>
+        </summary>
+        <div class="ing-card__body">
+          <ul class="ing-list">
           <li><strong>1.5mg Zinc</strong> — activates enzymes that build collagen, slows the ones that break it down</li>
           <li><strong>45mcg Biotin</strong> — strengthens the protein structure inside hair shafts and nail beds</li>
           <li>Together: supports <em>stronger hair and healthier nails</em> from the inside</li>
         </ul>
-      </div>
-      <div class="ing-card reveal reveal-delay-3">
-        <div class="ing-icon">
+        </div>
+      </details>
+      <details class="ing-card reveal reveal-delay-3" open>
+        <summary>
+          <div class="ing-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22a3 3 0 0 0 3-3c0-3.3-3-7-3-7s-3 3.7-3 7a3 3 0 0 0 3 3z"/><path d="M12 2a3 3 0 0 1 3 3c0 3.3-3 7-3 7s-3-3.7-3-7a3 3 0 0 1 3-3z"/><path d="M22 12a3 3 0 0 0-3-3c-3.3 0-7 3-7 3s3.7 3 7 3a3 3 0 0 0 3-3z"/><path d="M2 12a3 3 0 0 1 3-3c3.3 0 7 3 7 3s-3.7 3-7 3a3 3 0 0 1-3-3z"/></svg>
         </div>
-        <div class="ing-dose">Antioxidant</div>
-        <h3 class="ing-name">Pine Bark (Pycnogenol) + Resveratrol + CoQ10 + Curcumin</h3>
-        <ul class="ing-list">
+          <div class="ing-headtext">
+            <div class="ing-dose">Antioxidant</div>
+            <h3 class="ing-name">Pine Bark (Pycnogenol) + Resveratrol + CoQ10 + Curcumin</h3>
+          </div>
+          <span class="ing-chev" aria-hidden="true"></span>
+        </summary>
+        <div class="ing-card__body">
+          <ul class="ing-list">
           <li><strong>50mg Pine Bark (Pycnogenol)</strong> — protects collagen and elastin</li>
           <li><strong>50mg Resveratrol (Grape Seed)</strong> — supports cellular longevity</li>
           <li><strong>10mg Coenzyme Q10</strong> — powers up energy production in skin cells</li>
           <li><strong>5mg Water-Soluble Curcumin</strong> — calms inflammation</li>
           <li>A full antioxidant stack that fights the <em>oxidative stress driving skin ageing</em></li>
         </ul>
-      </div>
+        </div>
+      </details>
     </div>
   </div>
 </section>
@@ -2530,3 +2859,133 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
+<script>
+/* ══ Content condensation: viewport-aware progressive disclosure ══════
+   Every accordion ships open in the HTML, so the full copy is always in
+   the DOM for crawlers and for no-JS visitors. On phones we collapse the
+   deep detail so the page stays scannable. Only fires when the breakpoint
+   actually changes, so a visitor's own toggles are never overridden. */
+(function () {
+  var mq = window.matchMedia('(max-width: 899px)');
+
+  function apply(isMobile) {
+    // Ingredient accordions: first stays open as an affordance, rest collapse
+    var cards = document.querySelectorAll('details.ing-card');
+    for (var i = 0; i < cards.length; i++) {
+      cards[i].open = isMobile ? i === 0 : true;
+    }
+    // Dense prose disclosures: expanded on desktop, tucked away on mobile
+    var more = document.querySelectorAll('details.dc-more');
+    for (var j = 0; j < more.length; j++) {
+      more[j].open = !isMobile;
+    }
+  }
+
+  apply(mq.matches);
+  if (mq.addEventListener) {
+    mq.addEventListener('change', function (e) { apply(e.matches); });
+  } else if (mq.addListener) {
+    mq.addListener(function (e) { apply(e.matches); });
+  }
+})();
+</script>
+
+<!-- dc-fv:start -->
+{%- if dc_float_video != blank -%}
+<!-- ═══ FLOATING PRODUCT VIDEO (mobile only, deferred load) ════════ -->
+<div class="dc-fv" data-fv hidden>
+  <video class="dc-fv__vid" data-src="{{ dc_float_video | asset_url }}" muted loop playsinline preload="none" aria-hidden="true"></video>
+  <button type="button" class="dc-fv__tap" data-fv-expand aria-label="Expand product video"></button>
+  <button type="button" class="dc-fv__close" data-fv-close aria-label="Close video">&times;</button>
+  <span class="dc-fv__hint" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-15M21 3l-7 7M3 21l7-7"/></svg>
+  </span>
+</div>
+<div class="dc-fv-modal" data-fv-modal role="dialog" aria-modal="true" aria-label="Product video" hidden>
+  <video data-src="{{ dc_float_video | asset_url }}" controls loop playsinline preload="none"></video>
+  <button type="button" class="dc-fv-modal__close" data-fv-modal-close aria-label="Close video">&times;</button>
+</div>
+<script>
+(function () {
+  var fv = document.querySelector('[data-fv]');
+  var modal = document.querySelector('[data-fv-modal]');
+  if (!fv || !modal) return;
+  var vid = fv.querySelector('video');
+  var mvid = modal.querySelector('video');
+  var KEY = 'dcFvClosed-{{ dc_handle }}';
+  try { if (sessionStorage.getItem(KEY)) return; } catch (e) {}
+  /* Data Saver on = the visitor asked for less data. No video at all. */
+  var conn = navigator.connection;
+  if (conn && conn.saveData) return;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var mobile = window.matchMedia('(max-width: 899px)');
+  var armed = false;
+
+  function playFloat() {
+    if (!reduced && mobile.matches && !fv.hidden && modal.hidden && vid.src) {
+      vid.play().catch(function () {});
+    }
+  }
+
+  /* Deferred load: no video bytes move until the page has settled -
+     first scroll or touch, or 2.5s after the load event. The widget
+     stays hidden until the video can actually play, so there is never
+     an empty frame. Desktop never arms, so desktop loads zero bytes. */
+  function arm() {
+    if (armed || !mobile.matches) return;
+    armed = true;
+    vid.src = vid.getAttribute('data-src');
+    vid.addEventListener('canplay', function reveal() {
+      vid.removeEventListener('canplay', reveal);
+      fv.hidden = false;
+      playFloat();
+    });
+    vid.load();
+  }
+  window.addEventListener('scroll', arm, { passive: true });
+  window.addEventListener('touchstart', arm, { passive: true });
+  if (document.readyState === 'complete') {
+    setTimeout(arm, 2500);
+  } else {
+    window.addEventListener('load', function () { setTimeout(arm, 2500); });
+  }
+  if (mobile.addEventListener) {
+    mobile.addEventListener('change', function () { arm(); playFloat(); });
+  }
+  window.addEventListener('scroll', playFloat, { passive: true });
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) playFloat();
+  });
+
+  fv.querySelector('[data-fv-close]').addEventListener('click', function (e) {
+    e.stopPropagation();
+    fv.hidden = true; vid.pause();
+    try { sessionStorage.setItem(KEY, '1'); } catch (err) {}
+  });
+
+  function openModal() {
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    vid.pause();
+    if (!mvid.src) mvid.src = mvid.getAttribute('data-src');
+    try { mvid.currentTime = vid.currentTime; } catch (err) {}
+    mvid.muted = false;               /* user tapped - gesture allows sound */
+    mvid.play().catch(function () {});
+  }
+  function closeModal() {
+    modal.hidden = true;
+    document.body.style.overflow = '';
+    mvid.pause();
+    playFloat();
+  }
+  fv.querySelector('[data-fv-expand]').addEventListener('click', openModal);
+  modal.querySelector('[data-fv-modal-close]').addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !modal.hidden) closeModal();
+  });
+})();
+</script>
+{%- endif -%}
+<!-- dc-fv:end -->
+
