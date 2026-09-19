@@ -5,6 +5,7 @@
 {%- endcomment -%}
 {%- assign dc_handle = 'skelecoll' -%}
 {%- assign dc_float_video = '' -%}
+{%- assign dc_amazon_url = 'https://www.amazon.in/Dr-Collagen-Skelecoll-Hydrolysed-Supplement/dp/B0H4TX7KVD?th=1' -%}
 {%- comment -%} set to the Skelecoll reel filename once provided {%- endcomment -%}
 {%- assign dc_product = all_products[dc_handle] -%}
 {%- if dc_product and dc_product.id != blank -%}
@@ -1383,6 +1384,22 @@
       }
     }
 
+    /* ══ BUY ON AMAZON ════════════════════════════════════════════════
+       Secondary purchase route under each Add to cart. Image button with
+       its own transparent glow, so no box or border of its own. */
+    .dc-amazon {
+      display: block; width: 100%; max-width: 300px; margin-top: 14px;
+      line-height: 0; border-radius: 18px;
+      transition: transform .2s ease, filter .2s ease;
+    }
+    .dc-amazon img { display: block; width: 100%; height: auto; }
+    .dc-amazon:hover { transform: translateY(-1px); filter: brightness(1.06); }
+    .dc-amazon:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; }
+    .cta-inner .dc-amazon { margin-left: auto; margin-right: auto; }
+    @media (max-width: 899px) {
+      .dc-amazon { max-width: 260px; margin-left: auto; margin-right: auto; }
+    }
+
   </style>
 
 <!-- Skip-to-content link is provided globally by layout/theme.liquid (visually
@@ -1493,6 +1510,11 @@
         <a href="/products/{{ dc_handle }}" id="skelecoll-hero-add-to-cart-btn" class="btn-primary">Add to cart</a>
       {%- endif -%}
     </div>
+    {%- if dc_amazon_url != blank -%}
+    <a href="{{ dc_amazon_url }}" class="dc-amazon" target="_blank" rel="noopener" data-amazon-click="hero" aria-label="Buy Skelecoll on Amazon (opens in a new tab)">
+      <img src="{{ 'buy-on-amazon.webp' | asset_url }}" alt="Buy it now at Amazon" width="320" height="131" loading="lazy" decoding="async">
+    </a>
+    {%- endif -%}
     <p class="hero-trust">Doctor-formulated · Daily 30ml shot · Micro-hydrolysed marine collagen</p>
   </div>
   <div class="hero-visual">
@@ -2185,6 +2207,11 @@
         <a href="/products/{{ dc_handle }}" id="skelecoll-buy-btn" class="btn-primary">Add to cart — {{ dc_price }}</a>
       {%- endif -%}
     </div>
+    {%- if dc_amazon_url != blank -%}
+    <a href="{{ dc_amazon_url }}" class="dc-amazon" target="_blank" rel="noopener" data-amazon-click="cta" aria-label="Buy Skelecoll on Amazon (opens in a new tab)">
+      <img src="{{ 'buy-on-amazon.webp' | asset_url }}" alt="Buy it now at Amazon" width="320" height="131" loading="lazy" decoding="async">
+    </a>
+    {%- endif -%}
     <p class="hero-trust reveal reveal-delay-3" style="text-align:center;">Doctor-formulated · Micro-hydrolysed marine collagen · Daily 30ml shot</p>
     <p class="cta-guarantee reveal reveal-delay-4">Free shipping over ₹1,500 · ships within <span>48 hours</span></p>
   </div>
@@ -2547,6 +2574,19 @@ document.addEventListener('DOMContentLoaded', function () {
     mq.addListener(function (e) { apply(e.matches); });
   }
 })();
+</script>
+
+<script>
+/* Amazon button clicks -> Shopify customer-events bus ("amazon_click").
+   A custom pixel in Settings > Customer events can forward this to Meta
+   or GA4. Guarded so it never blocks the link. */
+document.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('[data-amazon-click]');
+  if (!a) return;
+  var data = { product: '{{ dc_handle }}', placement: a.getAttribute('data-amazon-click'), url: a.href };
+  try { if (window.Shopify && Shopify.analytics && Shopify.analytics.publish) Shopify.analytics.publish('amazon_click', data); } catch (err) {}
+  try { if (typeof window.gtag === 'function') window.gtag('event', 'amazon_click', data); } catch (err) {}
+});
 </script>
 
 <!-- dc-fv:start -->
