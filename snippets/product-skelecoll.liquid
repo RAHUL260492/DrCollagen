@@ -1329,14 +1329,15 @@
     }
 
     /* ══ FLOATING PRODUCT VIDEO (mobile) ══════════════════════════════
-       Small picture-in-picture style teaser above the sticky buy bar.
+       Small picture-in-picture style teaser pinned to the right edge, centred.
        Muted native autoplay; tap to expand into a full-screen player
        with sound. Desktop never shows it. */
     .dc-fv, .dc-fv-modal { display: none; }
     @media (max-width: 899px) {
       .dc-fv {
-        display: block; position: fixed; left: 14px;
-        bottom: calc(94px + env(safe-area-inset-bottom));
+        display: block; position: fixed;
+        right: calc(14px + env(safe-area-inset-right));
+        top: 50%; transform: translateY(-50%);
         width: 104px; aspect-ratio: 9 / 16; z-index: 455;
         border-radius: 16px; overflow: hidden;
         border: 2px solid #fff;
