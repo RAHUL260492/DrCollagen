@@ -21,6 +21,7 @@ One row per published article. Never reuse a primary keyword or write a second a
 | 2026-07-28 | marine-collagen | Marine Collagen: Benefits, Dose and How to Choose | Skin Science | skin |
 | 2026-07-28 | marine-vs-bovine-collagen | Marine vs Bovine Collagen: Which Should You Take? | Skin Science | skin |
 | 2026-07-28 | types-of-collagen | Types of Collagen: 1 vs 2 vs 3 Explained Simply | Joint Health | joint |
+| 2026-10-08 | how-to-increase-bone-density | How to Increase Bone Density: What Actually Moves the Number | Joint Health | joint |
 
 ## Topic candidates
 
@@ -30,3 +31,4 @@ Added by the Sunday audit. Hints only; the daily run still researches fresh.
 
 | Date | Day type | What was done | Result |
 |---|---|---|---|
+| 2026-10-08 | Thu — new article | Published `how-to-increase-bone-density` (Joint Health, Skelecoll, Dr Nachiket Pansey). Target question: "how to increase bone density". 11 sources. Shopify Page created (gid 124045033670), handle exact. | Published to main |
