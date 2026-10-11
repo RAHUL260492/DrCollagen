@@ -28,6 +28,16 @@
 
 .gk-pay-icons{display:inline-flex;align-items:center;gap:4px;flex-shrink:0;pointer-events:none;}
 .gk-pay-icons img{height:20px;width:auto;display:block;}
+/* ── Checkout opening spinner (theme addition, 11 Oct 2026) ──
+   GoKwik dims the page for several seconds before its checkout content renders.
+   .gk-overlay covers the page until GoKwik's modal wrapper exists; .gk-modal-spin
+   is then inserted INSIDE that wrapper (which sits at max z-index) until content shows. */
+.gk-overlay{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
+.gk-modal-spin{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(255,255,255,.92);pointer-events:none;}
+.gk-overlay__spin{width:40px;height:40px;border:3px solid rgba(0,0,0,.12);border-top-color:#1a1a1a;border-radius:50%;animation:gk-spin .8s linear infinite;}
+.gk-overlay__txt{font-size:14px;font-weight:600;letter-spacing:.02em;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'DM Sans',sans-serif;}
+.gk-overlay__sub{font-size:12px;color:#6b6b6b;margin-top:-8px;font-family:-apple-system,BlinkMacSystemFont,'DM Sans',sans-serif;}
+@keyframes gk-spin{to{transform:rotate(360deg)}}
 .sr-brand-badge-container span.sr-powered-by{display:none!important;}
 </style>
 
@@ -329,10 +339,11 @@
  // ── LOADER ──────────────────────────────────────────────────────────────
  function showLoader(btn) {
    btn.dataset.originalText = btn.innerHTML;
-   btn.innerHTML = "Processing...";
+   btn.innerHTML = "Opening checkout…";
    btn.disabled  = true;
    btn.classList.add("processing");
    window._gokwikLock = true;
+   gkOverlayShow();
  }
 
  function hideLoader(btn) {
@@ -340,8 +351,66 @@
    btn.disabled   = false;
    btn.classList.remove("processing");
    window._gokwikLock = false;
+   // Keep the overlay until the GoKwik checkout iframe is actually visible
+   // (their SDK dims the page for several seconds before it appears), or 12 s.
+   gkOverlayHideWhenCheckoutVisible();
  }
 
+ // ── OVERLAY / SPINNER (theme addition, 11 Oct 2026) ─────────────────────
+ var GK_SPIN_HTML = '<div class="gk-overlay__spin" aria-hidden="true"></div><div class="gk-overlay__txt">Opening secure checkout\u2026</div><div class="gk-overlay__sub">Powered by GoKwik</div>';
+ var __gkSpinTimer = null, __gkSpinDeadline = 0;
+
+ function gkOverlayShow() {
+   try {
+     if (!document.getElementById("gk-overlay")) {
+       var o = document.createElement("div");
+       o.id = "gk-overlay"; o.className = "gk-overlay"; o.setAttribute("role", "status"); o.setAttribute("aria-live", "polite");
+       o.innerHTML = GK_SPIN_HTML;
+       document.body.appendChild(o);
+     }
+     __gkSpinDeadline = Date.now() + 15000;
+     if (!__gkSpinTimer) __gkSpinTimer = setInterval(gkSpinTick, 150);
+   } catch (e) {}
+ }
+
+ function gkSpinCleanup() {
+   try {
+     clearInterval(__gkSpinTimer); __gkSpinTimer = null;
+     var o = document.getElementById("gk-overlay"); if (o) o.remove();
+     var m = document.getElementById("gk-modal-spin"); if (m) m.remove();
+   } catch (e) {}
+ }
+
+ function gkModalContentVisible(wrapper) {
+   // Content = any iframe, or any element taller than 120px, inside the modal
+   // (excluding our own spinner). GoKwik's empty dimmed wrapper has neither.
+   var nodes = wrapper.querySelectorAll("iframe, form, [class*='checkout' i], div");
+   for (var i = 0; i < nodes.length; i++) {
+     var n = nodes[i];
+     if (n.id === "gk-modal-spin" || n.closest("#gk-modal-spin")) continue;
+     if (n.tagName === "IFRAME" && n.getBoundingClientRect().height > 100) return true;
+     if (n.tagName !== "IFRAME" && n.children.length > 2 && n.getBoundingClientRect().height > 120 && n.textContent.trim().length > 20) return true;
+   }
+   return false;
+ }
+
+ function gkSpinTick() {
+   try {
+     if (Date.now() > __gkSpinDeadline) { gkSpinCleanup(); return; }
+     var wrapper = document.getElementById("gokwik-modal-wrapper") || document.querySelector(".gokwik-modalwrapper");
+     if (!wrapper) return; // still waiting for GoKwik to mount its modal; page overlay stays
+     var pageOverlay = document.getElementById("gk-overlay"); if (pageOverlay) pageOverlay.remove();
+     if (gkModalContentVisible(wrapper)) { gkSpinCleanup(); return; }
+     if (!document.getElementById("gk-modal-spin")) {
+       var m = document.createElement("div");
+       m.id = "gk-modal-spin"; m.className = "gk-modal-spin"; m.setAttribute("aria-hidden", "true");
+       m.innerHTML = GK_SPIN_HTML;
+       if (getComputedStyle(wrapper).position === "static") wrapper.style.position = "relative";
+       wrapper.appendChild(m);
+     }
+   } catch (e) { gkSpinCleanup(); }
+ }
+ function gkOverlayHideWhenCheckoutVisible() { /* handled by gkSpinTick */ }
 
  // ── FORM DETECTION ──────────────────────────────────────────────────────
  function getProductForm(btn) {
