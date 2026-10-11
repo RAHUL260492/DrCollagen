@@ -1227,3 +1227,48 @@
 </script>
 
 {%- comment -%}gk-stamp:1781526584842{%- endcomment -%}
+
+{%- comment -%}
+  Checkout warm-up (theme addition, 11 Oct 2026).
+  GoKwik's checkout iframe (pdp.gokwik.co/index.html) pulls /build/checkout.js (~670 KB gz)
+  and /build/checkout.css (~70 KB gz) at the moment the shopper taps Checkout, and GoKwik
+  caches them for only 10 minutes, so almost every tap is a cold download. The URLs are
+  fixed, so on product/cart/home pages we fetch them in the background after load, which
+  puts them in the browser's HTTP cache for the real iframe. Skipped on Save-Data / 2G.
+{%- endcomment -%}
+<script id="gk-checkout-warmup">
+(function () {
+  try {
+    var path = location.pathname;
+    if (!(path === '/' || path.indexOf('/products/') === 0 || path.indexOf('/cart') === 0 || path.indexOf('/collections') === 0)) return;
+    var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (c && (c.saveData || /(^|[^3-5])2g/.test(String(c.effectiveType || '')))) return;
+    var urls = [
+      'https://pdp.gokwik.co/build/checkout.js',
+      'https://pdp.gokwik.co/build/checkout.css',
+      'https://pdp.gokwik.co/global.css',
+      'https://pdp.gokwik.co/index.html'
+    ];
+    function warm() {
+      urls.forEach(function (u) {
+        try {
+          var l = document.createElement('link');
+          l.rel = 'prefetch'; l.href = u;
+          l.as = /\.js(\?|$)/.test(u) ? 'script' : (/\.css(\?|$)/.test(u) ? 'style' : 'document');
+          document.head.appendChild(l);
+        } catch (e) {}
+        try {
+          /* Safari ignores rel=prefetch; a no-cors fetch still populates the HTTP cache. */
+          if (window.fetch) fetch(u, { mode: 'no-cors', credentials: 'omit', cache: 'default', priority: 'low' }).catch(function () {});
+        } catch (e) {}
+      });
+    }
+    function schedule() {
+      if ('requestIdleCallback' in window) requestIdleCallback(warm, { timeout: 4000 });
+      else setTimeout(warm, 2500);
+    }
+    if (document.readyState === 'complete') schedule();
+    else window.addEventListener('load', schedule, { once: true });
+  } catch (e) {}
+})();
+</script>
