@@ -1688,19 +1688,19 @@
     }
 
     /* ══ BUY ON AMAZON ════════════════════════════════════════════════
-       Secondary purchase route under each Add to cart. Image button with
-       its own transparent glow, so no box or border of its own. */
+       Secondary purchase route under each Add to cart. Kept as a quiet
+       text link so it never out-weighs Add to cart. */
     .dc-amazon {
-      display: block; width: 100%; max-width: 250px; margin-top: 14px;
-      line-height: 0; border-radius: 18px;
-      transition: transform .2s ease, filter .2s ease;
+      display: block; width: fit-content; margin-top: 12px;
+      font-size: 13px; line-height: 1.4; color: var(--muted);
+      text-decoration: underline; text-underline-offset: 3px;
+      transition: color .2s ease;
     }
-    .dc-amazon img { display: block; width: 100%; height: auto; }
-    .dc-amazon:hover { transform: translateY(-1px); filter: brightness(1.06); }
+    .dc-amazon:hover { color: var(--accent-deep); }
     .dc-amazon:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; }
     .cta-inner .dc-amazon { margin-left: auto; margin-right: auto; }
     @media (max-width: 899px) {
-      .dc-amazon { max-width: 220px; margin-left: auto; margin-right: auto; }
+      .dc-amazon { margin-left: auto; margin-right: auto; }
     }
 
   </style>
@@ -1820,7 +1820,7 @@
     </div>
     {%- if dc_amazon_url != blank -%}
     <a href="{{ dc_amazon_url }}" class="dc-amazon" target="_blank" rel="noopener" data-amazon-click="hero" aria-label="Buy Collabloom on Amazon (opens in a new tab)">
-      <img src="{{ 'buy-on-amazon.webp' | asset_url }}" alt="Buy it now at Amazon" width="250" height="102" loading="lazy" decoding="async">
+      Also available on Amazon <span aria-hidden="true">↗</span>
     </a>
     {%- endif -%}
     <p class="hero-trust">Doctor-formulated · Daily 30ml shot · Micro-hydrolysed marine collagen</p>
@@ -2573,7 +2573,7 @@
         <p class="dc-offer" data-dc-offer="cta">₹100 off your first order · code <code>WELCOME100</code> at checkout</p>
 {%- if dc_amazon_url != blank -%}
     <a href="{{ dc_amazon_url }}" class="dc-amazon" target="_blank" rel="noopener" data-amazon-click="cta" aria-label="Buy Collabloom on Amazon (opens in a new tab)">
-      <img src="{{ 'buy-on-amazon.webp' | asset_url }}" alt="Buy it now at Amazon" width="250" height="102" loading="lazy" decoding="async">
+      Also available on Amazon <span aria-hidden="true">↗</span>
     </a>
     {%- endif -%}
     <p class="hero-trust reveal reveal-delay-3" style="text-align:center;">Doctor-formulated · Micro-hydrolysed marine collagen · Daily 30ml shot</p>
