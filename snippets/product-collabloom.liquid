@@ -9,12 +9,26 @@
 {%- assign dc_amazon_url = 'https://www.amazon.in/Dr-collagen-Collabloom-Collagen-Flavor/dp/B0H65LGRVN' -%}
 {%- assign dc_product = all_products[dc_handle] -%}
 {%- if dc_product and dc_product.id != blank -%}
-  {%- assign dc_price = dc_product.price | money -%}
-  {%- if dc_product.compare_at_price > dc_product.price -%}
-    {%- assign dc_was = dc_product.compare_at_price | money -%}
-    {%- assign dc_save_pct = dc_product.compare_at_price | minus: dc_product.price | times: 100.0 | divided_by: dc_product.compare_at_price | round -%}
+  {%- comment -%}
+    Default pack = Pack of 3. Ads promise "up to 40% off", which is the
+    3-pack; opening on the 20%-off single box broke that promise on landing,
+    and the 3-pack is also the best contribution per order. A ?variant= link
+    still wins, so ads or emails that name a specific pack land on it.
+  {%- endcomment -%}
+  {%- assign dc_variant = dc_product.selected_or_first_available_variant -%}
+  {%- if product and product.handle == dc_handle and product.selected_variant -%}
+    {%- assign dc_variant = product.selected_variant -%}
+  {%- else -%}
+    {%- for v in dc_product.variants -%}
+      {%- if v.available and v.title contains 'Pack of 3' -%}{%- assign dc_variant = v -%}{%- break -%}{%- endif -%}
+    {%- endfor -%}
   {%- endif -%}
-  {%- assign dc_variant_id = dc_product.selected_or_first_available_variant.id -%}
+  {%- assign dc_price = dc_variant.price | money -%}
+  {%- if dc_variant.compare_at_price > dc_variant.price -%}
+    {%- assign dc_was = dc_variant.compare_at_price | money -%}
+    {%- assign dc_save_pct = dc_variant.compare_at_price | minus: dc_variant.price | times: 100.0 | divided_by: dc_variant.compare_at_price | round -%}
+  {%- endif -%}
+  {%- assign dc_variant_id = dc_variant.id -%}
   {%- assign dc_available = dc_product.available -%}
 {%- else -%}
   {%- assign dc_price = '₹1,899' -%}
