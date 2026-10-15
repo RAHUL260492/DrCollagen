@@ -1628,6 +1628,13 @@
         background: var(--theme-2);
       }
       .dc-fv[hidden] { display: none; }
+      /* Steps aside while the purchase area is on screen - see the
+         IntersectionObserver in the dc-fv script. */
+      .dc-fv { transition: transform .3s ease, opacity .3s ease; }
+      .dc-fv.dc-fv--tucked {
+        transform: translate(calc(100% + 24px), -50%);
+        opacity: 0; pointer-events: none;
+      }
       .dc-fv__vid { width: 100%; height: 100%; object-fit: cover; display: block; }
       .dc-fv__tap {
         position: absolute; inset: 0; border: 0; background: transparent;
@@ -2974,9 +2981,10 @@ document.addEventListener('click', function (e) {
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var mobile = window.matchMedia('(max-width: 899px)');
   var armed = false;
+  var tucked = false;
 
   function playFloat() {
-    if (!reduced && mobile.matches && !fv.hidden && modal.hidden && vid.src) {
+    if (!reduced && !tucked && mobile.matches && !fv.hidden && modal.hidden && vid.src) {
       vid.play().catch(function () {});
     }
   }
@@ -3007,6 +3015,28 @@ document.addEventListener('click', function (e) {
     mobile.addEventListener('change', function () { arm(); playFloat(); });
   }
   window.addEventListener('scroll', playFloat, { passive: true });
+
+  /* Never sit on a buy button. The widget is pinned to the vertical centre
+     of the right edge, so any purchase control scrolling through mid-screen
+     used to land underneath it: on Collabloom, 4 of 9 hit-test points
+     across Add to cart returned this widget's tap target, not the button.
+     While any part of the purchase area (pack picker, quantity, Add to cart,
+     Amazon button) is on screen, the widget tucks off the right edge and
+     pauses; it slides back once the visitor scrolls past. */
+  if ('IntersectionObserver' in window) {
+    var buyState = new Map();
+    var buyIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { buyState.set(en.target, en.isIntersecting); });
+      var any = false;
+      buyState.forEach(function (v) { if (v) any = true; });
+      if (any === tucked) return;
+      tucked = any;
+      fv.classList.toggle('dc-fv--tucked', tucked);
+      if (tucked) { vid.pause(); } else { playFloat(); }
+    });
+    document.querySelectorAll('.dc-pack, .hero-actions, .cta-actions, .dc-amazon')
+      .forEach(function (el) { buyIo.observe(el); });
+  }
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) playFloat();
   });
