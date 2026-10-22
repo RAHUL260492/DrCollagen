@@ -1,0 +1,402 @@
+{% comment %}
+  JOURNAL ARTICLE — /pages/osteopenia-vs-osteoporosis
+  Primary keyword ...... osteopenia vs osteoporosis
+  Secondary ............ osteopenia meaning, T-score -1.5 osteopenia, is osteopenia serious, osteopenia treatment,
+                         DEXA scan report India, FRAX score
+  Product ............... Skelecoll
+  Author ................ Dr Nachiket Pansey (joint and bone health)
+  Published ............. 2026-10-23   Updated: 2026-10-23
+  Title tag / meta description live in layout/theme.liquid (dc_seo block).
+{% endcomment %}
+
+{% render 'journal-styles' %}
+
+<article class="jr">
+  <div class="jr-wrap">
+
+    <nav class="jr-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> &nbsp;/&nbsp;
+      <a href="/pages/blog">Journal</a> &nbsp;/&nbsp;
+      <span aria-current="page">Osteopenia vs Osteoporosis</span>
+    </nav>
+
+    <header>
+      <p class="jr-eyebrow">Joint Health</p>
+      <h1 class="jr-h1">Osteopenia vs Osteoporosis: How to Read Your DEXA Report</h1>
+      <p class="jr-standfirst">People bring their DEXA report to clinic convinced osteopenia means they are halfway to a fracture, or convinced it means nothing at all. Neither is right. Here is how to read the numbers, which ones actually decide treatment, and the Indian catch most reports do not mention.</p>
+
+      <div class="jr-byline">
+        {%- if settings.founder_1_image != blank -%}
+          <img src="{{ settings.founder_1_image | image_url: width: 92 }}" alt="Dr Nachiket Pansey, Orthopaedic Surgeon at Dr Collagen" width="46" height="46" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">NP</span>
+        {%- endif -%}
+        <div class="jr-byline-txt">
+          <div class="jr-byline-name"><a href="#author-bio">Dr Nachiket Pansey</a> · Orthopaedic Surgeon</div>
+          <div class="jr-byline-meta">
+            Published <time datetime="2026-10-23">23 October 2026</time>
+            &nbsp;·&nbsp; Updated <time datetime="2026-10-23">23 October 2026</time>
+            &nbsp;·&nbsp; 9 min read
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="jr-hero jr-hero--joint">
+      <img src="{{ 'skelecoll-bottle.png' | asset_url }}"
+           alt="Skelecoll collagen shot, discussed here as a small supporting role next to the bone density decisions on a DEXA report"
+           width="420" height="560" loading="eager" fetchpriority="high">
+    </div>
+
+    <div class="jr-answer">
+      <h2>The short answer</h2>
+      <p><strong>Osteopenia means a DEXA T-score between -1.0 and -2.5, bone density lower than a young adult's but not low enough to be called osteoporosis, which starts at -2.5 or below.</strong> The label alone does not decide treatment: your 10-year fracture risk on the FRAX calculator does, and most fractures actually happen in people labelled osteopenic.</p>
+      <ul>
+        <li><strong>The bands:</strong> T-score -1.0 or higher is normal, between -1.0 and -2.5 is osteopenia, and -2.5 or lower is osteoporosis. A fragility fracture changes the picture regardless of the number.</li>
+        <li><strong>How fast it changes:</strong> in a study of 4,957 women aged 67 and over, mild osteopenia took about 17 years for 10% of women to reach osteoporosis, advanced osteopenia about one year.</li>
+        <li><strong>The Indian catch:</strong> in one 2025 Indian study, using an ICMR Indian reference instead of a US white reference cut the share of women labelled osteoporotic from 26.6% to 18%.</li>
+        <li><strong>The honest limitation:</strong> supplements play a small supporting role here. Strength and impact training, calcium and vitamin D adequacy, and medication when FRAX says so do the real work.</li>
+      </ul>
+    </div>
+
+    <nav class="jr-toc" aria-label="Table of contents">
+      <h2>In this article</h2>
+      <ol>
+        <li><a href="#bands">What is the difference between osteopenia and osteoporosis?</a></li>
+        <li><a href="#fractures">Is osteopenia serious?</a></li>
+        <li><a href="#frax">Does osteopenia need treatment?</a></li>
+        <li><a href="#india">Why your scanner's database matters in India</a></li>
+        <li><a href="#what-to-do">What to do after an osteopenia report</a></li>
+        <li><a href="#doctor">When to see a doctor</a></li>
+        <li><a href="#faq">Frequently asked questions</a></li>
+      </ol>
+    </nav>
+
+    <div class="jr-prose">
+
+      <h2 id="bands">What is the difference between osteopenia and osteoporosis?</h2>
+
+      <p>
+        Only where your T-score falls. Both describe lower than ideal bone mineral density on a DEXA
+        scan; osteoporosis is simply the lower band. The cut-offs come from the World Health
+        Organization and are applied to the lowest reading at the spine or hip.
+      </p>
+
+      <div class="jr-table-scroll">
+        <table class="jr-table">
+          <thead><tr><th scope="col">T-score</th><th scope="col">Label</th><th scope="col">What it means</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">-1.0 or higher</th><td>Normal</td><td>Density within the range of a healthy young adult.</td></tr>
+            <tr><th scope="row">Between -1.0 and -2.5</th><td>Osteopenia (low bone mass)</td><td>Lower than ideal. Fracture risk depends on age and other factors, not on this band alone.</td></tr>
+            <tr><th scope="row">-2.5 or lower</th><td>Osteoporosis</td><td>Low enough that treatment is usually recommended.</td></tr>
+            <tr><th scope="row">-2.5 or lower plus a fragility fracture</th><td>Severe osteoporosis</td><td>Treatment strongly recommended.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        A T-score compares you with a healthy 30-year-old of the same sex. A score of -1.8 means your
+        density is 1.8 standard deviations below that young-adult average. It is not a percentage, and
+        it does not mean your bones are 18% weaker. Women before menopause and men under 50 are read on
+        the Z-score instead, which compares you with people your own age.
+      </p>
+
+      <p>
+        One rule overrides the numbers. If you have already broken a hip or a vertebra from a minor fall
+        or with no clear injury, clinicians treat you as having osteoporosis whatever the T-score says.
+        That fracture is the strongest predictor of the next one.
+      </p>
+
+      <h2 id="fractures">Is osteopenia serious?</h2>
+
+      <p>
+        It can be, which is the part people miss. Reviews of fracture data note that most people who
+        present with a fragility fracture have bone density in the osteopenic range, not the
+        osteoporotic range.
+      </p>
+
+      <p>
+        That sounds alarming until you see why. Far more people sit in the osteopenia band than in the
+        osteoporosis band, so even though each person's risk is lower, the group produces more fractures
+        overall. Osteopenia is a range, not a verdict. A 52-year-old at -1.2 and a 74-year-old at -2.4
+        are both "osteopenic" and have very different futures.
+      </p>
+
+      <div class="jr-stats">
+        <div class="jr-stat">
+          <p class="jr-stat-num">17 yrs</p>
+          <p class="jr-stat-lbl">Time for 10% of women with mild osteopenia to reach osteoporosis</p>
+          <p class="jr-stat-src"><a href="https://pubmed.ncbi.nlm.nih.gov/?term=Gourlay+bone+density+testing+interval+transition+to+osteoporosis+older+women+2012" target="_blank" rel="noopener nofollow">NEJM, 2012</a></p>
+        </div>
+        <div class="jr-stat">
+          <p class="jr-stat-num">~1 yr</p>
+          <p class="jr-stat-lbl">The same transition for women with advanced osteopenia, close to -2.5</p>
+          <p class="jr-stat-src"><a href="https://pubmed.ncbi.nlm.nih.gov/?term=Gourlay+bone+density+testing+interval+transition+to+osteoporosis+older+women+2012" target="_blank" rel="noopener nofollow">NEJM, 2012</a></p>
+        </div>
+        <div class="jr-stat">
+          <p class="jr-stat-num">26.6% → 18%</p>
+          <p class="jr-stat-lbl">Indian women labelled osteoporotic on a US reference versus an ICMR Indian reference</p>
+          <p class="jr-stat-src"><a href="https://pubmed.ncbi.nlm.nih.gov/?term=ETHNICA+NHANES+ICMR+reference+osteoporosis+overdiagnosis+India" target="_blank" rel="noopener nofollow">Retrospective study, 2025</a></p>
+        </div>
+      </div>
+
+      <p>
+        How fast it changes depends on where in the band you start. A 2012 study in the <em>New England
+        Journal of Medicine</em> followed 4,957 women aged 67 and over for up to 15 years and estimated
+        how long it took 10% of each group to cross into osteoporosis. For normal density and mild
+        osteopenia it was about 17 years. For moderate osteopenia, about 4.7 years. For advanced
+        osteopenia, close to -2.5, about 1.1 years. That is why the right gap before your next scan
+        depends on your number, not on a fixed rule.
+      </p>
+
+      <h2 id="frax">Does osteopenia need treatment?</h2>
+
+      <p>
+        Not automatically. Whether you need medication is decided by your 10-year fracture probability,
+        usually calculated with the FRAX tool, which combines age, sex, weight, previous fractures,
+        parental hip fracture, smoking, alcohol, steroid use, rheumatoid arthritis and your hip density.
+      </p>
+
+      <p>
+        In the United States, the long-standing guidance is to offer medication to postmenopausal women
+        and men over 50 with osteopenia when the 10-year probability of a hip fracture is 3% or more, or
+        of a major osteoporotic fracture is 20% or more. India has its own FRAX model, but no formal
+        Indian treatment threshold has been agreed, partly because thresholds depend on cost and access
+        to DEXA. In practice your doctor will use FRAX alongside your history. Medication trials were
+        mostly run in people with osteoporosis, so the benefit of drugs for mild osteopenia without other
+        risk factors is less certain, which is another reason not to treat the label alone.
+      </p>
+
+      <h2 id="india">Why your scanner's database matters in India</h2>
+
+      <p>
+        Because a T-score is only as good as the young-adult average it is compared against. Many
+        scanners in India compare you with a US reference population. Indian reference data, including
+        the ICMR database, often sit lower, so the same scan can carry a more severe label on one setting
+        than the other.
+      </p>
+
+      <p>
+        A 2025 retrospective Indian study found that using the US NHANES-III reference significantly
+        overdiagnosed both osteoporosis and osteopenia: in women, the share labelled osteoporotic fell
+        from about 26.6% to 18% when ICMR data were used. A study of South Asian Indians living in the
+        United States found the same direction, with Indian-derived standards classifying more people as
+        normal. The effect is not uniform. Some hip comparisons show close agreement between databases,
+        and the largest shifts appear at the lumbar spine. The practical step is simple: ask which
+        reference database your report used, and keep using the same scanner and setting for follow-up
+        scans so changes are real changes.
+      </p>
+
+      <h2 id="what-to-do">What to do after an osteopenia report</h2>
+
+      <ol>
+        <li><strong>Ask for your FRAX score.</strong> It turns a band into a number that guides treatment.</li>
+        <li><strong>Start loading your bones.</strong> Progressive strength training with some impact is the intervention with the best evidence for raising density, which our guide to <a href="/pages/how-to-increase-bone-density">how to increase bone density</a> covers in detail.</li>
+        <li><strong>Check vitamin D and calcium intake.</strong> A blood test for vitamin D, and an honest look at dietary calcium, which is low in many Indian diets. See <a href="/pages/vitamin-d-deficiency-symptoms">vitamin D deficiency symptoms</a> for the thresholds Indian labs use.</li>
+        <li><strong>Reduce fall risk.</strong> Most fractures need a fall. Eyesight, footwear, loose rugs and balance training matter as much as density.</li>
+        <li><strong>Repeat the scan at a sensible interval,</strong> on the same machine, guided by how close you are to -2.5.</li>
+      </ol>
+
+      <p>
+        Supplements belong at the end of that list, not the start. Collagen has some bone evidence: one
+        randomised trial in 131 postmenopausal women with reduced density found 5g a day of specific
+        collagen peptides improved density at the spine and femoral neck against placebo over 12 months.
+        That is one trial, of one branded peptide. Skelecoll's 10,000mg of collagen is above that dose,
+        and its 250mg of calcium and 600 IU of vitamin D3 are maintenance amounts that contribute to daily
+        targets. None of it replaces training, medication when FRAX calls for it, or correcting a measured
+        deficiency.
+      </p>
+
+      <div class="jr-quote">
+        {%- if settings.founder_1_image != blank -%}
+          <img src="{{ settings.founder_1_image | image_url: width: 112 }}" alt="Dr Nachiket Pansey" width="56" height="56" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">NP</span>
+        {%- endif -%}
+        <div>
+          <blockquote>"Patients bring me carrier bags of supplements. Nine times out of ten the problem is not that they bought the wrong ingredients — it is that every bottle contains a tenth of the dose that was studied. Underdosing is the industry's default setting."</blockquote>
+          <cite><strong>Dr Nachiket Pansey</strong> · Orthopaedic Surgeon, Founder of Dr Collagen</cite>
+        </div>
+      </div>
+
+      <h2 id="doctor">When to see a doctor</h2>
+
+      <ul>
+        <li>Any fracture from a fall at standing height or less, or new back pain with loss of height, which can be a spinal fracture.</li>
+        <li>A T-score at or below -2.5, or a FRAX result above the threshold your doctor uses.</li>
+        <li>Osteopenia at a young age, before menopause or in a man under 50, which needs a search for a cause such as thyroid, parathyroid, steroid use or coeliac disease.</li>
+        <li>Long-term steroid tablets, which accelerate bone loss and often justify treatment earlier.</li>
+      </ul>
+
+      <a class="jr-product" href="/products/skelecoll">
+        <img src="{{ 'skelecoll-bottle.png' | asset_url }}" alt="Skelecoll collagen shot" width="240" height="240" loading="lazy">
+        <div>
+          <p class="jr-product-eyebrow">For bones, joints and recovery</p>
+          <h3>Skelecoll</h3>
+          <p>10,000mg Japanese hydrolysed marine collagen per 30ml shot, with 600 IU vitamin D3, 250mg calcium and 50mg magnesium, 300mg glucosamine HCl, 120mg hyaluronic acid, 1,000mg L-carnitine, 500mg Cissus quadrangularis, 40mg vitamin C from amla, 100mg rosehip extract, 60mg coenzyme Q10, 2mg lycopene and 1.5mcg vitamin B12. Made from fish. Zero sugar, 40 kcal, cola flavour.</p>
+          <span class="jr-cta">See the full formula →</span>
+        </div>
+      </a>
+
+      <p class="jr-disclaimer">
+        This article is for general information and is not medical advice. Nutritional supplements
+        are not intended to diagnose, treat, cure or prevent any disease. If you are pregnant,
+        breastfeeding, taking prescription medication, or have a known fish or shellfish allergy,
+        speak to a qualified healthcare professional before starting supplementation.
+      </p>
+
+      <h2 id="faq">Frequently asked questions</h2>
+      <div class="jr-faq">
+        <details>
+          <summary>What is the difference between osteopenia and osteoporosis?</summary>
+          <p>Only the T-score band. Osteopenia is a T-score between -1.0 and -2.5, and osteoporosis is -2.5 or lower. Both mean bone density below a young adult's average; osteoporosis is the lower band.</p>
+        </details>
+        <details>
+          <summary>Is a T-score of -1.5 bad?</summary>
+          <p>It is mild osteopenia. In a large study of women aged 67 and over, it took about 17 years for 10% of women with normal density or mild osteopenia to reach osteoporosis. Your FRAX score and history matter more than this number alone.</p>
+        </details>
+        <details>
+          <summary>Can osteopenia be reversed?</summary>
+          <p>Density can improve, especially with progressive strength and impact training, adequate calcium and vitamin D, and medication where indicated. Even a small rise or a halt in loss reduces risk. The aim is to stop the trend toward osteoporosis rather than to reach a normal score.</p>
+        </details>
+        <details>
+          <summary>Does osteopenia need medication?</summary>
+          <p>Not automatically. Medication is decided by your 10-year fracture risk on FRAX and by any previous fragility fracture. US guidance treats osteopenia when 10-year hip fracture risk is 3% or more or major fracture risk is 20% or more.</p>
+        </details>
+        <details>
+          <summary>What is a FRAX score?</summary>
+          <p>FRAX estimates your 10-year probability of a hip fracture and of a major osteoporotic fracture from age, sex, weight, past fractures, family history, smoking, alcohol, steroid use, rheumatoid arthritis and hip density. India has its own FRAX model.</p>
+        </details>
+        <details>
+          <summary>Why does my DEXA report say osteoporosis on one machine and osteopenia on another?</summary>
+          <p>The reference database may differ. A 2025 Indian study found that using a US reference instead of an ICMR Indian reference raised the share of women labelled osteoporotic from 18% to 26.6%. Ask which database was used and repeat scans on the same machine.</p>
+        </details>
+        <details>
+          <summary>Can supplements fix osteopenia?</summary>
+          <p>No supplement replaces training, fall prevention and medication when needed. Correcting a measured vitamin D or calcium shortfall helps, and one trial of 5g of specific collagen peptides showed improved spine and hip density, but that is a single study.</p>
+        </details>
+      </div>
+
+      <section class="jr-sources">
+        <h2>Sources</h2>
+        <ol>
+          <li>World Health Organization criteria for osteopenia and osteoporosis by T-score, summarised in StatPearls (NCBI Bookshelf). <a href="https://www.ncbi.nlm.nih.gov/books/NBK499878/" target="_blank" rel="noopener nofollow">NCBI</a></li>
+          <li>Gourlay ML et al. "Bone-density testing interval and transition to osteoporosis in older women." <em>New England Journal of Medicine</em>, 2012;366:225-33. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Gourlay+bone+density+testing+interval+transition+to+osteoporosis+older+women" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>ETHNICA: NHANES-III versus ICMR reference data and the diagnosis of osteoporosis and osteopenia in India. Retrospective study, 2025. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=NHANES+ICMR+reference+database+osteoporosis+overdiagnosis+India+2025" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Indian-derived versus US white reference standards for bone density in South Asian Indians in the United States (MASALA study). <a href="https://pubmed.ncbi.nlm.nih.gov/?term=MASALA+South+Asian+bone+mineral+density+reference+standards" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>National Osteoporosis Foundation. Clinician's guide to prevention and treatment of osteoporosis, 2014 (FRAX treatment thresholds). <a href="https://pubmed.ncbi.nlm.nih.gov/?term=clinician's+guide+prevention+treatment+osteoporosis+2014+National+Osteoporosis+Foundation" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>König D et al. "Specific collagen peptides improve bone mineral density and bone markers in postmenopausal women — a randomized controlled study." <em>Nutrients</em>, 2018. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=specific+collagen+peptides+improve+bone+mineral+density+postmenopausal+women+randomized" target="_blank" rel="noopener nofollow">PubMed</a></li>
+          <li>Review of FRAX intervention thresholds across Asian countries and the Indian FRAX model. <a href="https://pubmed.ncbi.nlm.nih.gov/?term=FRAX+intervention+thresholds+Asia+India" target="_blank" rel="noopener nofollow">PubMed</a></li>
+        </ol>
+      </section>
+
+      <aside class="jr-author" id="author-bio">
+        {%- if settings.founder_1_image != blank -%}
+          <img src="{{ settings.founder_1_image | image_url: width: 168 }}" alt="Dr Nachiket Pansey" width="84" height="84" loading="lazy">
+        {%- else -%}
+          <span class="jr-avatar-fallback" aria-hidden="true">NP</span>
+        {%- endif -%}
+        <div>
+          <p class="jr-author-eyebrow">About the author</p>
+          <h2>Dr Nachiket Pansey</h2>
+          <p class="jr-author-role">Orthopaedic Surgeon · Founder, Dr Collagen</p>
+          <p>Dr Nachiket Pansey is an orthopaedic surgeon and the founder of Dr Collagen. Fragility fractures make up a steady part of his surgical work, and many of those patients had a DEXA report labelled osteopenia years earlier that nobody acted on, which is why he cares more about the FRAX score and a training plan than about the label.</p>
+          <p>He writes the joint and bone health section of the Dr Collagen Journal. <a href="/pages/our-story">Read the founders' story →</a></p>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <div class="jr-wrap jr-wrap--wide">
+    <section class="jr-related">
+      <h2>Keep reading</h2>
+      <div class="jr-related-grid">
+        <a class="jr-related-card" href="/pages/how-to-increase-bone-density">
+          <p class="jr-related-cat">Joint Health</p>
+          <h3>How to Increase Bone Density: What Actually Moves the Number</h3>
+          <p class="jr-related-dek">The training that raises a DEXA score, the 1,000mg Indian calcium target, and the trials where supplements alone did nothing.</p>
+        </a>
+        <a class="jr-related-card" href="/pages/vitamin-d-deficiency-symptoms">
+          <p class="jr-related-cat">Joint Health</p>
+          <h3>Vitamin D Deficiency Symptoms: What Is Real and What Is Not</h3>
+          <p class="jr-related-dek">The signs that are actually specific, the ng/mL thresholds Indian labs use, and why a maintenance dose cannot correct a deficiency.</p>
+        </a>
+        <a class="jr-related-card" href="/pages/menopause-joint-pain">
+          <p class="jr-related-cat">Joint Health</p>
+          <h3>Menopause Joint Pain: Why It Happens and What Actually Helps</h3>
+          <p class="jr-related-dek">What oestrogen did in the largest trial, why loading comes first, and why no supplement has been tested in this group.</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</article>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "Osteopenia vs Osteoporosis: How to Read Your DEXA Report",
+      "description": "What the T-score bands mean, why most fractures happen in people labelled osteopenic, how FRAX decides treatment, and why the reference database on an Indian DEXA report changes the label.",
+      "image": "{{ 'skelecoll-bottle.png' | asset_url | prepend: request.origin }}",
+      "datePublished": "2026-10-23",
+      "dateModified": "2026-10-23",
+      "inLanguage": "en",
+      "articleSection": "Joint Health",
+      "keywords": "osteopenia vs osteoporosis, osteopenia T-score, DEXA report, FRAX, osteopenia treatment India",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ shop.url }}/pages/osteopenia-vs-osteoporosis"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Dr Nachiket Pansey",
+        "jobTitle": "Orthopaedic Surgeon",
+        "description": "Orthopaedic surgeon and founder of Dr Collagen",
+        "url": "{{ shop.url }}/pages/our-story"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ shop.name }}",
+        "url": "{{ shop.url }}"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "{{ shop.url }}/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Journal",
+          "item": "{{ shop.url }}/pages/blog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Osteopenia vs Osteoporosis"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "What is the difference between osteopenia and osteoporosis?", "acceptedAnswer": {"@type": "Answer", "text": "Only the T-score band. Osteopenia is a T-score between -1.0 and -2.5, and osteoporosis is -2.5 or lower. Both mean bone density below a young adult's average; osteoporosis is the lower band."}},
+        {"@type": "Question", "name": "Is a T-score of -1.5 bad?", "acceptedAnswer": {"@type": "Answer", "text": "It is mild osteopenia. In a large study of women aged 67 and over, it took about 17 years for 10% of women with normal density or mild osteopenia to reach osteoporosis. Your FRAX score and history matter more than this number alone."}},
+        {"@type": "Question", "name": "Can osteopenia be reversed?", "acceptedAnswer": {"@type": "Answer", "text": "Density can improve, especially with progressive strength and impact training, adequate calcium and vitamin D, and medication where indicated. Even a small rise or a halt in loss reduces risk. The aim is to stop the trend toward osteoporosis rather than to reach a normal score."}},
+        {"@type": "Question", "name": "Does osteopenia need medication?", "acceptedAnswer": {"@type": "Answer", "text": "Not automatically. Medication is decided by your 10-year fracture risk on FRAX and by any previous fragility fracture. US guidance treats osteopenia when 10-year hip fracture risk is 3% or more or major fracture risk is 20% or more."}},
+        {"@type": "Question", "name": "What is a FRAX score?", "acceptedAnswer": {"@type": "Answer", "text": "FRAX estimates your 10-year probability of a hip fracture and of a major osteoporotic fracture from age, sex, weight, past fractures, family history, smoking, alcohol, steroid use, rheumatoid arthritis and hip density. India has its own FRAX model."}},
+        {"@type": "Question", "name": "Why does my DEXA report say osteoporosis on one machine and osteopenia on another?", "acceptedAnswer": {"@type": "Answer", "text": "The reference database may differ. A 2025 Indian study found that using a US reference instead of an ICMR Indian reference raised the share of women labelled osteoporotic from 18% to 26.6%. Ask which database was used and repeat scans on the same machine."}},
+        {"@type": "Question", "name": "Can supplements fix osteopenia?", "acceptedAnswer": {"@type": "Answer", "text": "No supplement replaces training, fall prevention and medication when needed. Correcting a measured vitamin D or calcium shortfall helps, and one trial of 5g of specific collagen peptides showed improved spine and hip density, but that is a single study."}}
+      ]
+    }
+  ]
+}
+</script>
