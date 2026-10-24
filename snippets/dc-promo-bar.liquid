@@ -60,6 +60,12 @@
       url({{ 'dc-diwali-corner-l.svg' | asset_url }}) left top / 130px auto no-repeat,
       url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 160px auto no-repeat;
   }
+  /* Homepage on phones swaps the canvas for .m-hero; same treatment there. */
+  .m-hero { position: relative; isolation: isolate; }
+  .m-hero::after {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 110px auto no-repeat;
+  }
   @media (max-width: 768px) {
     #hero::after { background: url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 120px auto no-repeat; }
     #canvas-container::after { background: url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 110px auto no-repeat; }
