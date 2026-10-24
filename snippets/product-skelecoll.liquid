@@ -37,6 +37,11 @@
   {%- assign dc_available = false -%}
 {%- endif -%}
 
+{%- comment -%} Diwali 2026: labels show 24 Oct to 15 Nov; the prices themselves are on the variants. {%- endcomment -%}
+{%- assign dc_diwali = false -%}
+{%- assign dc_promo_today = 'now' | date: '%Y%m%d' | plus: 0 -%}
+{%- if dc_promo_today >= 20261024 and dc_promo_today <= 20261115 -%}{%- assign dc_diwali = true -%}{%- endif -%}
+
 <style>
     /* ─── DESIGN TOKENS (per-product theme: Skelecoll — light walnut/latte brown) ─── */
     :root {
@@ -1499,6 +1504,7 @@
       <span class="hero-price js-cb-price">{{ dc_price }}</span>
       <span class="hero-price-was js-cb-was"{% unless dc_was %} style="display:none"{% endunless %}>{{ dc_was }}</span>
       <span class="hero-price-save js-cb-save"{% unless dc_was %} style="display:none"{% endunless %}>{% if dc_was %}Save {{ dc_save_pct }}%{% endif %}</span>
+      {%- if dc_diwali -%}<span class="hero-price-diwali" style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:#2A1225;color:#F4C77B;">Diwali price</span>{%- endif -%}
     </div>
     <p class="dc-offer" data-dc-offer="hero">₹100 off your first order · code <code>WELCOME100</code> at checkout</p>
     {%- if dc_product and dc_product.variants.size > 1 -%}
@@ -1522,7 +1528,7 @@
             <span class="dc-pack__name">{{ v.title }}</span>
             <span class="dc-pack__price">{{ v.price | money }}{% unless v.available %} · Sold out{% endunless %}</span>
             {%- if v.compare_at_price > v.price -%}
-              <span class="dc-pack__save">Save {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}%</span>
+              <span class="dc-pack__save">{% if dc_diwali %}Diwali · {% endif %}Save {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}%</span>
             {%- endif -%}
           </button>
         {%- endfor -%}
@@ -2219,7 +2225,7 @@
             <span class="dc-pack__name">{{ v.title }}</span>
             <span class="dc-pack__price">{{ v.price | money }}{% unless v.available %} · Sold out{% endunless %}</span>
             {%- if v.compare_at_price > v.price -%}
-              <span class="dc-pack__save">Save {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}%</span>
+              <span class="dc-pack__save">{% if dc_diwali %}Diwali · {% endif %}Save {{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}%</span>
             {%- endif -%}
           </button>
         {%- endfor -%}

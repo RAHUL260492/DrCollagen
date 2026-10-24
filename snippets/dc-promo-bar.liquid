@@ -1,0 +1,45 @@
+{%- comment -%}
+  Diwali 2026 offer bar. Shows from 24 Oct to 15 Nov 2026 (store time) and
+  hides itself afterwards, server-side by date and client-side by IST clock,
+  so a cached page cannot keep it up. Prices themselves live on the Shopify
+  variants; this bar only announces them. Rendered once, from layout/theme.liquid.
+{%- endcomment -%}
+{%- assign dc_promo_today = 'now' | date: '%Y%m%d' | plus: 0 -%}
+{%- if dc_promo_today >= 20261024 and dc_promo_today <= 20261115 -%}
+<style>
+  :root { --dc-promo-h: 36px; }
+  .dc-promo {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 510;
+    height: var(--dc-promo-h);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 0 16px;
+    background: #2A1225; color: #FBF1E6;
+    font: 600 13px/1.2 system-ui, -apple-system, 'Segoe UI', sans-serif;
+    letter-spacing: .02em; text-align: center;
+  }
+  .dc-promo a { color: #F4C77B; text-decoration: underline; text-underline-offset: 2px; }
+  .dc-promo__diya { color: #F4C77B; }
+  body.dc-promo-on { padding-top: var(--dc-promo-h); }
+  body.dc-promo-on #navbar,
+  body.dc-promo-on .dc-header { top: var(--dc-promo-h); }
+  @media (max-width: 600px) {
+    :root { --dc-promo-h: 34px; }
+    .dc-promo { font-size: 12px; gap: 6px; }
+    .dc-promo__more { display: none; }
+  }
+</style>
+<div class="dc-promo" id="dc-promo" role="region" aria-label="Diwali offer">
+  <span class="dc-promo__diya" aria-hidden="true">✦</span>
+  <span>Diwali Offer: up to 45% off Collabloom &amp; Skelecoll<span class="dc-promo__more"> · till 15 Nov</span></span>
+  <a href="/products/collabloom" class="dc-promo__more">Shop now</a>
+</div>
+<script>
+  (function () {
+    // Offer ends 15 Nov 2026, 23:59:59 IST (UTC+5:30).
+    var end = Date.UTC(2026, 10, 15, 18, 29, 59);
+    var bar = document.getElementById('dc-promo');
+    if (Date.now() > end) { if (bar) bar.remove(); return; }
+    document.body.classList.add('dc-promo-on');
+  })();
+</script>
+{%- endif -%}
