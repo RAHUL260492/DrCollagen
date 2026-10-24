@@ -50,23 +50,41 @@
   #hero::after {
     content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
     background:
-      url({{ 'dc-diwali-corner-l.svg' | asset_url }}) left top / 120px auto no-repeat,
-      url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 170px auto no-repeat;
+      url({{ 'dc-diwali-corner-l-anim.svg' | asset_url }}) left top / 120px auto no-repeat,
+      url({{ 'dc-diwali-corner-r-anim.svg' | asset_url }}) right top / 170px auto no-repeat;
   }
   /* Homepage: the sticky canvas container, above the canvas tint, below the fixed text. */
   #canvas-container::after {
     content: ''; position: absolute; inset: 0; pointer-events: none;
     background:
-      url({{ 'dc-diwali-corner-l.svg' | asset_url }}) left top / 130px auto no-repeat,
-      url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 160px auto no-repeat;
+      url({{ 'dc-diwali-corner-l-anim.svg' | asset_url }}) left top / 130px auto no-repeat,
+      url({{ 'dc-diwali-corner-r-anim.svg' | asset_url }}) right top / 160px auto no-repeat;
   }
   /* Homepage on phones swaps the canvas for .m-hero; same treatment there. */
   .m-hero { position: relative; isolation: isolate; }
   .m-hero::after {
     content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-    background: url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 110px auto no-repeat;
+    background: url({{ 'dc-diwali-corner-r-anim.svg' | asset_url }}) right top / 110px auto no-repeat;
   }
   @media (max-width: 768px) {
+    #hero::after { background: url({{ 'dc-diwali-corner-r-anim.svg' | asset_url }}) right top / 120px auto no-repeat; }
+    #canvas-container::after { background: url({{ 'dc-diwali-corner-r-anim.svg' | asset_url }}) right top / 110px auto no-repeat; }
+  }
+  /* Reduced-motion users get the still artwork. */
+  @media (prefers-reduced-motion: reduce) {
+    #hero::after {
+      background:
+        url({{ 'dc-diwali-corner-l.svg' | asset_url }}) left top / 120px auto no-repeat,
+        url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 170px auto no-repeat;
+    }
+    #canvas-container::after {
+      background:
+        url({{ 'dc-diwali-corner-l.svg' | asset_url }}) left top / 130px auto no-repeat,
+        url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 160px auto no-repeat;
+    }
+    .m-hero::after { background: url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 110px auto no-repeat; }
+  }
+  @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
     #hero::after { background: url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 120px auto no-repeat; }
     #canvas-container::after { background: url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 110px auto no-repeat; }
   }
