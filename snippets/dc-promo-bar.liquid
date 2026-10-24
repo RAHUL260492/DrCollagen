@@ -42,4 +42,27 @@
     document.body.classList.add('dc-promo-on');
   })();
 </script>
+<style>
+  /* Hanging-diya corner art: a left file and its mirror, as background layers on the
+     hero's spare ::after. Behind every bit of text and the bottle; gone with the bar. */
+  #hero { isolation: isolate; }
+  #hero::before { z-index: -2; }
+  #hero::after {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      url({{ 'dc-diwali-corner-l.svg' | asset_url }}) left top / 120px auto no-repeat,
+      url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 170px auto no-repeat;
+  }
+  /* Homepage: the sticky canvas container, above the canvas tint, below the fixed text. */
+  #canvas-container::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      url({{ 'dc-diwali-corner-l.svg' | asset_url }}) left top / 130px auto no-repeat,
+      url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 160px auto no-repeat;
+  }
+  @media (max-width: 768px) {
+    #hero::after { background: url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 120px auto no-repeat; }
+    #canvas-container::after { background: url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 110px auto no-repeat; }
+  }
+</style>
 {%- endif -%}
