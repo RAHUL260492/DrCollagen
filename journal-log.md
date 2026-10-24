@@ -43,6 +43,25 @@ Added by the Sunday audit. Hints only; the daily run still researches fresh.
 
 Considered and rejected on 2026-10-11: `frozen-shoulder` / cervical stiffness. Searched it; physiotherapy and mobilisation carry the recommendations and there is no supplement evidence worth citing. An article there could not avoid drifting into disease-treatment framing, so it should stay unwritten.
 
+## Flagged for the next audit
+
+**Prices on live article pages (found 2026-10-24, NOT fixed — outside the Saturday two-article scope).**
+The brief forbids mentioning prices in articles. Today's refresh removed a price from
+`collagen-for-hair` and `collagen-peptides`, but a scan of all 25 articles found five more that
+still carry one. Two of them quote our own product price, which is also a commercial risk if the
+price has since changed:
+
+| Article | Line | What it says |
+|---|---|---|
+| `boost-collagen-naturally` | ~505 | "Collabloom is ₹1,899 for a month" |
+| `collagen-for-men` | ~428 | "not the best use of 2,199 rupees a month" |
+| `collagen-for-women` | ~346-348 | 30 to 100 rupees per serving; 30 rupees sachet vs 90 rupees shot |
+| `collagen-vs-whey-protein` | ~343 | whey "between 3,000 and 5,000 rupees" |
+| `marine-vs-bovine-collagen` | ~332-342 | ₹1,600, ₹2,400, ₹80/day, ₹120/day, ₹40 sachet |
+
+Each needs the price removed while keeping the cost-per-studied-gram argument, which is the useful
+part and works without naming a number (see the two rewrites in today's commit for the pattern).
+
 ## Run history
 
 | Date | Day type | What was done | Result |
