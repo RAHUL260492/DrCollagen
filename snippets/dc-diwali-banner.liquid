@@ -1,0 +1,112 @@
+{%- comment -%}
+  Diwali 2026 homepage banner. Shows 24 Oct to 15 Nov 2026 (store time) like the promo
+  bar in dc-promo-bar.liquid, then hides itself. Prices come from the live variants, so
+  the 16 Nov price revert needs no edit here. Rendered once, from templates/index.liquid,
+  just before #products.
+{%- endcomment -%}
+{%- assign dc_banner_today = 'now' | date: '%Y%m%d' | plus: 0 -%}
+{%- if dc_banner_today >= 20261024 and dc_banner_today <= 20261115 -%}
+{%- assign dc_cb = all_products['collabloom'] -%}
+{%- assign dc_sk = all_products['skelecoll'] -%}
+<style>
+  #dc-diwali {
+    position: relative; isolation: isolate; overflow: hidden;
+    padding: 88px 48px 80px;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(232,183,46,.22) 0%, rgba(232,183,46,0) 55%),
+      linear-gradient(180deg, #2A1225 0%, #3B0F6B 100%);
+    color: #FBF1E6;
+    font-family: var(--body, 'DM Sans', sans-serif);
+  }
+  #dc-diwali::after {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      url({{ 'dc-diwali-corner-l-anim.svg' | asset_url }}) left top / 150px auto no-repeat,
+      url({{ 'dc-diwali-corner-r-anim.svg' | asset_url }}) right top / 150px auto no-repeat;
+  }
+  .dcdw-inner { max-width: 1100px; margin: 0 auto; text-align: center; }
+  .dcdw-overline {
+    font-size: 12px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
+    color: #F4C77B; margin: 0 0 18px;
+  }
+  .dcdw-title {
+    font-family: var(--heading, 'Playfair Display', serif); font-weight: 500;
+    font-size: clamp(34px, 4.6vw, 58px); line-height: 1.1; margin: 0 0 18px; color: #FFF8EC;
+  }
+  .dcdw-title em { font-style: italic; color: #F4C77B; }
+  .dcdw-sub { font-size: 17px; line-height: 1.55; color: rgba(251,241,230,.82); max-width: 620px; margin: 0 auto 44px; }
+  .dcdw-cards { display: flex; gap: 24px; justify-content: center; }
+  .dcdw-card {
+    flex: 1 1 0; max-width: 440px; display: flex; align-items: center; gap: 22px; text-align: left;
+    padding: 22px 26px; border-radius: 20px; text-decoration: none; color: inherit;
+    background: rgba(255,255,255,.07); border: 1px solid rgba(244,199,123,.28);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    transition: transform .3s ease, border-color .3s ease, background .3s ease;
+  }
+  .dcdw-card:hover { transform: translateY(-3px); border-color: rgba(244,199,123,.6); background: rgba(255,255,255,.1); }
+  .dcdw-card img { width: 86px; height: 150px; object-fit: contain; flex: 0 0 auto; filter: drop-shadow(0 14px 22px rgba(0,0,0,.35)); }
+  .dcdw-card-name { font-family: var(--heading, 'Playfair Display', serif); font-size: 26px; font-weight: 500; margin: 0 0 2px; color: #FFF8EC; }
+  .dcdw-card-for { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: rgba(251,241,230,.65); margin: 0 0 12px; }
+  .dcdw-price { font-size: 15px; color: rgba(251,241,230,.85); margin: 0 0 4px; }
+  .dcdw-price b { font-size: 22px; font-weight: 600; color: #FFF8EC; }
+  .dcdw-price s { color: rgba(251,241,230,.5); margin-left: 6px; }
+  .dcdw-save { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 5px 11px; border-radius: 20px; background: #F4C77B; color: #2A1225; margin: 6px 0 12px; }
+  .dcdw-cta { font-size: 14px; font-weight: 600; letter-spacing: .06em; color: #F4C77B; }
+  .dcdw-cta::after { content: ' →'; }
+  .dcdw-note { font-size: 13px; color: rgba(251,241,230,.6); margin: 36px 0 0; }
+  @media (max-width: 768px) {
+    #dc-diwali { padding: 128px 20px 56px; }
+    #dc-diwali::after { background: url({{ 'dc-diwali-corner-r-anim.svg' | asset_url }}) right top / 110px auto no-repeat; }
+    .dcdw-sub { font-size: 15px; margin-bottom: 32px; }
+    .dcdw-cards { flex-direction: column; align-items: stretch; }
+    .dcdw-card { max-width: none; padding: 18px 20px; gap: 18px; }
+    .dcdw-card img { width: 64px; height: 112px; }
+    .dcdw-card-name { font-size: 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #dc-diwali::after {
+      background:
+        url({{ 'dc-diwali-corner-l.svg' | asset_url }}) left top / 150px auto no-repeat,
+        url({{ 'dc-diwali-corner-r.svg' | asset_url }}) right top / 150px auto no-repeat;
+    }
+    .dcdw-card { transition: none; }
+  }
+</style>
+<section id="dc-diwali" aria-labelledby="dcdw-title">
+  <div class="dcdw-inner">
+    <p class="dcdw-overline">Diwali Offer · till 15 November</p>
+    <h2 class="dcdw-title" id="dcdw-title">Light up your glow <em>this Diwali</em></h2>
+    <p class="dcdw-sub">Our Diwali prices on every pack of Collabloom and Skelecoll — up to 45% off MRP. No code needed, and WELCOME100 still takes ₹100 off your first order.</p>
+    <div class="dcdw-cards">
+      {%- if dc_cb -%}
+      {%- assign dc_cb_save = dc_cb.compare_at_price_max | minus: dc_cb.price_max | times: 100.0 | divided_by: dc_cb.compare_at_price_max | round -%}
+      <a class="dcdw-card" href="{{ dc_cb.url }}">
+        <img src="{{ 'collabloom-bottle.png' | asset_url }}" alt="Collabloom collagen shot bottle" width="86" height="150" loading="lazy">
+        <span>
+          <span class="dcdw-card-name">Collabloom</span>
+          <span class="dcdw-card-for" style="display:block">Skin · Hair · Nails</span>
+          <span class="dcdw-price" style="display:block">From <b>{{ dc_cb.price_min | money }}</b><s>{{ dc_cb.compare_at_price_min | money }}</s></span>
+          <span class="dcdw-save">Up to {{ dc_cb_save }}% off</span>
+          <span class="dcdw-cta" style="display:block">Shop Collabloom</span>
+        </span>
+      </a>
+      {%- endif -%}
+      {%- if dc_sk -%}
+      {%- assign dc_sk_save = dc_sk.compare_at_price_max | minus: dc_sk.price_max | times: 100.0 | divided_by: dc_sk.compare_at_price_max | round -%}
+      <a class="dcdw-card" href="{{ dc_sk.url }}">
+        <img src="{{ 'skelecoll-bottle.png' | asset_url }}" alt="Skelecoll collagen shot bottle" width="86" height="150" loading="lazy">
+        <span>
+          <span class="dcdw-card-name">Skelecoll</span>
+          <span class="dcdw-card-for" style="display:block">Bones · Joints · Muscles</span>
+          <span class="dcdw-price" style="display:block">From <b>{{ dc_sk.price_min | money }}</b><s>{{ dc_sk.compare_at_price_min | money }}</s></span>
+          <span class="dcdw-save">Up to {{ dc_sk_save }}% off</span>
+          <span class="dcdw-cta" style="display:block">Shop Skelecoll</span>
+        </span>
+      </a>
+      {%- endif -%}
+    </div>
+    <p class="dcdw-note">Prices include GST · Free shipping on every pack · Offer ends 15 November 2026</p>
+  </div>
+</section>
+{%- endif -%}
