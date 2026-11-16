@@ -85,6 +85,23 @@ fasciitis. Leave it unwritten.
 
 ## Flagged for the next audit
 
+**Article JSON-LD `image` URL is doubled in all 26 journal snippets and in the template (found
+2026-11-16, fixable by a Sunday audit, NOT fixed in bulk today).** Every article's `Article`
+schema renders `"image": "https://drcollagen.in//drcollagen.in/cdn/shop/t/34/assets/<file>.png"`.
+The cause is in `JOURNAL-ARTICLE-TEMPLATE.txt` and copied into every article:
+`asset_url` already returns a protocol-relative `//drcollagen.in/cdn/...` URL, so
+`| prepend: request.origin` prepends the host a second time. Verified live on
+`/pages/best-time-to-take-collagen` as well as the new article, so it has been wrong on every
+article since launch. A malformed image URL means Google and AI crawlers get no usable article
+image from the structured data, which costs rich-result eligibility. **Fixed today in
+`journal-collagen-for-loose-skin.liquid` only**, by replacing `| prepend: request.origin` with
+`| prepend: 'https:'`, because this run's hard limits allow changing only the one article it
+created. The remaining 25 snippets need the same one-line substitution, and
+`JOURNAL-ARTICLE-TEMPLATE.txt` needs it too so new articles stop inheriting the bug — the
+template is outside the files any daily run may touch, so that one needs Rahul or an explicit
+instruction.
+
+
 **Product page copy vs product composition — `snippets/product-skelecoll.liquid` (found 2026-10-31,
 needs Rahul's decision, NOT fixable by this routine).** The Skelecoll product page carries an FAQ
 answer reading "For joint-focused support, Type II is the correct starting point." Skelecoll does
